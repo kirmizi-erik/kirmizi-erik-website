@@ -3,7 +3,7 @@
 **Proje adı:** `kirmizi-erik-website`
 **Domain:** kirmizierik.com.tr [NETLEŞTIRILECEK: domain kayıtlı mı, DNS yönetimi nerede?]
 **Tarih:** 2026-05-07
-**Versiyon:** 0.1 — taslak
+**Versiyon:** 1.0 — finalize (renk + portfolyo + hosting sonradan netleşecek)
 
 ---
 
@@ -277,10 +277,10 @@ Card hover'da otomatik küçük video oynar (muted, loop). AKQA / Buck tarzı UX
 4. **Tipografi:** Lisanslı font için bütçe var mı, yoksa Geist + Inter (ücretsiz) ile mi?
 5. ~~**Mevcut portfolyo:** İlk 3-5 case study için hangi projeleri kullanacağız?~~ ⏸️ **SONRADAN (2026-05-07):** Kullanıcı portfolyo listesini sonra anlatacak. Faz 1'de anasayfada "Öne çıkan çalışmalar" alanı **placeholder** ile yapılır (3-6 boş kart, "Yakında" rozeti). Admin panelden case study girildikçe alan dolar. Lansman öncesi en az 3 case study eklenmesi önerilir.
 6. ~~**Showreel:** Hazır 60-90 sn'lik bir reel var mı?~~ ✅ NETLEŞTI (2026-05-07): **Hibrit yaklaşım** — Hero'da büyük display typography ana karakter; arka planda 5-10 sn kırmızı/siyah soyut motion loop video (ses yok, autoplay muted). Showreel hazırlandığında ileri faz'da değiştirilebilir, opsiyonel modal'da gösterilebilir.
-7. **Hero feature'lar:** 3D erik (A) ve AI Brief Asistanı (B) — Faz 1'de mi Faz 2'de mi?
-8. **Stream service:** Cloudflare Stream ($1/1000 dakika izlenme) vs Mux (daha pahalı ama developer-friendly) — hangisi?
-9. **Logo dosyaları + marka rehberi:** Sektörel logo kullanımı için kuralın var mı?
-10. **Hosting:** Vercel'de mi production, yoksa Türkiye-yerleşik hosting (Hetzner, Turhost) tercih ederiz?
+7. ~~**Hero feature'lar:** 3D erik ve AI Brief Asistanı — Faz?~~ ✅ NETLEŞTI: 3D erik → Faz 2; AI Brief Asistanı → Faz 1 (MVP star feature).
+8. ~~**Stream service:**~~ ⏸️ Hibrit hero kararı sonrası: Faz 1'de büyük showreel yok → Cloudflare Stream/Mux gerek değil. Küçük loop video Supabase Storage'da yeterli. Faz 2'de showreel eklenirse yeniden konuşulur.
+9. ~~**Logo dosyaları + marka rehberi:**~~ ✅ Logo yerleştirildi. Marka rehberi (kullanım kuralları, padding, küçültme limitleri) Faz 2'de detaylanır.
+10. ~~**Hosting:**~~ ⏸️ **LOKAL-FIRST KARAR (2026-05-07):** Site lokalde geliştirilir, MVP bitince hosting seçeneği konuşulur. Mevcut Alastyr Linux Bayi Hosting paketi Next.js'in tam feature set'ini desteklemiyor. Lansman zamanı 3 yol değerlendirilecek: (a) Domain Alastyr, hosting Vercel; (b) Alastyr VPS planına geçiş; (c) Static export + mevcut paket (feature kaybı).
 
 ---
 
@@ -297,12 +297,47 @@ Card hover'da otomatik küçük video oynar (muted, loop). AKQA / Buck tarzı UX
 
 ---
 
-## Sıradaki Adımlar
+## Sıradaki Adımlar (Brief v1.0 onaylandı → implementation)
 
-1. Sen bu brief'i oku, eklemek/çıkarmak istediklerini söyle
-2. [NETLEŞTIRILECEK] işaretli yerleri tek tek konuşalım (özellikle 1-7 numaralı sorular)
-3. Brief v1.0 finalize → ben Supabase şemasını yeniliyorum (eski tabloları silip yeni şemayı uyguluyorum)
-4. boilerplate'ten klonluyorum → projeler/kirmizi-erik-website/
-5. GitHub repo açıyorum (kirmizi-erik/kirmizi-erik-website)
-6. Vercel'e bağlıyorum (preview deploy)
-7. Hafta 1 işlerine başlıyorum
+### Tamamlandı (2026-05-07)
+- ✅ Brief sorularının 7'si netleşti, 3'ü "sonradan" (renk, portfolyo, hosting)
+- ✅ Boilerplate'ten klon → `projeler/kirmizi-erik-website/`
+- ✅ GitHub repo: `kirmizi-erik/kirmizi-erik-website` (private, push'landı)
+- ✅ Logo + favicon (Next.js icon convention) yerleştirildi
+- ✅ Supabase project bağlı (`kirmizi-erik-admin`, eski şema halen duruyor — silineceği)
+
+### Sıradaki — Hafta 1
+1. **Supabase yeni şemaya geç:** Eski (musteriler/projeler/...) tabloları sil, web sitesi için yeni şema (case_studies, leads, site_settings, profiles)
+2. **Tasarım sistemi temeli:** `globals.css` CSS variables (logo'dan tahmini palet ile), Tailwind theme config, base typography (Geist)
+3. **Header + Footer component'leri:** logo (PNG'den Image component), nav links, mobil menü
+4. **Anasayfa hero:** display tipografi + soyut motion arkaplan + CTA'lar
+5. **3 sütun hizmet bölümü:** anasayfa altında, hover micro-interaction
+6. **Öne çıkan çalışmalar:** placeholder kartlar (admin'den dolacak)
+
+### Hafta 2-3
+7. Çalışmalar liste sayfası (`/calismalar`)
+8. Çalışma detay (`/calismalar/[slug]`) — case study render
+9. Admin paneli auth (Supabase magic link, `/admin` route group)
+10. Admin'de Çalışma CRUD (form, listele, sil, yayınla)
+
+### Hafta 4
+11. Hizmet sayfası: `/hizmetler/ai-kurulumlari`
+12. İletişim sayfası: form + Server Action + Resend e-posta
+13. **AI Brief Asistanı** (Anthropic SDK + Claude Haiku 4.5)
+14. Admin'de Lead'ler (filter + status update)
+15. Admin'de Site Ayarları (SEO, footer, sosyal)
+16. Hover video preview (case grid)
+17. Lansman öncesi polishing (SEO, sitemap, robots, OG image, accessibility audit)
+
+### Lansman (Hafta 4 sonu - Hafta 5 başı)
+18. Hosting kararı (Vercel vs Alastyr VPS — sen vereceksin)
+19. Production deploy
+20. Domain DNS bağlantısı
+21. Renk paleti final review
+22. İlk 3 case study içeriğini birlikte yazıyoruz
+
+---
+
+## Geliştirme prensibi
+
+**Lokal-first:** Tüm geliştirme `localhost:3000`'de yapılır. `pnpm dev`. Supabase hibrit (cloud DB + lokal Next.js). Lansman zamanına kadar deploy yok.
