@@ -61,6 +61,8 @@ export function CaseForm({ mode, initial }: CaseFormProps) {
   const [metrikler, setMetrikler] = useState<Metrik[]>(initial?.metrikler ?? []);
   const [ekipText, setEkipText] = useState((initial?.ekip_krediler ?? []).join("\n"));
   const [galeri, setGaleri] = useState<string[]>(initial?.galeri_urls ?? []);
+  const [durum, setDurum] = useState<CaseStudyDurum>(initial?.durum ?? "taslak");
+  const [oneCikan, setOneCikan] = useState<boolean>(initial?.one_cikan ?? false);
 
   const toggleKategori = (val: string) =>
     setKategori((prev) =>
@@ -98,43 +100,46 @@ export function CaseForm({ mode, initial }: CaseFormProps) {
   const removeMetrik = (i: number) =>
     setMetrikler((m) => m.filter((_, idx) => idx !== i));
 
+  const submitForm = (formData: FormData, overrideDurum?: CaseStudyDurum) => {
+    // Inject computed/array fields manually
+    formData.delete("kategori");
+    kategori.forEach((k) => formData.append("kategori", k));
+
+    formData.set(
+      "metrikler",
+      JSON.stringify(metrikler.filter((m) => m.label.trim() && m.value.trim())),
+    );
+    formData.set(
+      "ekip_krediler",
+      JSON.stringify(
+        ekipText
+          .split("\n")
+          .map((s) => s.trim())
+          .filter(Boolean),
+      ),
+    );
+    formData.set("galeri_urls", JSON.stringify(galeri));
+    formData.set("kapak_url", kapakUrl);
+    formData.set("kapak_video_url", kapakVideoUrl);
+    formData.set("durum", overrideDurum ?? durum);
+    formData.set("one_cikan", oneCikan ? "true" : "false");
+
+    if (overrideDurum) setDurum(overrideDurum);
+
+    startTransition(async () => {
+      if (mode === "create") {
+        const r = await createCaseStudy(formData);
+        if (!r.ok) toast.error(r.error);
+      } else if (initial?.id) {
+        const r = await updateCaseStudy(initial.id, formData);
+        if (r.ok) toast.success(r.message ?? "Kaydedildi");
+        else toast.error(r.error);
+      }
+    });
+  };
+
   return (
-    <form
-      action={(formData) => {
-        // Inject computed/array fields manually
-        formData.delete("kategori");
-        kategori.forEach((k) => formData.append("kategori", k));
-
-        formData.set(
-          "metrikler",
-          JSON.stringify(metrikler.filter((m) => m.label.trim() && m.value.trim())),
-        );
-        formData.set(
-          "ekip_krediler",
-          JSON.stringify(
-            ekipText
-              .split("\n")
-              .map((s) => s.trim())
-              .filter(Boolean),
-          ),
-        );
-        formData.set("galeri_urls", JSON.stringify(galeri));
-        formData.set("kapak_url", kapakUrl);
-        formData.set("kapak_video_url", kapakVideoUrl);
-
-        startTransition(async () => {
-          if (mode === "create") {
-            const r = await createCaseStudy(formData);
-            if (!r.ok) toast.error(r.error);
-          } else if (initial?.id) {
-            const r = await updateCaseStudy(initial.id, formData);
-            if (r.ok) toast.success(r.message ?? "Kaydedildi");
-            else toast.error(r.error);
-          }
-        });
-      }}
-      className="space-y-8"
-    >
+    <form action={(formData) => submitForm(formData)} className="space-y-8">
       {/* Temel bilgi */}
       <section className="space-y-5">
         <h2 className="text-sm font-semibold tracking-wider uppercase">Temel bilgi</h2>
@@ -198,7 +203,8 @@ export function CaseForm({ mode, initial }: CaseFormProps) {
             <select
               id="durum"
               name="durum"
-              defaultValue={initial?.durum ?? "taslak"}
+              value={durum}
+              onChange={(e) => setDurum(e.target.value as CaseStudyDurum)}
               className="border-input bg-background focus-visible:ring-ring h-9 w-full rounded-md border px-3 py-1 text-sm focus-visible:ring-2 focus-visible:outline-none"
             >
               {durumOptions.map((d) => (
@@ -207,6 +213,9 @@ export function CaseForm({ mode, initial }: CaseFormProps) {
                 </option>
               ))}
             </select>
+            <p className="text-muted-foreground text-xs">
+              Sadece <strong>Yayında</strong> olan çalışmalar siteye gözükür.
+            </p>
           </div>
 
           <div className="space-y-2 md:col-span-2">
@@ -246,16 +255,28 @@ export function CaseForm({ mode, initial }: CaseFormProps) {
             </div>
           </div>
 
-          <div className="md:col-span-2">
+          <div className="md:col-span-2 space-y-2">
             <label className="flex cursor-pointer items-center gap-2">
               <input
                 type="checkbox"
                 name="one_cikan"
-                defaultChecked={initial?.one_cikan ?? false}
+                checked={oneCikan}
+                onChange={(e) => setOneCikan(e.target.checked)}
                 className="size-4 accent-current"
               />
               <span className="text-sm">Anasayfa &quot;Öne Çıkanlar&quot; alanında göster</span>
             </label>
+
+            {oneCikan && durum !== "yayinda" ? (
+              <div className="border-brand/40 bg-brand/5 text-brand flex items-start gap-2 rounded-md border p-3 text-xs">
+                <span className="bg-brand mt-1 size-1.5 shrink-0 rounded-full" />
+                <div>
+                  <strong>Heads up:</strong> &quot;Öne çıkan&quot; işaretli ama <strong>Durum: {durumLabel[durum]}</strong>.
+                  Anasayfada görünmesi için durumu <strong>Yayında</strong> yapman gerek.
+                  Aşağıdaki <em>&quot;Yayına al ve kaydet&quot;</em> butonu hızlı yol.
+                </div>
+              </div>
+            ) : null}
           </div>
         </div>
       </section>
@@ -509,13 +530,38 @@ export function CaseForm({ mode, initial }: CaseFormProps) {
       </section>
 
       {/* Submit */}
-      <div className="border-border flex items-center justify-end gap-2 border-t pt-6">
-        <Button type="submit" disabled={isPending} size="lg">
+      <div className="border-border flex flex-col items-stretch gap-2 border-t pt-6 sm:flex-row sm:items-center sm:justify-end">
+        {durum !== "yayinda" ? (
+          <Button
+            type="button"
+            disabled={isPending}
+            size="lg"
+            variant="default"
+            onClick={(e) => {
+              const form = (e.currentTarget as HTMLButtonElement).form;
+              if (!form) return;
+              const fd = new FormData(form);
+              submitForm(fd, "yayinda");
+            }}
+          >
+            {isPending ? "Kaydediliyor..." : "Yayına al ve kaydet"}
+          </Button>
+        ) : null}
+        <Button
+          type="submit"
+          disabled={isPending}
+          size="lg"
+          variant={durum === "yayinda" ? "default" : "ghost"}
+        >
           {isPending
             ? "Kaydediliyor..."
             : mode === "create"
-              ? "Çalışmayı oluştur"
-              : "Değişiklikleri kaydet"}
+              ? durum === "yayinda"
+                ? "Çalışmayı yayına al"
+                : "Taslak olarak kaydet"
+              : durum === "yayinda"
+                ? "Değişiklikleri kaydet"
+                : "Taslak olarak kaydet"}
         </Button>
       </div>
     </form>
