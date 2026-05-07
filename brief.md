@@ -95,30 +95,42 @@ Diğer 8 hizmetin detay sayfası **Faz 2**'de açılır. Faz 1'de sütunlardan t
 
 ### Renk Paleti — [SONRADAN NETLEŞECEK ⏸️]
 
-**Karar:** Kullanıcı 2026-05-07'de "tek site rengi konusunda kararsızım, sonradan değiştiririz, sistemi kuralım" dedi. Renk paleti netleştirilene kadar **temporary default** ile gidiyoruz:
+**Karar:** Kullanıcı 2026-05-07'de "tek site rengi konusunda kararsızım, sonradan değiştiririz, sistemi kuralım" dedi.
 
-| Token | Geçici değer | Notlar |
-|-------|--------------|--------|
-| Background (dark) | `#0D0D0D` | Antrasit, neredeyse siyah |
-| Foreground | `#FAFAFA` | Off-white |
-| Aksan / CTA | `#C8102E` | Geçici "erik kırmızısı" — değişecek |
-| Card/border | `#1A1A1A` / `#2A2A2A` | Dark mode için |
+**Logo'dan tahmin edilen renkler** (kullanıcı onayı bekliyor — sadece referans):
 
-Renk netleştiğinde `tailwind.config` ve `globals.css` üzerinden tek noktadan değiştirilecek (CSS variable'lar). Bu yüzden tüm component'lerde `bg-background`, `text-foreground`, `bg-primary` gibi semantic class'lar kullanılacak — hard-coded `#C8102E` yok.
+| Renk | Tahmin (HEX) | Kullanım önerisi |
+|------|--------------|-------------------|
+| Erik kırmızı (parlak) | `#DC0E18` veya `#E31E24` | "kırmızı" wordmark, ana CTA |
+| Erik mor (koyu) | `#6B1B45` veya `#5C1A3F` | "erik" wordmark, ikon koyu |
+| Erik mor (en koyu) | `#2D0F26` | Çok karanlık vurgu |
+| Yaprak yeşili (açık) | `#87B345` | Yardımcı / vurgu |
+| Yaprak yeşili (koyu) | `#4A7028` | Gölge |
+| Sap altın | `#A57D34` | Akşam vurgusu (opsiyonel) |
+| Tagline gri | `#7D7D7D` | Alt yazılar |
 
-### Tipografi [NETLEŞTIRILECEK]
+**Geçici dark theme palet (kod yazılırken kullanılan defaults):**
 
-**Hero / Display (önerim):**
-- PP Editorial New (Pangram Pangram, paid)
-- Söhne (Klim, paid)
-- Migra (Pangram Pangram, paid)
-- **Ücretsiz alternatif:** Inter Display, Tobias (license), Cormorant Garamond
+| Token | Geçici değer |
+|-------|--------------|
+| `--background` (dark) | `#0D0D0D` |
+| `--foreground` | `#FAFAFA` |
+| `--primary` (CTA) | `#DC0E18` (logo erik kırmızısından) |
+| `--accent` | `#6B1B45` (logo erik morundan) |
+| `--card` / `--border` | `#1A1A1A` / `#2A2A2A` |
 
-**Body:**
-- Inter veya Geist (ücretsiz, modern, okunabilir)
-- TR karakter desteği var (latin-ext)
+CSS variables ile tek noktadan değiştirilebilir. Component'lerde **sadece semantic class** (`bg-background`, `text-primary`, `border-border`). Hard-coded HEX yok.
 
-**Final karar:** Sen lisans almak istemezsen Geist + Inter kombosunu kullanırız (ikisi de zaten Vercel'in ücretsiz fontları, projedede kurulu).
+### Tipografi ✅ NETLEŞTI (2026-05-07)
+
+| Kullanım | Font | Notlar |
+|----------|------|--------|
+| Display / Hero | **Geist** (extra bold/black weight) | Devasa başlıklar |
+| Body | **Geist** (regular/medium) | Okunabilir, modern |
+| UI / Code | **Geist Mono** | Monospace alanlarda |
+
+**License:** SIL Open Font License — ticari kullanım serbest, lisans bedeli yok.
+**Avantaj:** Vercel resmi fontu, projedede zaten kurulu (`next/font/google`). Türkçe (latin-ext) tam destek.
 
 ### Layout
 
@@ -233,39 +245,38 @@ RLS: tüm tablolar açık. `case_studies` ve `site_settings` `select` herkese a�
 
 ## Bonus Özellikler (Karar verilecek)
 
-### A. Hero'da 3D scroll-driven erik 🌶️ [NETLEŞTIRILECEK]
-- React Three Fiber ile 3D model erik
-- Scroll'da dönüyor, deforme oluyor, hizmet ikonlarına dönüşüyor
-- 3D/2D yetkinliğin canlı kanıtı
-- **Risk:** Üretim süresi 1-2 hafta + perf optimizasyonu
+### A. Hero'da 3D scroll-driven erik 🌶️ ⏸️ FAZ 2
 
-**Karar:** Faz 1 MVP'de yapalım mı, Faz 2'ye mi bırakalım?
+Faz 1'de yapılmıyor — lansman 3-4 hafta korunur. Faz 2'de eklenir (1-2 hafta ekstra iş): React Three Fiber ile 3D kırmızı erik, scroll'da dönüyor/deforme oluyor.
 
-### B. AI Brief Asistanı (iletişim formunda) [NETLEŞTIRILECEK]
-- Müşteri form'u doldururken Claude API live feedback
-- "Bütçen X-Y aralığı için şu hizmetler uygun" önerisi
-- "Brief'in eksik, bu noktayı netleştir" uyarısı
-- AI Kurulumları hizmetinizin canlı demosu
-- **Risk:** Claude API maliyeti (~5-15$/ay düşük trafikte)
+### B. AI Brief Asistanı (iletişim formunda) ✅ FAZ 1 ⭐
 
-**Karar:** MVP'de yapalım mı?
+**MVP'nin star feature'ı.** İletişim formunda kullanıcı yazarken Claude API canlı feedback:
+- "Bu bütçeye şu hizmetler uygun" önerisi
+- "Brief'in eksik, şu noktayı netleştir" uyarısı
+- Form sonunda otomatik özet
+- AI Kurulumları hizmetinin **canlı kanıtı**
 
-### C. Çalışmalar grid'inde hover video preview
-- Card hover'da otomatik küçük video oynar (muted, loop)
-- AKQA / Buck tarzı
+**Implementation:**
+- Anthropic SDK + `claude-haiku-4-5` (hızlı + ucuz, demo için yeterli)
+- API key Vercel env'e (sadece server-side)
+- Server Action ile her input'ta tetiklenir, debounce 800ms
+- Maliyet: ~$5-15/ay (düşük trafik), kullanım artarsa rate limit eklenir
 
-**Karar:** Bu kesin yapılmalı (UX için kritik).
+### C. Çalışmalar grid'inde hover video preview ✅ FAZ 1
+
+Card hover'da otomatik küçük video oynar (muted, loop). AKQA / Buck tarzı UX. Case study'lerin `kapak_video_url`'ini kullanır.
 
 ---
 
 ## Açık Sorular [NETLEŞTIRILECEK — sıradaki konuşma]
 
-1. **Domain:** kirmizierik.com.tr kayıtlı mı? DNS nerede yönetiliyor? (Cloudflare, Natro, GoDaddy?)
-2. **Logo:** Mevcut logo var mı? Vector dosya (SVG/AI) bende olur mu?
+1. ~~**Domain:** kirmizierik.com.tr kayıtlı mı? DNS nerede yönetiliyor?~~ ✅ **NETLEŞTI (2026-05-07):** Domain kayıtlı, kullanıcıda, DNS erişimi var. Lansman zamanı registrar (Natro/Cloudflare vb.) bilgisi alınacak, Vercel'e A/CNAME ile bağlanacak.
+2. ~~**Logo:** Mevcut logo var mı?~~ ✅ NETLEŞTI (2026-05-07): Logo `~/Desktop/kirmizi-erik-ajans/kirmizi-erik-logo/`'de. Master AI vektör + 2 PNG (renkli yatay logo, dikey erik ikonu) kullanıcıdan alındı. Projeye kopyalandı: `public/logo/` (logo, ikonlar) + `src/app/icon.png` & `apple-icon.png` (Next.js auto-detect favicon).
 3. **Renk paleti:** Erik kırmızısı tonu specific (HEX değeri)? Yoksa benim önerim üzerinde mi gidiyoruz?
 4. **Tipografi:** Lisanslı font için bütçe var mı, yoksa Geist + Inter (ücretsiz) ile mi?
-5. **Mevcut portfolyo:** İlk 3-5 case study için hangi projeleri kullanacağız? (Novawood, HGR, Muğla Eczacı Odası vb. — hangileri yayına uygun?)
-6. **Showreel:** Hazır 60-90 sn'lik bir reel var mı, yoksa montaj edilecek mi?
+5. ~~**Mevcut portfolyo:** İlk 3-5 case study için hangi projeleri kullanacağız?~~ ⏸️ **SONRADAN (2026-05-07):** Kullanıcı portfolyo listesini sonra anlatacak. Faz 1'de anasayfada "Öne çıkan çalışmalar" alanı **placeholder** ile yapılır (3-6 boş kart, "Yakında" rozeti). Admin panelden case study girildikçe alan dolar. Lansman öncesi en az 3 case study eklenmesi önerilir.
+6. ~~**Showreel:** Hazır 60-90 sn'lik bir reel var mı?~~ ✅ NETLEŞTI (2026-05-07): **Hibrit yaklaşım** — Hero'da büyük display typography ana karakter; arka planda 5-10 sn kırmızı/siyah soyut motion loop video (ses yok, autoplay muted). Showreel hazırlandığında ileri faz'da değiştirilebilir, opsiyonel modal'da gösterilebilir.
 7. **Hero feature'lar:** 3D erik (A) ve AI Brief Asistanı (B) — Faz 1'de mi Faz 2'de mi?
 8. **Stream service:** Cloudflare Stream ($1/1000 dakika izlenme) vs Mux (daha pahalı ama developer-friendly) — hangisi?
 9. **Logo dosyaları + marka rehberi:** Sektörel logo kullanımı için kuralın var mı?
