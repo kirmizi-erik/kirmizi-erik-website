@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
+import { MAX_IMAGE_SIZE_MB, MAX_VIDEO_SIZE_MB } from "@/lib/upload-limits";
 import {
   caseStudyInputSchema,
   type CaseStudyInput,
@@ -170,10 +171,15 @@ export async function uploadMedia(
     return { ok: false, error: "Dosya bulunamadı" };
   }
 
-  // 25 MB sınır (case görseli/preview video için yeterli)
-  const MAX = 25 * 1024 * 1024;
-  if (file.size > MAX) {
-    return { ok: false, error: "Dosya 25 MB'tan büyük olamaz" };
+  const isVideo = file.type.startsWith("video/");
+  const maxMB = isVideo ? MAX_VIDEO_SIZE_MB : MAX_IMAGE_SIZE_MB;
+  const maxBytes = maxMB * 1024 * 1024;
+  if (file.size > maxBytes) {
+    const sizeMB = (file.size / 1024 / 1024).toFixed(1);
+    return {
+      ok: false,
+      error: `Dosya çok büyük (${sizeMB} MB). ${isVideo ? "Video" : "Görsel"} için maksimum ${maxMB} MB.`,
+    };
   }
 
   const supabase = await createClient();

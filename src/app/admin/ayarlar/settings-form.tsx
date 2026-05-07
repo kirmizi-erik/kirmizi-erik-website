@@ -8,11 +8,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import { updateSiteSettings } from "./actions";
+import { HeroVideoUploader } from "./hero-video-uploader";
 
 type SettingsFormProps = {
   initial: {
     meta_title: string;
     meta_description: string;
+    hero_title: string;
+    hero_subtitle: string;
+    hero_video_url: string;
     contact_email: string;
     contact_phone: string;
     contact_address: string;
@@ -36,6 +40,53 @@ export function SettingsForm({ initial }: SettingsFormProps) {
       }
       className="space-y-8"
     >
+      <section className="space-y-4">
+        <h2 className="text-sm font-semibold tracking-wider uppercase">Anasayfa Hero</h2>
+        <p className="text-muted-foreground text-xs">
+          Anasayfada en üstte görünen büyük başlık ve arkaplan videosu.
+        </p>
+
+        <div className="space-y-2">
+          <Label htmlFor="hero_title">Başlık (her satır ayrı görünür)</Label>
+          <textarea
+            id="hero_title"
+            name="hero_title"
+            defaultValue={initial.hero_title}
+            maxLength={300}
+            rows={3}
+            className="border-input bg-background focus-visible:ring-ring w-full rounded-md border px-3 py-2 text-base font-semibold focus-visible:ring-2 focus-visible:outline-none"
+            placeholder="Bir fikir,&#10;dokuz hizmet,&#10;sıfır sınır."
+          />
+          <p className="text-muted-foreground text-xs">
+            İpucu: Son satırı vurgulu (kırmızı) renkte göstermek için son satıra normalden farklı bir
+            şey koymana gerek yok — son satır otomatik vurgulanır.
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="hero_subtitle">Alt yazı</Label>
+          <textarea
+            id="hero_subtitle"
+            name="hero_subtitle"
+            defaultValue={initial.hero_subtitle}
+            maxLength={800}
+            rows={3}
+            className="border-input bg-background focus-visible:ring-ring w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:outline-none"
+            placeholder="Hero altında görünür"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label>Hero arkaplan videosu</Label>
+          <HeroVideoUploader name="hero_video_url" defaultValue={initial.hero_video_url} />
+          <p className="text-muted-foreground text-xs">
+            <strong>Not:</strong> Hero arkaplan videosu otomatik oynatılır (sessiz, döngüsel).
+            YouTube&apos;un autoplay kısıtlamaları var; en iyi sonuç için kısa (5-15 saniye) bir mp4
+            yüklemen önerilir. Boş bırakırsan animasyonlu gradient arkaplan (mevcut) kullanılır.
+          </p>
+        </div>
+      </section>
+
       <section className="space-y-4">
         <h2 className="text-sm font-semibold tracking-wider uppercase">SEO / Meta</h2>
         <div className="space-y-2">

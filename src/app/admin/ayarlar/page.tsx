@@ -31,6 +31,9 @@ export default async function AdminAyarlarPage() {
             initial={{
               meta_title: data?.meta_title ?? "",
               meta_description: data?.meta_description ?? "",
+              hero_title: data?.hero_title ?? "",
+              hero_subtitle: data?.hero_subtitle ?? "",
+              hero_video_url: data?.hero_video_url ?? "",
               contact_email: data?.contact_email ?? "",
               contact_phone: data?.contact_phone ?? "",
               contact_address: data?.contact_address ?? "",

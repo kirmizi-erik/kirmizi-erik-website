@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowUpRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Markdown } from "@/components/site/markdown";
+import { parseVideoUrl } from "@/lib/embed";
 import { createClient } from "@/lib/supabase/server";
 import type { Metrik } from "@/lib/validations/case-study";
 
@@ -105,29 +106,49 @@ export default async function CalismaDetayPage({ params }: PageProps) {
       </header>
 
       {/* Kapak görsel/video */}
-      {w.kapak_url || w.kapak_video_url ? (
-        <div className="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-10">
-          <div className="border-border bg-muted/30 relative -mt-px aspect-[16/9] overflow-hidden">
-            {w.kapak_video_url ? (
-              <video
-                src={w.kapak_video_url}
-                poster={w.kapak_url ?? undefined}
-                controls
-                playsInline
-                preload="metadata"
-                className="absolute inset-0 size-full object-cover"
-              />
-            ) : w.kapak_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={w.kapak_url}
-                alt={w.baslik}
-                className="absolute inset-0 size-full object-cover"
-              />
-            ) : null}
+      {(() => {
+        const v = parseVideoUrl(w.kapak_video_url);
+        if (!v && !w.kapak_url) return null;
+        return (
+          <div className="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-10">
+            <div className="border-border bg-muted/30 relative -mt-px aspect-video overflow-hidden">
+              {v?.kind === "youtube" ? (
+                <iframe
+                  src={v.embedUrl}
+                  title={w.baslik}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  className="absolute inset-0 size-full"
+                />
+              ) : v?.kind === "vimeo" ? (
+                <iframe
+                  src={v.embedUrl}
+                  title={w.baslik}
+                  allow="autoplay; fullscreen; picture-in-picture"
+                  allowFullScreen
+                  className="absolute inset-0 size-full"
+                />
+              ) : v?.kind === "direct" ? (
+                <video
+                  src={v.url}
+                  poster={w.kapak_url ?? undefined}
+                  controls
+                  playsInline
+                  preload="metadata"
+                  className="absolute inset-0 size-full object-cover"
+                />
+              ) : w.kapak_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={w.kapak_url}
+                  alt={w.baslik}
+                  className="absolute inset-0 size-full object-cover"
+                />
+              ) : null}
+            </div>
           </div>
-        </div>
-      ) : null}
+        );
+      })()}
 
       {/* Problem / Çözüm / Sonuç (markdown) */}
       <section className="mx-auto max-w-screen-md space-y-16 px-4 py-20 sm:px-6 lg:py-28">

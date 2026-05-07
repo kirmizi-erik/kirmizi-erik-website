@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 
+import { parseVideoUrl } from "@/lib/embed";
 import { createClient } from "@/lib/supabase/server";
 import { kategoriOptions } from "@/lib/validations/case-study";
 import { cn } from "@/lib/utils";
@@ -98,6 +99,11 @@ export default async function CalismalarPage({
               const pattern = [8, 4, 4, 8, 6, 6];
               const span = pattern[i % pattern.length];
 
+              const video = parseVideoUrl(w.kapak_video_url);
+              const directVideo = video?.kind === "direct" ? video.url : null;
+              const ytThumb = video?.kind === "youtube" ? video.thumbnail : null;
+              const cover = w.kapak_url ?? ytThumb;
+
               return (
                 <Link
                   key={w.slug}
@@ -108,10 +114,10 @@ export default async function CalismalarPage({
                   )}
                 >
                   <div className="border-border/60 bg-muted/30 hover:border-foreground/30 relative aspect-[4/3] overflow-hidden rounded-2xl border transition-colors">
-                    {w.kapak_video_url ? (
+                    {directVideo ? (
                       <video
-                        src={w.kapak_video_url}
-                        poster={w.kapak_url ?? undefined}
+                        src={directVideo}
+                        poster={cover ?? undefined}
                         autoPlay
                         muted
                         loop
@@ -121,10 +127,10 @@ export default async function CalismalarPage({
                       />
                     ) : null}
 
-                    {w.kapak_url ? (
+                    {cover ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
-                        src={w.kapak_url}
+                        src={cover}
                         alt=""
                         className="absolute inset-0 size-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
                         loading="lazy"

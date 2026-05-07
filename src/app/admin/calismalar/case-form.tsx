@@ -17,6 +17,9 @@ import {
 } from "@/lib/validations/case-study";
 import { cn } from "@/lib/utils";
 
+import { parseVideoUrl } from "@/lib/embed";
+import { MAX_IMAGE_SIZE_MB, MAX_VIDEO_SIZE_MB } from "@/lib/upload-limits";
+
 import { createCaseStudy, updateCaseStudy, uploadMedia } from "./actions";
 
 type CaseFormProps = {
@@ -295,38 +298,74 @@ export function CaseForm({ mode, initial }: CaseFormProps) {
                 disabled={busy === "kapak"}
               />
             </label>
+            <p className="text-muted-foreground text-xs">
+              Max {MAX_IMAGE_SIZE_MB} MB · jpg/png/webp önerilir.
+            </p>
           </div>
 
           <div className="space-y-2">
-            <Label>Kapak preview videosu (hover&apos;da oynar)</Label>
+            <Label>Kapak preview / detay videosu</Label>
             <div className="border-border relative aspect-[4/3] overflow-hidden rounded-md border">
               {kapakVideoUrl ? (
-                <>
-                  <video
-                    src={kapakVideoUrl}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    className="absolute inset-0 size-full object-cover"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setKapakVideoUrl("")}
-                    className="absolute right-2 top-2 inline-flex size-7 items-center justify-center rounded-full bg-black/70 text-white hover:bg-black"
-                  >
-                    <X className="size-3.5" />
-                  </button>
-                </>
+                (() => {
+                  const v = parseVideoUrl(kapakVideoUrl);
+                  return (
+                    <>
+                      {v?.kind === "direct" ? (
+                        <video
+                          src={v.url}
+                          autoPlay
+                          muted
+                          loop
+                          playsInline
+                          className="absolute inset-0 size-full object-cover"
+                        />
+                      ) : v?.kind === "youtube" ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={v.thumbnail}
+                          alt=""
+                          className="absolute inset-0 size-full object-cover"
+                        />
+                      ) : v?.kind === "vimeo" ? (
+                        <div className="bg-muted text-muted-foreground absolute inset-0 flex items-center justify-center text-xs">
+                          Vimeo embed
+                        </div>
+                      ) : null}
+                      <button
+                        type="button"
+                        onClick={() => setKapakVideoUrl("")}
+                        className="absolute top-2 right-2 inline-flex size-7 items-center justify-center rounded-full bg-black/70 text-white hover:bg-black"
+                      >
+                        <X className="size-3.5" />
+                      </button>
+                      {v?.kind === "youtube" || v?.kind === "vimeo" ? (
+                        <span className="absolute bottom-2 left-2 rounded-full bg-black/70 px-2 py-0.5 text-[10px] tracking-wider text-white uppercase">
+                          {v.kind}
+                        </span>
+                      ) : null}
+                    </>
+                  );
+                })()
               ) : (
                 <div className="text-muted-foreground flex h-full items-center justify-center text-xs">
                   Video yok (opsiyonel)
                 </div>
               )}
             </div>
+
+            {/* URL girişi (YouTube/Vimeo veya direct) */}
+            <Input
+              type="url"
+              value={kapakVideoUrl}
+              onChange={(e) => setKapakVideoUrl(e.target.value)}
+              placeholder="YouTube/Vimeo URL ya da yüklediğin video URL'i"
+            />
+
+            {/* Veya yükle */}
             <label className="bg-muted/40 hover:bg-muted/60 inline-flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-xs">
               <Upload className="size-3.5" />
-              {busy === "kapakVideo" ? "Yükleniyor..." : "Video yükle (loop, ses yok)"}
+              {busy === "kapakVideo" ? "Yükleniyor..." : "Veya video dosyası yükle"}
               <input
                 type="file"
                 accept="video/*"
@@ -335,6 +374,10 @@ export function CaseForm({ mode, initial }: CaseFormProps) {
                 disabled={busy === "kapakVideo"}
               />
             </label>
+            <p className="text-muted-foreground text-xs">
+              YouTube/Vimeo URL yapıştırabilir veya video dosyası yükleyebilirsin (max{" "}
+              {MAX_VIDEO_SIZE_MB} MB).
+            </p>
           </div>
         </div>
 
@@ -369,6 +412,9 @@ export function CaseForm({ mode, initial }: CaseFormProps) {
               disabled={busy === "galeri"}
             />
           </label>
+          <p className="text-muted-foreground text-xs">
+            Her görsel max {MAX_IMAGE_SIZE_MB} MB.
+          </p>
         </div>
       </section>
 

@@ -8,6 +8,9 @@ import { createClient } from "@/lib/supabase/server";
 const settingsSchema = z.object({
   meta_title: z.string().max(160).optional().or(z.literal("")),
   meta_description: z.string().max(400).optional().or(z.literal("")),
+  hero_title: z.string().max(300).optional().or(z.literal("")),
+  hero_subtitle: z.string().max(800).optional().or(z.literal("")),
+  hero_video_url: z.string().url().optional().or(z.literal("")),
   contact_email: z.string().email("Geçerli e-posta").optional().or(z.literal("")),
   contact_phone: z.string().max(40).optional().or(z.literal("")),
   contact_address: z.string().max(300).optional().or(z.literal("")),
@@ -33,6 +36,9 @@ export async function updateSiteSettings(formData: FormData): Promise<ActionResu
   const raw = {
     meta_title: formData.get("meta_title"),
     meta_description: formData.get("meta_description"),
+    hero_title: formData.get("hero_title"),
+    hero_subtitle: formData.get("hero_subtitle"),
+    hero_video_url: formData.get("hero_video_url"),
     contact_email: formData.get("contact_email"),
     contact_phone: formData.get("contact_phone"),
     contact_address: formData.get("contact_address"),
@@ -66,6 +72,9 @@ export async function updateSiteSettings(formData: FormData): Promise<ActionResu
     .update({
       meta_title: emptyToNull(v.meta_title),
       meta_description: emptyToNull(v.meta_description),
+      hero_title: emptyToNull(v.hero_title),
+      hero_subtitle: emptyToNull(v.hero_subtitle),
+      hero_video_url: emptyToNull(v.hero_video_url),
       contact_email: emptyToNull(v.contact_email),
       contact_phone: emptyToNull(v.contact_phone),
       contact_address: emptyToNull(v.contact_address),

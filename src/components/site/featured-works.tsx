@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { parseVideoUrl } from "@/lib/embed";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
 
@@ -26,6 +27,13 @@ function WorkCard({
   placeholder,
   spanLg = 6,
 }: WorkCardProps) {
+  const v = parseVideoUrl(kapak_video_url);
+  const ytThumb = v?.kind === "youtube" ? v.thumbnail : null;
+  // YouTube/Vimeo embed liste/grid'de hover preview olarak otomatik oynatılmaz —
+  // thumbnail göster, klik ile detay sayfada izlenir. Sadece direct mp4 hover'da oynar.
+  const directVideo = v?.kind === "direct" ? v.url : null;
+  const effectiveKapak = kapak_url ?? ytThumb;
+
   const inner = (
     <div
       className={cn(
@@ -35,11 +43,11 @@ function WorkCard({
           : "border-border/60 bg-muted/40 hover:border-foreground/30 transition-colors",
       )}
     >
-      {/* Kapak görsel veya video */}
-      {kapak_video_url ? (
+      {/* Direct mp4 → hover'da oynat */}
+      {directVideo ? (
         <video
-          src={kapak_video_url}
-          poster={kapak_url ?? undefined}
+          src={directVideo}
+          poster={effectiveKapak ?? undefined}
           autoPlay
           muted
           loop
@@ -49,10 +57,10 @@ function WorkCard({
         />
       ) : null}
 
-      {kapak_url && !placeholder ? (
+      {effectiveKapak && !placeholder ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={kapak_url}
+          src={effectiveKapak}
           alt={baslik ?? ""}
           className="absolute inset-0 size-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
           loading="lazy"

@@ -190,6 +190,9 @@ export type Database = {
           contact_phone: string | null
           cookie_text: string | null
           footer_links: Json
+          hero_subtitle: string | null
+          hero_title: string | null
+          hero_video_url: string | null
           id: number
           kvkk_text: string | null
           meta_description: string | null
@@ -204,6 +207,9 @@ export type Database = {
           contact_phone?: string | null
           cookie_text?: string | null
           footer_links?: Json
+          hero_subtitle?: string | null
+          hero_title?: string | null
+          hero_video_url?: string | null
           id?: number
           kvkk_text?: string | null
           meta_description?: string | null
@@ -218,6 +224,9 @@ export type Database = {
           contact_phone?: string | null
           cookie_text?: string | null
           footer_links?: Json
+          hero_subtitle?: string | null
+          hero_title?: string | null
+          hero_video_url?: string | null
           id?: number
           kvkk_text?: string | null
           meta_description?: string | null
