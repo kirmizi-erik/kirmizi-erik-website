@@ -27,6 +27,13 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  experimental: {
+    serverActions: {
+      // Server Action default body limit 1MB → çok düşük.
+      // Hero video / kapak video upload (max 50MB) için 60MB headroom.
+      bodySizeLimit: "60mb",
+    },
+  },
   async headers() {
     return [
       {

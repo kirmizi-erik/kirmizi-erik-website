@@ -192,15 +192,29 @@ export async function uploadMedia(
     .slice(0, 60);
   const path = `${Date.now()}-${safe || "media"}.${ext}`;
 
-  const { error: upErr } = await supabase.storage
-    .from("case-media")
-    .upload(path, file, {
-      cacheControl: "31536000",
-      upsert: false,
-      contentType: file.type || undefined,
-    });
-  if (upErr) return { ok: false, error: upErr.message };
+  try {
+    const { error: upErr } = await supabase.storage
+      .from("case-media")
+      .upload(path, file, {
+        cacheControl: "31536000",
+        upsert: false,
+        contentType: file.type || undefined,
+      });
+    if (upErr) {
+      console.error("[uploadMedia] storage error", {
+        message: upErr.message,
+        name: file.name,
+        size: file.size,
+      });
+      return { ok: false, error: `Yüklenemedi: ${upErr.message}` };
+    }
 
-  const { data: pub } = supabase.storage.from("case-media").getPublicUrl(path);
-  return { ok: true, data: { url: pub.publicUrl, path } };
+    const { data: pub } = supabase.storage.from("case-media").getPublicUrl(path);
+    return { ok: true, data: { url: pub.publicUrl, path } };
+  } catch (err) {
+    // Yakalanmamış exception (network timeout, fetch fail, vb.)
+    console.error("[uploadMedia] exception", err);
+    const msg = err instanceof Error ? err.message : "Bilinmeyen hata";
+    return { ok: false, error: `Yükleme hatası: ${msg}` };
+  }
 }
