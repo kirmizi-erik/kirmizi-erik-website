@@ -1,8 +1,6 @@
 "use server";
 
 import Anthropic from "@anthropic-ai/sdk";
-import { z } from "zod";
-import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 
 import { kategoriOptions } from "@/lib/validations/case-study";
 import type { AiAnalysis } from "@/lib/validations/lead";
@@ -25,36 +23,43 @@ const HIZMET_REFERANS = kategoriOptions
   .map((k) => `- ${k.value}: ${k.label}`)
   .join("\n");
 
-// JSON schema — Claude'un yanıt formatı (skor 0-100, kısa özet, eksikler, önerilen hizmetler)
-const AnalysisSchema = z.object({
-  skor: z
-    .number()
-    .min(0)
-    .max(100)
-    .describe(
-      "Brief'in netliği ve uygulanabilirliği skoru. 0-30: çok eksik, 30-60: temel var ama detay az, 60-85: iyi, 85-100: çok detaylı.",
-    ),
-  ozet: z
-    .string()
-    .max(280)
-    .describe("Brief'in 1-2 cümlelik özeti. Kullanıcıya gösterilir, profesyonel ton."),
-  eksikler: z
-    .array(z.string().max(140))
-    .max(4)
-    .describe(
-      "Brief'te eksik gördüğün, müşterinin netleştirmesi gereken noktalar. Maksimum 4 madde, her biri kısa cümle.",
-    ),
-  onerilenHizmetler: z
-    .array(
-      z.enum(
-        kategoriOptions.map((k) => k.value) as [string, ...string[]],
-      ),
-    )
-    .max(5)
-    .describe(
-      "Brief'in içeriğine göre en uygun olabilecek 1-5 hizmet kategorisi. Kullanıcı bunları formda işaretleyebilecek.",
-    ),
-});
+// JSON schema — Claude'un yanıt formatı (zod yerine manuel: zod3/zod4 helper uyuşmazlığı)
+const HIZMET_VALUES: readonly string[] = kategoriOptions.map((k) => k.value);
+
+// Not: Anthropic structured output array constraints (maxItems/minLength) desteklemiyor.
+// Bu yüzden sınırlar prompt'ta belirtilir, sonuçta defansif client-side trim yapılır.
+const ANALYSIS_JSON_SCHEMA = {
+  type: "object",
+  properties: {
+    skor: {
+      type: "number",
+      description:
+        "Brief'in netliği ve uygulanabilirliği skoru, 0-100 arası tam sayı. 0-30: çok eksik, 30-60: temel var ama detay az, 60-85: iyi, 85-100: çok detaylı.",
+    },
+    ozet: {
+      type: "string",
+      description: "Brief'in 1-2 cümlelik özeti. Maksimum 280 karakter. Profesyonel ton.",
+    },
+    eksikler: {
+      type: "array",
+      items: { type: "string" },
+      description:
+        "Brief'te eksik gördüğün, müşterinin netleştirmesi gereken noktalar. **EN FAZLA 4 MADDE**, her biri kısa cümle.",
+    },
+    onerilenHizmetler: {
+      type: "array",
+      items: {
+        type: "string",
+        enum: HIZMET_VALUES as unknown as string[],
+      },
+      description:
+        "Brief'in içeriğine göre en uygun **1-5 HİZMET** kategorisi. Sadece şu slug'lardan seç: " +
+        HIZMET_VALUES.join(", "),
+    },
+  },
+  required: ["skor", "ozet", "eksikler", "onerilenHizmetler"],
+  additionalProperties: false,
+} as const;
 
 const SYSTEM_PROMPT = `Sen Kırmızı Erik Reklam Ajansı'nın brief değerlendirme asistanısın. Kırmızı Erik 360° kreatif reklam ajansı; aşağıdaki dokuz hizmeti veriyor:
 
@@ -110,11 +115,11 @@ export async function analyzeBriefAction(input: AnalyzeInput): Promise<AnalyzeRe
   const userMessage = `${userContext ? userContext + "\n\n" : ""}Brief metni:\n${input.brief.trim()}`;
 
   try {
-    const response = await client.messages.parse({
+    const response = await client.messages.create({
       model: "claude-haiku-4-5",
       max_tokens: 1024,
       // System prompt sabit → ephemeral cache (5dk TTL).
-      // Stable prefix → sonraki istekte cache_read_input_tokens > 0.
+      // Sonraki istekte cache_read_input_tokens > 0 olmalı.
       system: [
         {
           type: "text",
@@ -124,22 +129,54 @@ export async function analyzeBriefAction(input: AnalyzeInput): Promise<AnalyzeRe
       ],
       messages: [{ role: "user", content: userMessage }],
       output_config: {
-        format: zodOutputFormat(AnalysisSchema),
+        format: {
+          type: "json_schema",
+          schema: ANALYSIS_JSON_SCHEMA,
+        },
       },
     });
 
-    const parsed = response.parsed_output;
-    if (!parsed) {
-      return { ok: false, error: "AI cevabı işlenemedi, lütfen tekrar dene" };
+    // Response içinde text block(ları) var, JSON parse edilir
+    const textBlock = response.content.find((b) => b.type === "text");
+    if (!textBlock || textBlock.type !== "text") {
+      return { ok: false, error: "AI cevabı boş geldi, lütfen tekrar dene" };
     }
+
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(textBlock.text);
+    } catch {
+      return { ok: false, error: "AI cevabı JSON formatında değil, tekrar dene" };
+    }
+
+    // Defansif validation — schema enforce edildi ama yine de güvene almak için
+    if (
+      !parsed ||
+      typeof parsed !== "object" ||
+      typeof (parsed as Record<string, unknown>).skor !== "number" ||
+      typeof (parsed as Record<string, unknown>).ozet !== "string" ||
+      !Array.isArray((parsed as Record<string, unknown>).eksikler) ||
+      !Array.isArray((parsed as Record<string, unknown>).onerilenHizmetler)
+    ) {
+      return { ok: false, error: "AI cevabı beklenen formatta değil" };
+    }
+
+    const r = parsed as {
+      skor: number;
+      ozet: string;
+      eksikler: string[];
+      onerilenHizmetler: string[];
+    };
 
     return {
       ok: true,
       data: {
-        skor: Math.round(parsed.skor),
-        ozet: parsed.ozet,
-        eksikler: parsed.eksikler,
-        onerilenHizmetler: parsed.onerilenHizmetler,
+        skor: Math.max(0, Math.min(100, Math.round(r.skor))),
+        ozet: r.ozet,
+        eksikler: r.eksikler.slice(0, 4),
+        onerilenHizmetler: r.onerilenHizmetler
+          .filter((s) => HIZMET_VALUES.includes(s))
+          .slice(0, 5),
       },
     };
   } catch (error) {
