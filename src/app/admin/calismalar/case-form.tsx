@@ -18,7 +18,11 @@ import {
 import { cn } from "@/lib/utils";
 
 import { parseVideoUrl } from "@/lib/embed";
-import { MAX_IMAGE_SIZE_MB, MAX_VIDEO_SIZE_MB } from "@/lib/upload-limits";
+import {
+  IMAGE_GUIDELINES,
+  MAX_IMAGE_SIZE_MB,
+  MAX_VIDEO_SIZE_MB,
+} from "@/lib/upload-limits";
 
 import { createCaseStudy, updateCaseStudy, uploadMedia } from "./actions";
 
@@ -319,9 +323,13 @@ export function CaseForm({ mode, initial }: CaseFormProps) {
                 disabled={busy === "kapak"}
               />
             </label>
-            <p className="text-muted-foreground text-xs">
-              Max {MAX_IMAGE_SIZE_MB} MB · jpg/png/webp önerilir.
-            </p>
+            <div className="text-muted-foreground space-y-0.5 text-xs">
+              <div>
+                <strong>Önerilen:</strong> {IMAGE_GUIDELINES.cover.recommended} ·{" "}
+                {IMAGE_GUIDELINES.cover.aspect}
+              </div>
+              <div>Max {MAX_IMAGE_SIZE_MB} MB · jpg/png/webp · {IMAGE_GUIDELINES.cover.note}</div>
+            </div>
           </div>
 
           <div className="space-y-2">
@@ -395,10 +403,15 @@ export function CaseForm({ mode, initial }: CaseFormProps) {
                 disabled={busy === "kapakVideo"}
               />
             </label>
-            <p className="text-muted-foreground text-xs">
-              YouTube/Vimeo URL yapıştırabilir veya video dosyası yükleyebilirsin (max{" "}
-              {MAX_VIDEO_SIZE_MB} MB).
-            </p>
+            <div className="text-muted-foreground space-y-0.5 text-xs">
+              <div>
+                <strong>Önerilen:</strong> {IMAGE_GUIDELINES.videoPreview.recommended} ·{" "}
+                {IMAGE_GUIDELINES.videoPreview.aspect}
+              </div>
+              <div>
+                Max {MAX_VIDEO_SIZE_MB} MB · mp4/webm · YouTube/Vimeo URL de kabul edilir
+              </div>
+            </div>
           </div>
         </div>
 
@@ -433,9 +446,13 @@ export function CaseForm({ mode, initial }: CaseFormProps) {
               disabled={busy === "galeri"}
             />
           </label>
-          <p className="text-muted-foreground text-xs">
-            Her görsel max {MAX_IMAGE_SIZE_MB} MB.
-          </p>
+          <div className="text-muted-foreground space-y-0.5 text-xs">
+            <div>
+              <strong>Önerilen:</strong> {IMAGE_GUIDELINES.gallery.recommended} ·{" "}
+              {IMAGE_GUIDELINES.gallery.aspect}
+            </div>
+            <div>Her görsel max {MAX_IMAGE_SIZE_MB} MB</div>
+          </div>
         </div>
       </section>
 

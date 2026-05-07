@@ -93,12 +93,8 @@ export default async function CalismalarPage({
               : "Henüz yayında çalışma yok. Admin panelden eklendikçe burada listelenecek."}
           </p>
         ) : (
-          <div className="grid grid-cols-12 gap-4 md:gap-6">
-            {works.map((w, i) => {
-              // Asimetrik 12-grid: 2'li gruplar (8/4, 4/8, 6/6)
-              const pattern = [8, 4, 4, 8, 6, 6];
-              const span = pattern[i % pattern.length];
-
+          <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
+            {works.map((w) => {
               const video = parseVideoUrl(w.kapak_video_url);
               const directVideo = video?.kind === "direct" ? video.url : null;
               const ytThumb = video?.kind === "youtube" ? video.thumbnail : null;
@@ -108,12 +104,9 @@ export default async function CalismalarPage({
                 <Link
                   key={w.slug}
                   href={`/calismalar/${w.slug}`}
-                  className={cn(
-                    "group col-span-12 md:col-span-6",
-                    span === 4 ? "lg:col-span-4" : span === 8 ? "lg:col-span-8" : "lg:col-span-6",
-                  )}
+                  className="group"
                 >
-                  <div className="border-border/60 bg-muted/30 hover:border-foreground/30 relative aspect-[4/3] overflow-hidden rounded-2xl border transition-colors">
+                  <div className="border-border/60 bg-muted/30 hover:border-foreground/30 relative aspect-video overflow-hidden rounded-2xl border transition-colors">
                     {directVideo ? (
                       <video
                         src={directVideo}
@@ -139,22 +132,22 @@ export default async function CalismalarPage({
                       <div className="from-brand/10 absolute inset-0 bg-gradient-to-br to-transparent" />
                     )}
 
-                    <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/80 via-black/20 to-transparent p-6">
+                    <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/80 via-black/20 to-transparent p-5 sm:p-6">
                       {w.kategori && w.kategori.length ? (
                         <div className="text-foreground/70 text-[10px] tracking-widest uppercase">
                           {w.kategori.slice(0, 2).join(" · ")}
                         </div>
                       ) : null}
                       <div className="mt-2 flex items-end justify-between gap-3">
-                        <div>
+                        <div className="min-w-0">
                           {w.musteri_adi ? (
                             <div className="text-muted-foreground text-xs">{w.musteri_adi}</div>
                           ) : null}
-                          <h2 className="text-foreground mt-0.5 text-xl font-semibold tracking-tight sm:text-2xl">
+                          <h2 className="text-foreground mt-0.5 truncate text-lg font-semibold tracking-tight sm:text-xl">
                             {w.baslik}
                           </h2>
                         </div>
-                        <ArrowUpRight className="text-foreground size-5 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
+                        <ArrowUpRight className="text-foreground size-5 shrink-0 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
                       </div>
                     </div>
                   </div>

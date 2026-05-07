@@ -5,7 +5,7 @@ import { Upload, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { Input } from "@/components/ui/input";
-import { MAX_VIDEO_SIZE_MB } from "@/lib/upload-limits";
+import { IMAGE_GUIDELINES, MAX_VIDEO_SIZE_MB } from "@/lib/upload-limits";
 
 import { uploadMedia } from "../calismalar/actions";
 
@@ -51,10 +51,16 @@ export function HeroVideoUploader({ name, defaultValue }: Props) {
         onChange={(e) => setUrl(e.target.value)}
         placeholder="https://youtube.com/watch?v=... veya https://...mp4"
       />
-      <p className="text-muted-foreground text-xs">
-        YouTube / Vimeo URL yapıştırabilir veya kendi videonu yükleyebilirsin (max{" "}
-        {MAX_VIDEO_SIZE_MB} MB, mp4/webm önerilir).
-      </p>
+      <div className="text-muted-foreground space-y-0.5 text-xs">
+        <div>
+          <strong>Önerilen:</strong> {IMAGE_GUIDELINES.hero.recommended} ·{" "}
+          {IMAGE_GUIDELINES.hero.aspect}
+        </div>
+        <div>
+          Max {MAX_VIDEO_SIZE_MB} MB · mp4/webm · YouTube/Vimeo URL de kabul edilir.{" "}
+          {IMAGE_GUIDELINES.hero.note}
+        </div>
+      </div>
 
       <div className="flex items-center gap-2">
         <label className="bg-muted/40 hover:bg-muted/60 inline-flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-xs">
