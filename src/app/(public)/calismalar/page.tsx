@@ -46,6 +46,20 @@ export default async function CalismalarPage({
           <h1 className="font-heading mt-5 max-w-3xl text-5xl leading-[0.95] font-black tracking-tight sm:text-7xl">
             Yaptıklarımız.
           </h1>
+          {aktif ? (
+            <div className="mt-5 inline-flex items-center gap-2 text-sm">
+              <span className="text-muted-foreground">Filtre:</span>
+              <span className="bg-brand/10 text-brand border-brand/30 rounded-full border px-3 py-1 text-xs tracking-wider uppercase">
+                {kategoriOptions.find((k) => k.value === aktif)?.label ?? aktif}
+              </span>
+              <Link
+                href="/calismalar"
+                className="text-muted-foreground hover:text-foreground text-xs underline underline-offset-2"
+              >
+                Temizle
+              </Link>
+            </div>
+          ) : null}
         </div>
         <p className="text-muted-foreground md:col-span-5 md:text-right md:text-base">
           {works?.length ?? 0} çalışma
