@@ -8,7 +8,7 @@ export const siteConfig = {
   name: "Kırmızı Erik",
   tagline: "360° Kreatif Reklam Ajansı",
   description:
-    "Video, fotoğraf, dijital pazarlama, sosyal medya, web/uygulama, AI kurulumları, grafik ve 3D/2D — dokuz disiplin tek çatı altında.",
+    "Video, fotoğraf, dijital pazarlama, sosyal medya, web/uygulama, AI kurulumları, grafik ve 3D/2D — dokuz hizmet tek çatı altında.",
   url: "https://kirmizierik.com.tr",
 } as const;
 

@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     template: "%s · Kırmızı Erik",
   },
   description:
-    "Video, fotoğraf, dijital pazarlama, sosyal medya, web/uygulama yazılımı, AI kurulumları, grafik ve 3D/2D — dokuz disiplin tek çatı altında.",
+    "Video, fotoğraf, dijital pazarlama, sosyal medya, web/uygulama yazılımı, AI kurulumları, grafik ve 3D/2D — dokuz hizmet tek çatı altında.",
   openGraph: {
     type: "website",
     locale: "tr_TR",

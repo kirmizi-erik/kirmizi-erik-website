@@ -45,16 +45,16 @@ export async function SiteFooter() {
         <div className="grid gap-10 md:grid-cols-12">
           {/* Sol blok — marka */}
           <div className="md:col-span-5">
-            <Link href="/" className="inline-flex items-center gap-2.5">
+            <Link href="/" className="inline-flex items-center gap-3">
               <Image
                 src="/logo/icon-32.png"
-                alt=""
+                alt={siteConfig.name}
                 width={32}
                 height={32}
-                className="size-8"
+                className="size-8 shrink-0"
               />
-              <span className="text-base font-semibold tracking-tight">
-                kırmızı<span className="text-brand-mor">erik</span>
+              <span className="text-base font-medium tracking-tight">
+                Kırmızı Erik
               </span>
             </Link>
             <p className="text-muted-foreground mt-4 max-w-md text-sm leading-relaxed">

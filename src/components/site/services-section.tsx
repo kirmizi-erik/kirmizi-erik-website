@@ -20,7 +20,7 @@ export function ServicesSection() {
             Hizmetler
           </div>
           <h2 className="font-heading mt-5 text-4xl leading-tight font-black sm:text-5xl lg:text-6xl">
-            Dokuz disiplin.
+            Dokuz hizmet.
             <br />
             <span className="text-brand-mor">Tek çatı.</span>
           </h2>

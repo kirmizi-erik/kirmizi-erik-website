@@ -35,22 +35,22 @@ export function SiteHeader() {
       )}
     >
       <div className="mx-auto flex h-16 max-w-screen-2xl items-center justify-between px-4 sm:px-6 lg:px-10">
-        {/* Logo */}
+        {/* Logo — sadece erik ikonu + plain "Kırmızı Erik" yazısı */}
         <Link
           href="/"
           aria-label={siteConfig.name}
-          className="flex items-center gap-2.5 transition-opacity hover:opacity-90"
+          className="flex items-center gap-3 transition-opacity hover:opacity-90"
         >
           <Image
             src="/logo/icon-32.png"
-            alt=""
+            alt={siteConfig.name}
             width={32}
             height={32}
             priority
-            className="size-8"
+            className="size-8 shrink-0"
           />
-          <span className="text-base font-semibold tracking-tight">
-            kırmızı<span className="text-brand-mor">erik</span>
+          <span className="text-foreground text-base font-medium tracking-tight">
+            Kırmızı Erik
           </span>
         </Link>
 

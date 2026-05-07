@@ -39,7 +39,7 @@ export function HeroSection() {
         <h1 className="font-heading display max-w-[18ch] text-5xl leading-[0.95] font-black sm:text-7xl lg:text-[clamp(4rem,9vw,9rem)]">
           Bir fikir,
           <br />
-          dokuz disiplin,
+          dokuz hizmet,
           <br />
           <span className="text-brand">sıfır sınır.</span>
         </h1>
