@@ -3,6 +3,7 @@
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 
+import { sendLeadNotification } from "@/lib/email/resend";
 import { createClient } from "@/lib/supabase/server";
 import { leadInputSchema } from "@/lib/validations/lead";
 
@@ -74,6 +75,20 @@ export async function submitLead(formData: FormData): Promise<SubmitResult> {
 
   revalidatePath("/admin/leadler");
   revalidatePath("/admin");
+
+  // E-posta bildirimi (background, fail olsa form yine submit kalsın)
+  await sendLeadNotification({
+    ad_soyad: parsed.data.ad_soyad,
+    eposta: parsed.data.eposta,
+    telefon: emptyToNull(parsed.data.telefon),
+    sirket: emptyToNull(parsed.data.sirket),
+    hizmet_kategori: parsed.data.hizmet_kategori,
+    butce: emptyToNull(parsed.data.butce),
+    brief: parsed.data.brief,
+    ai_ozet: emptyToNull(aiOzet),
+    kaynak: "iletişim formu",
+    leadId: data.id,
+  }).catch((e) => console.warn("[submitLead] email skip:", e));
 
   return { ok: true, id: data.id };
 }

@@ -2,22 +2,20 @@
 
 import Link from "next/link";
 import { useState, useTransition } from "react";
-import { ArrowUpRight, CheckCircle2, Sparkles, AlertCircle } from "lucide-react";
+import { ArrowUpRight, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { butceOptions, type AiAnalysis } from "@/lib/validations/lead";
+import { butceOptions } from "@/lib/validations/lead";
 import { kategoriOptions } from "@/lib/validations/case-study";
 import { cn } from "@/lib/utils";
 
 import { submitLead } from "./actions";
-import { analyzeBriefAction } from "./ai-actions";
 
 export function IletisimForm() {
   const [isPending, startTransition] = useTransition();
-  const [isAnalyzing, startAnalyze] = useTransition();
   const [submitted, setSubmitted] = useState(false);
 
   // Controlled state
@@ -29,39 +27,11 @@ export function IletisimForm() {
   const [brief, setBrief] = useState("");
   const [hizmetler, setHizmetler] = useState<string[]>([]);
   const [kvkk, setKvkk] = useState(false);
-  const [analysis, setAnalysis] = useState<AiAnalysis | null>(null);
-  const [analysisError, setAnalysisError] = useState<string | null>(null);
 
   const toggleHizmet = (val: string) =>
     setHizmetler((prev) =>
       prev.includes(val) ? prev.filter((v) => v !== val) : [...prev, val],
     );
-
-  const handleAnalyze = () => {
-    if (brief.trim().length < 10) {
-      toast.error("AI değerlendirmesi için en az 10 karakter brief yazın");
-      return;
-    }
-    setAnalysisError(null);
-    startAnalyze(async () => {
-      const r = await analyzeBriefAction({
-        ad_soyad: adSoyad,
-        eposta,
-        sirket,
-        hizmet_kategori: hizmetler,
-        butce,
-        brief,
-      });
-      if (r.ok) {
-        setAnalysis(r.data);
-        // AI önerdiği hizmetleri kullanıcıya tıkla denilen rozet olarak gösterilir
-        toast.success(`AI değerlendirmesi tamam — Skor: ${r.data.skor}/100`);
-      } else {
-        setAnalysisError(r.error);
-        toast.error(r.error);
-      }
-    });
-  };
 
   if (submitted) {
     return (
@@ -73,10 +43,7 @@ export function IletisimForm() {
         <p className="text-muted-foreground mt-3 text-sm">
           Birkaç iş günü içinde sana <strong>{eposta}</strong> üzerinden döneceğiz.
           Acil bir konu varsa{" "}
-          <a
-            href="mailto:info@kirmizierik.com.tr"
-            className="text-brand hover:underline"
-          >
+          <a href="mailto:info@kirmizierik.com.tr" className="text-brand hover:underline">
             info@kirmizierik.com.tr
           </a>{" "}
           ya da telefon en hızlı yol.
@@ -99,15 +66,10 @@ export function IletisimForm() {
   return (
     <form
       action={(formData) => {
-        // Inject controlled state
         formData.delete("hizmet_kategori");
         hizmetler.forEach((h) => formData.append("hizmet_kategori", h));
         formData.set("butce", butce);
         formData.set("kvkk_onay", kvkk ? "on" : "");
-        if (analysis) {
-          formData.set("ai_skor", String(analysis.skor));
-          formData.set("ai_ozet", analysis.ozet);
-        }
 
         startTransition(async () => {
           const r = await submitLead(formData);
@@ -122,21 +84,25 @@ export function IletisimForm() {
     >
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2 sm:col-span-2">
-          <Label htmlFor="ad_soyad">Ad Soyad *</Label>
+          <Label htmlFor="ad_soyad">
+            Ad Soyad <span className="text-brand">*</span>
+          </Label>
           <Input
             id="ad_soyad"
             name="ad_soyad"
             value={adSoyad}
             onChange={(e) => setAdSoyad(e.target.value)}
             required
-            minLength={2}
+            minLength={3}
             placeholder="Ali Yılmaz"
             autoComplete="name"
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="eposta">E-posta *</Label>
+          <Label htmlFor="eposta">
+            E-posta <span className="text-brand">*</span>
+          </Label>
           <Input
             id="eposta"
             name="eposta"
@@ -159,6 +125,7 @@ export function IletisimForm() {
             onChange={(e) => setTelefon(e.target.value)}
             placeholder="+90 555 ..."
             autoComplete="tel"
+            pattern="[\d\s\+\(\)\-]{7,}"
           />
         </div>
 
@@ -218,104 +185,25 @@ export function IletisimForm() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="brief">Brief *</Label>
+        <Label htmlFor="brief">
+          Brief <span className="text-brand">*</span>
+        </Label>
         <textarea
           id="brief"
           name="brief"
           value={brief}
           onChange={(e) => setBrief(e.target.value)}
           required
-          minLength={10}
+          minLength={20}
           maxLength={5000}
           rows={7}
           className="border-input bg-background focus-visible:ring-ring w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:outline-none"
           placeholder="Markandan, hedeflerinden, aklındaki çözüm fikirlerinden bahset. Ne kadar açıklayıcı olursan biz o kadar net cevap döneriz."
         />
-        <div className="flex items-center justify-between">
-          <p className="text-muted-foreground text-xs">
-            {brief.length}/5000 karakter — markdown destekler
-          </p>
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={handleAnalyze}
-            disabled={isAnalyzing || brief.trim().length < 10}
-          >
-            <Sparkles className="mr-1 size-3.5" />
-            {isAnalyzing ? "Değerlendiriliyor..." : "AI ile değerlendir"}
-          </Button>
-        </div>
+        <p className="text-muted-foreground text-xs">
+          {brief.length}/5000 — en az 20 karakter
+        </p>
       </div>
-
-      {/* AI değerlendirme sonucu */}
-      {analysisError ? (
-        <div className="border-destructive/40 bg-destructive/5 text-destructive flex items-start gap-2 rounded-md border p-3 text-xs">
-          <AlertCircle className="mt-0.5 size-4 shrink-0" />
-          <span>{analysisError}</span>
-        </div>
-      ) : null}
-
-      {analysis ? (
-        <div className="border-brand/40 from-brand/5 space-y-3 rounded-md border bg-gradient-to-br to-transparent p-4">
-          <div className="flex items-start justify-between gap-3">
-            <div className="text-brand inline-flex items-center gap-2 text-xs tracking-wider uppercase">
-              <Sparkles className="size-3.5" />
-              AI Brief Asistanı
-            </div>
-            <div className="text-foreground text-2xl font-bold tracking-tight">
-              {analysis.skor}
-              <span className="text-muted-foreground text-xs">/100</span>
-            </div>
-          </div>
-          <p className="text-foreground/90 text-sm leading-relaxed">{analysis.ozet}</p>
-          {analysis.eksikler.length > 0 ? (
-            <div className="space-y-1.5">
-              <div className="text-muted-foreground text-xs tracking-wider uppercase">
-                Daha net olabilir
-              </div>
-              <ul className="space-y-1 text-sm">
-                {analysis.eksikler.map((e, i) => (
-                  <li key={i} className="text-foreground/80 flex items-start gap-2">
-                    <span className="bg-brand/60 mt-2 size-1 shrink-0 rounded-full" />
-                    {e}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
-          {analysis.onerilenHizmetler.length > 0 ? (
-            <div className="space-y-1.5">
-              <div className="text-muted-foreground text-xs tracking-wider uppercase">
-                Önerilen hizmetler
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {analysis.onerilenHizmetler.map((slug) => {
-                  const k = kategoriOptions.find((o) => o.value === slug);
-                  if (!k) return null;
-                  const sel = hizmetler.includes(slug);
-                  return (
-                    <button
-                      key={slug}
-                      type="button"
-                      onClick={() => toggleHizmet(slug)}
-                      className={cn(
-                        "rounded-full border px-3 py-1 text-xs transition-colors",
-                        sel
-                          ? "bg-brand text-background border-brand"
-                          : "border-brand/40 text-brand hover:bg-brand/10",
-                      )}
-                    >
-                      {sel ? "✓ " : "+ "}
-                      {k.label}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          ) : null}
-        </div>
-      ) : null}
 
       {/* KVKK */}
       <label className="flex cursor-pointer items-start gap-2 text-xs">
@@ -328,7 +216,11 @@ export function IletisimForm() {
           className="mt-0.5 size-4 accent-current"
         />
         <span className="text-muted-foreground">
-          <Link href="/kvkk" target="_blank" className="hover:text-foreground underline underline-offset-2">
+          <Link
+            href="/kvkk"
+            target="_blank"
+            className="hover:text-foreground underline underline-offset-2"
+          >
             KVKK aydınlatma metnini
           </Link>{" "}
           okudum, kişisel verilerimin işlenmesine onay veriyorum.
