@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
+import { createPortal } from "react-dom";
 import { MessageCircle, Send, X, Loader2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
@@ -14,15 +15,14 @@ import { chatAction, submitChatLead } from "./actions";
 
 const STORAGE_KEY = "kirmizi-erik-chat-v1";
 
-const KARSILAMA_MESAJI = `Merhaba 👋 Kırmızı Erik AI asistanıyım. Reklam, sosyal medya, video, web/uygulama, AI kurulumları — dokuz disiplinde sorabileceğin her şey için buradayım.
-
-Ne tür bir ihtiyacın var? Yapacağım iş, marka, hedef kitle ya da süre — kısaca anlat, üzerinden gidelim.`;
+const KARSILAMA_MESAJI = `Merhaba, Kırmızı Erik asistanıyım. Reklam, video, sosyal medya, web/uygulama, AI kurulumları — ne tür bir ihtiyacın var?`;
 
 type ContactPrefs = {
   showForm: boolean;
 };
 
 export function Chatbot() {
+  const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([
@@ -34,14 +34,15 @@ export function Chatbot() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // İlk yüklemede localStorage'dan mesajları geri yükle (hydration sonrası)
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
+    setMounted(true);
     if (typeof window === "undefined") return;
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved) as ChatMessage[];
         if (Array.isArray(parsed) && parsed.length > 0) {
-          // eslint-disable-next-line react-hooks/set-state-in-effect
           setMessages(parsed);
         }
       }
@@ -49,6 +50,7 @@ export function Chatbot() {
       // ignore — default karşılama mesajı kalsın
     }
   }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   // Mesajlar değişince localStorage'a kaydet
   useEffect(() => {
@@ -101,7 +103,12 @@ export function Chatbot() {
     setInput("");
   };
 
-  return (
+  // SSR sırasında veya mount öncesi hiç render etme (portal target body henüz yok)
+  if (!mounted) return null;
+
+  // createPortal ile body'ye direkt mount — Safari'deki containing-block bug'ı bypass eder
+  // (parent'ta backdrop-filter / transform / will-change varsa fixed bozulur)
+  return createPortal(
     <>
       {/* Floating buton */}
       <button
@@ -253,7 +260,8 @@ export function Chatbot() {
           </div>
         </div>
       ) : null}
-    </>
+    </>,
+    document.body,
   );
 }
 
