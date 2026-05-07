@@ -25,37 +25,37 @@ export const hizmetler = [
     slug: "video-produksiyon",
     label: "Video Prodüksiyon",
     grup: "gorsel",
-    aktif: false, // Faz 1'de detay sayfası yok
+    aktif: true, // Faz 1'de detay sayfası yok
   },
   {
     slug: "fotograf-cekimleri",
     label: "Fotoğraf Çekimleri",
     grup: "gorsel",
-    aktif: false,
+    aktif: true,
   },
   {
     slug: "dijital-pazarlama",
     label: "Dijital Pazarlama",
     grup: "dijital",
-    aktif: false,
+    aktif: true,
   },
   {
     slug: "sosyal-medya-yonetimi",
     label: "Sosyal Medya Yönetimi",
     grup: "dijital",
-    aktif: false,
+    aktif: true,
   },
   {
     slug: "uygulama-gelistirme",
     label: "Uygulama Geliştirme",
     grup: "yazilim",
-    aktif: false,
+    aktif: true,
   },
   {
     slug: "web-tasarim-yazilim",
     label: "Web Sitesi Tasarım ve Yazılımı",
     grup: "yazilim",
-    aktif: false,
+    aktif: true,
   },
   {
     slug: "ai-kurulumlari",
@@ -68,13 +68,13 @@ export const hizmetler = [
     slug: "grafik-tasarim",
     label: "Grafik Tasarım",
     grup: "gorsel",
-    aktif: false,
+    aktif: true,
   },
   {
     slug: "3d-2d-calismalar",
     label: "3D/2D Çalışmalar",
     grup: "gorsel",
-    aktif: false,
+    aktif: true,
   },
 ] as const;
 

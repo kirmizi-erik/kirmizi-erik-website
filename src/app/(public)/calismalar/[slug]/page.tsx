@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowUpRight } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Calendar } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Markdown } from "@/components/site/markdown";
+import { ShareButtons } from "@/components/site/share-buttons";
 import { parseVideoUrl } from "@/lib/embed";
 import { createClient } from "@/lib/supabase/server";
+import { kategoriOptions } from "@/lib/validations/case-study";
 import type { Metrik } from "@/lib/validations/case-study";
 
 type PageProps = { params: Promise<{ slug: string }> };
@@ -27,6 +29,19 @@ export async function generateMetadata({ params }: PageProps) {
   };
 }
 
+function kategoriLabel(slug: string): string {
+  return kategoriOptions.find((o) => o.value === slug)?.label ?? slug;
+}
+
+function formatTarih(iso: string | null): string {
+  if (!iso) return "";
+  return new Date(iso).toLocaleDateString("tr-TR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
+
 export default async function CalismaDetayPage({ params }: PageProps) {
   const { slug } = await params;
   const supabase = await createClient();
@@ -40,199 +55,212 @@ export default async function CalismaDetayPage({ params }: PageProps) {
   if (!w) notFound();
 
   const metrikler = (w.metrikler ?? []) as Metrik[];
+  const video = parseVideoUrl(w.kapak_video_url);
+  const yayinTarihi = formatTarih(w.yayin_tarihi);
 
   return (
-    <article>
-      {/* Hero — kapak + başlık */}
-      <header className="border-border/40 mx-auto max-w-screen-2xl border-b px-4 pt-16 pb-12 sm:px-6 lg:px-10 lg:pt-24">
-        <Button asChild variant="ghost" size="sm" className="mb-6">
-          <Link href="/calismalar">
-            <ArrowLeft className="mr-1 size-4" />
-            Tüm çalışmalar
-          </Link>
-        </Button>
+    <article className="mx-auto max-w-screen-xl px-4 py-12 sm:px-6 lg:px-10 lg:py-16">
+      {/* Geri linki */}
+      <Button asChild variant="ghost" size="sm" className="mb-6">
+        <Link href="/calismalar">
+          <ArrowLeft className="mr-1 size-4" />
+          Tüm çalışmalar
+        </Link>
+      </Button>
 
-        <div className="grid gap-12 md:grid-cols-12">
-          <div className="md:col-span-7">
+      {/* VİDEO — büyük, ortalı, max-w-4xl (YouTube watch sayfası ölçüsü) */}
+      <div className="mx-auto max-w-4xl">
+        {video || w.kapak_url ? (
+          <div className="border-border bg-muted/30 relative aspect-video overflow-hidden rounded-2xl border">
+            {video?.kind === "youtube" ? (
+              <iframe
+                src={video.embedUrl}
+                title={w.baslik}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+                className="absolute inset-0 size-full"
+              />
+            ) : video?.kind === "vimeo" ? (
+              <iframe
+                src={video.embedUrl}
+                title={w.baslik}
+                allow="autoplay; fullscreen; picture-in-picture"
+                allowFullScreen
+                className="absolute inset-0 size-full"
+              />
+            ) : video?.kind === "direct" ? (
+              <video
+                src={video.url}
+                poster={w.kapak_url ?? undefined}
+                controls
+                playsInline
+                preload="metadata"
+                className="absolute inset-0 size-full object-cover"
+              />
+            ) : w.kapak_url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={w.kapak_url}
+                alt={w.baslik}
+                className="absolute inset-0 size-full object-cover"
+              />
+            ) : null}
+          </div>
+        ) : null}
+      </div>
+
+      {/* YouTube tarzı info row: başlık + müşteri/kategori + paylaş butonları */}
+      <div className="mx-auto mt-6 max-w-4xl">
+        <h1 className="font-heading text-2xl leading-tight font-bold tracking-tight sm:text-3xl lg:text-4xl">
+          {w.baslik}
+        </h1>
+
+        <div className="border-border/40 mt-4 flex flex-col gap-4 border-b pb-4 sm:flex-row sm:items-center sm:justify-between">
+          {/* Sol: müşteri + kategori chip'leri */}
+          <div className="flex flex-wrap items-center gap-2 text-sm">
             {w.musteri_adi ? (
-              <div className="text-muted-foreground text-xs tracking-widest uppercase">
-                {w.musteri_adi}
-                {w.sektor ? ` · ${w.sektor}` : ""}
-              </div>
+              <span className="font-medium">{w.musteri_adi}</span>
             ) : null}
-            <h1 className="font-heading mt-3 text-4xl leading-[1.05] font-black tracking-tight sm:text-6xl lg:text-7xl">
-              {w.baslik}
-            </h1>
-            {w.ozet ? (
-              <p className="text-muted-foreground mt-6 max-w-2xl text-lg leading-relaxed">
-                {w.ozet}
-              </p>
+            {w.musteri_adi && w.kategori && w.kategori.length > 0 ? (
+              <span className="text-muted-foreground/40">·</span>
             ) : null}
-            {w.kategori && w.kategori.length ? (
-              <div className="mt-6 flex flex-wrap gap-2">
-                {w.kategori.map((k: string) => (
+            {w.kategori && w.kategori.length > 0
+              ? w.kategori.map((k: string) => (
                   <span
                     key={k}
-                    className="border-border text-muted-foreground rounded-full border px-3 py-1 text-xs tracking-wider uppercase"
+                    className="bg-muted text-foreground/80 rounded-full px-2.5 py-0.5 text-xs"
                   >
-                    {k}
+                    {kategoriLabel(k)}
                   </span>
-                ))}
-              </div>
+                ))
+              : null}
+            {yayinTarihi ? (
+              <>
+                <span className="text-muted-foreground/40">·</span>
+                <span className="text-muted-foreground inline-flex items-center gap-1 text-xs">
+                  <Calendar className="size-3" />
+                  {yayinTarihi}
+                </span>
+              </>
             ) : null}
           </div>
 
-          {/* Metrikler sağda */}
-          {metrikler.length > 0 ? (
-            <aside className="md:col-span-5 md:self-end">
-              <div className="grid gap-3 sm:grid-cols-2">
-                {metrikler.map((m, i) => (
-                  <div
-                    key={i}
-                    className="border-border/60 from-card/60 rounded-2xl border bg-gradient-to-br to-transparent p-5"
-                  >
-                    <div className="text-brand text-3xl font-bold tracking-tight">
-                      {m.value}
-                    </div>
-                    <div className="text-muted-foreground mt-1 text-xs tracking-wider uppercase">
-                      {m.label}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </aside>
-          ) : null}
+          {/* Sağ: paylaş butonları */}
+          <ShareButtons
+            title={w.baslik}
+            description={w.ozet ?? undefined}
+            path={`/calismalar/${w.slug}`}
+          />
         </div>
-      </header>
 
-      {/* Kapak görsel/video */}
-      {(() => {
-        const v = parseVideoUrl(w.kapak_video_url);
-        if (!v && !w.kapak_url) return null;
-        return (
-          <div className="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-10">
-            <div className="border-border bg-muted/30 relative -mt-px aspect-video overflow-hidden">
-              {v?.kind === "youtube" ? (
-                <iframe
-                  src={v.embedUrl}
-                  title={w.baslik}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowFullScreen
-                  className="absolute inset-0 size-full"
-                />
-              ) : v?.kind === "vimeo" ? (
-                <iframe
-                  src={v.embedUrl}
-                  title={w.baslik}
-                  allow="autoplay; fullscreen; picture-in-picture"
-                  allowFullScreen
-                  className="absolute inset-0 size-full"
-                />
-              ) : v?.kind === "direct" ? (
-                <video
-                  src={v.url}
-                  poster={w.kapak_url ?? undefined}
-                  controls
-                  playsInline
-                  preload="metadata"
-                  className="absolute inset-0 size-full object-cover"
-                />
-              ) : w.kapak_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={w.kapak_url}
-                  alt={w.baslik}
-                  className="absolute inset-0 size-full object-cover"
-                />
-              ) : null}
-            </div>
-          </div>
-        );
-      })()}
-
-      {/* Problem / Çözüm / Sonuç (markdown) */}
-      <section className="mx-auto max-w-screen-md space-y-16 px-4 py-20 sm:px-6 lg:py-28">
-        {w.problem ? (
-          <div>
-            <div className="text-muted-foreground mb-4 inline-flex items-center gap-3 text-xs tracking-widest uppercase">
-              <span className="bg-brand size-1.5 rounded-full" />
-              Problem
-            </div>
-            <Markdown>{w.problem}</Markdown>
+        {/* Özet — YouTube açıklama paneli gibi */}
+        {w.ozet ? (
+          <div className="bg-muted/40 mt-4 rounded-2xl p-5">
+            <p className="text-foreground/90 text-sm leading-relaxed sm:text-base">
+              {w.ozet}
+            </p>
           </div>
         ) : null}
 
-        {w.cozum ? (
-          <div>
-            <div className="text-muted-foreground mb-4 inline-flex items-center gap-3 text-xs tracking-widest uppercase">
-              <span className="bg-brand-mor size-1.5 rounded-full" />
-              Çözüm
-            </div>
-            <Markdown>{w.cozum}</Markdown>
+        {/* Metrikler — varsa kompakt grid */}
+        {metrikler.length > 0 ? (
+          <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {metrikler.map((m, i) => (
+              <div
+                key={i}
+                className="border-border/60 from-card/60 rounded-xl border bg-gradient-to-br to-transparent p-4"
+              >
+                <div className="text-brand text-2xl font-bold tracking-tight">
+                  {m.value}
+                </div>
+                <div className="text-muted-foreground mt-0.5 text-xs tracking-wider uppercase">
+                  {m.label}
+                </div>
+              </div>
+            ))}
           </div>
         ) : null}
+      </div>
 
-        {w.sonuc ? (
-          <div>
-            <div className="text-muted-foreground mb-4 inline-flex items-center gap-3 text-xs tracking-widest uppercase">
-              <span className="bg-brand-yaprak size-1.5 rounded-full" />
-              Sonuç
+      {/* Problem / Çözüm / Sonuç — okunabilir kolon */}
+      {w.problem || w.cozum || w.sonuc ? (
+        <section className="mx-auto mt-16 max-w-3xl space-y-12">
+          {w.problem ? (
+            <div>
+              <div className="text-muted-foreground mb-3 inline-flex items-center gap-3 text-xs tracking-widest uppercase">
+                <span className="bg-brand size-1.5 rounded-full" />
+                Problem
+              </div>
+              <Markdown>{w.problem}</Markdown>
             </div>
-            <Markdown>{w.sonuc}</Markdown>
-          </div>
-        ) : null}
-      </section>
+          ) : null}
+          {w.cozum ? (
+            <div>
+              <div className="text-muted-foreground mb-3 inline-flex items-center gap-3 text-xs tracking-widest uppercase">
+                <span className="bg-brand-mor size-1.5 rounded-full" />
+                Çözüm
+              </div>
+              <Markdown>{w.cozum}</Markdown>
+            </div>
+          ) : null}
+          {w.sonuc ? (
+            <div>
+              <div className="text-muted-foreground mb-3 inline-flex items-center gap-3 text-xs tracking-widest uppercase">
+                <span className="bg-brand-yaprak size-1.5 rounded-full" />
+                Sonuç
+              </div>
+              <Markdown>{w.sonuc}</Markdown>
+            </div>
+          ) : null}
+        </section>
+      ) : null}
 
       {/* Galeri */}
       {w.galeri_urls && w.galeri_urls.length > 0 ? (
-        <section className="border-border/40 border-t">
-          <div className="mx-auto max-w-screen-2xl px-4 py-16 sm:px-6 lg:px-10">
-            <div className="text-muted-foreground mb-8 inline-flex items-center gap-3 text-xs tracking-widest uppercase">
-              <span className="bg-brand size-1.5 rounded-full" />
-              Galeri
-            </div>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:gap-6">
-              {w.galeri_urls.map((url: string) => (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  key={url}
-                  src={url}
-                  alt=""
-                  loading="lazy"
-                  className="border-border w-full rounded-lg border"
-                />
-              ))}
-            </div>
+        <section className="border-border/40 mx-auto mt-20 max-w-5xl border-t pt-12">
+          <div className="text-muted-foreground mb-6 inline-flex items-center gap-3 text-xs tracking-widest uppercase">
+            <span className="bg-brand size-1.5 rounded-full" />
+            Galeri
+          </div>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            {w.galeri_urls.map((url: string) => (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                key={url}
+                src={url}
+                alt=""
+                loading="lazy"
+                className="border-border w-full rounded-lg border"
+              />
+            ))}
           </div>
         </section>
       ) : null}
 
-      {/* Ekip kredileri */}
+      {/* Ekip */}
       {w.ekip_krediler && w.ekip_krediler.length > 0 ? (
-        <section className="border-border/40 border-t">
-          <div className="mx-auto max-w-screen-md px-4 py-16 sm:px-6">
-            <div className="text-muted-foreground mb-6 inline-flex items-center gap-3 text-xs tracking-widest uppercase">
-              <span className="bg-brand size-1.5 rounded-full" />
-              Ekip
-            </div>
-            <ul className="divide-border/40 divide-y">
-              {w.ekip_krediler.map((k: string, i: number) => (
-                <li key={i} className="text-foreground py-3 text-sm">
-                  {k}
-                </li>
-              ))}
-            </ul>
+        <section className="border-border/40 mx-auto mt-12 max-w-3xl border-t pt-10">
+          <div className="text-muted-foreground mb-4 inline-flex items-center gap-3 text-xs tracking-widest uppercase">
+            <span className="bg-brand size-1.5 rounded-full" />
+            Ekip
           </div>
+          <ul className="divide-border/40 divide-y">
+            {w.ekip_krediler.map((k: string, i: number) => (
+              <li key={i} className="text-foreground py-2.5 text-sm">
+                {k}
+              </li>
+            ))}
+          </ul>
         </section>
       ) : null}
 
-      {/* CTA */}
-      <section className="border-border/40 border-t">
-        <div className="mx-auto flex max-w-screen-2xl flex-col items-start justify-between gap-6 px-4 py-16 sm:flex-row sm:items-center sm:px-6 lg:px-10">
-          <h2 className="font-heading max-w-xl text-2xl leading-tight font-black tracking-tight sm:text-3xl">
+      {/* Alt CTA */}
+      <section className="border-border/40 mx-auto mt-16 max-w-4xl border-t pt-12">
+        <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+          <h2 className="font-heading text-xl leading-tight font-black tracking-tight sm:text-2xl">
             Sıradaki büyük fikir <span className="text-brand-mor">senin mi?</span>
           </h2>
-          <Button asChild size="lg">
+          <Button asChild>
             <Link href="/iletisim">
               Brief paylaş
               <ArrowUpRight className="ml-1 size-4" />
