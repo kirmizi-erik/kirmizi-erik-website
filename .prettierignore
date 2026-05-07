@@ -1,0 +1,9 @@
+node_modules
+.next
+out
+build
+.vercel
+.supabase
+public
+pnpm-lock.yaml
+src/components/ui
