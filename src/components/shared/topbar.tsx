@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { logout } from "@/app/dashboard/actions";
+import { logout } from "@/app/admin/actions";
 
 type TopbarProps = {
   email: string;

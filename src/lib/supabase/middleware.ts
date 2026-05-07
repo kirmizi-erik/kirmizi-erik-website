@@ -32,19 +32,21 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
-  const isAuthRoute = pathname.startsWith("/login") || pathname.startsWith("/auth");
-  const isPublicRoute = pathname === "/" || isAuthRoute;
 
-  if (!user && !isPublicRoute) {
+  // Sadece /admin/* protected — diğer her şey public (anasayfa, /calismalar, /hizmetler, /iletisim).
+  const isAdminRoute = pathname.startsWith("/admin");
+  const isAuthRoute = pathname === "/login" || pathname.startsWith("/auth");
+
+  if (isAdminRoute && !user) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("next", pathname);
     return NextResponse.redirect(url);
   }
 
-  if (user && isAuthRoute) {
+  if (user && isAuthRoute && pathname === "/login") {
     const url = request.nextUrl.clone();
-    url.pathname = "/dashboard";
+    url.pathname = "/admin";
     url.search = "";
     return NextResponse.redirect(url);
   }

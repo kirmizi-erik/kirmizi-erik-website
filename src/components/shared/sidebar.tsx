@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 // Brief sonrası proje'ye özel menü item'ları buraya eklenir.
-const navItems = [{ href: "/dashboard", label: "Genel bakış", icon: LayoutDashboard }];
+const navItems = [{ href: "/admin", label: "Genel bakış", icon: LayoutDashboard }];
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -15,7 +15,7 @@ export function Sidebar() {
   return (
     <aside className="bg-sidebar text-sidebar-foreground border-sidebar-border hidden w-64 shrink-0 border-r md:flex md:flex-col">
       <div className="border-sidebar-border flex h-14 items-center border-b px-6">
-        <Link href="/dashboard" className="font-semibold tracking-tight">
+        <Link href="/admin" className="font-semibold tracking-tight">
           Admin
         </Link>
       </div>

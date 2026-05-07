@@ -22,7 +22,7 @@ export default function DashboardHomePage() {
         <CardContent className="text-muted-foreground space-y-2 text-sm">
           <p>
             Hazır olan: Next.js 16 + Supabase Auth (magic link) + shadcn/ui + Tailwind v4 +
-            security headers + protected /dashboard layout.
+            security headers + protected /admin layout.
           </p>
           <p>
             Buradan sonrası proje brief&apos;ine bağlı: hangi sayfalar, hangi tablolar, hangi
