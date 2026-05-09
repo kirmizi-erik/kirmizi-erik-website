@@ -33,6 +33,13 @@ export function Chatbot() {
   const [submittedLead, setSubmittedLead] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Dışarıdan chatbot'u açma — `kirmizierik:open-chat` custom event'iyle (örn. AI Kurulumları "Canlı AI demo dene" butonu)
+  useEffect(() => {
+    const handler = () => setOpen(true);
+    window.addEventListener("kirmizierik:open-chat", handler);
+    return () => window.removeEventListener("kirmizierik:open-chat", handler);
+  }, []);
+
   // İlk yüklemede localStorage'dan mesajları geri yükle (hydration sonrası)
   /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {

@@ -18,6 +18,7 @@ import {
   Music,
   Package,
   Palette,
+  Plane,
   Search,
   ScanText,
   ShoppingCart,
@@ -123,6 +124,12 @@ export const servicePages: ServicePageData[] = [
           "Sanatçı vizyonunu görsel dile çeviren konseptli müzik klibi prodüksiyonu — yönetmenden post-produksiyon'a.",
       },
       {
+        icon: Plane,
+        baslik: "Hava Çekimi (Drone)",
+        aciklama:
+          "Lisanslı pilotlarla 4K/6K hava çekimi — tesis tanıtımı, mimari, etkinlik, doğa ve takip kamerası.",
+      },
+      {
         icon: Mic,
         baslik: "Belgesel ve Röportaj",
         aciklama:
@@ -172,6 +179,7 @@ export const servicePages: ServicePageData[] = [
           "Sony FX serisi, RED Komodo, Blackmagic 6K Pro",
           "Sigma Cine, Canon Cinema, Zeiss CP.3 lens setleri",
           "DJI Ronin gimbal, slider, jib",
+          "DJI Mavic 3 Pro / Inspire — lisanslı drone pilotu",
         ],
       },
       {
@@ -246,6 +254,12 @@ export const servicePages: ServicePageData[] = [
         aciklama:
           "Moda, ev tekstili, mücevher için sezonluk lookbook çekimi. Stylist, model, lokasyon yönetimi dahil.",
       },
+      {
+        icon: Plane,
+        baslik: "Hava Fotoğrafı (Drone)",
+        aciklama:
+          "Tesis, kampüs, otel, fabrika ve mimari için yüksek çözünürlüklü hava fotoğrafı — lisanslı pilot, izinler dahil.",
+      },
     ],
     surecBaslik: "Beş aşama,",
     surecAltBaslik: "her kare onaylı.",
@@ -290,6 +304,7 @@ export const servicePages: ServicePageData[] = [
           "Sony A1, Canon R5, medium format opsiyon",
           "Sigma Art, Canon L, Zeiss Otus serisi lens",
           "Macro, tilt-shift, prime lens kütüphanesi",
+          "DJI Mavic 3 Pro / Inspire — lisanslı drone pilotu",
         ],
       },
       {

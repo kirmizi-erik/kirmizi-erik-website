@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 
@@ -35,71 +36,97 @@ export default async function CalismalarPage({
   const { data: works } = await query;
 
   return (
-    <div className="mx-auto max-w-screen-2xl px-4 py-24 sm:px-6 lg:px-10 lg:py-32">
-      {/* Üst */}
-      <div className="grid items-end gap-8 md:grid-cols-12">
-        <div className="md:col-span-7">
-          <div className="text-muted-foreground inline-flex items-center gap-3 text-xs tracking-widest uppercase">
-            <span className="bg-brand size-1.5 rounded-full" />
-            Çalışmalar
-          </div>
-          <h1 className="font-heading mt-5 max-w-3xl text-5xl leading-[0.95] font-black tracking-tight sm:text-7xl">
-            Yaptıklarımız.
-          </h1>
-          {aktif ? (
-            <div className="mt-5 inline-flex items-center gap-2 text-sm">
-              <span className="text-muted-foreground">Filtre:</span>
-              <span className="bg-brand/10 text-brand border-brand/30 rounded-full border px-3 py-1 text-xs tracking-wider uppercase">
-                {kategoriOptions.find((k) => k.value === aktif)?.label ?? aktif}
-              </span>
-              <Link
-                href="/calismalar"
-                className="text-muted-foreground hover:text-foreground text-xs underline underline-offset-2"
-              >
-                Temizle
-              </Link>
+    <article>
+      {/* Hero — banner görsel + text overlay (üst), filtre rozetleri (alt) */}
+      <header>
+        {/* Üst banner — cinema/film stripes atmosfer, sol-altta rozet + başlık */}
+        <div className="relative h-56 w-full overflow-hidden sm:h-72 lg:h-96">
+          <Image
+            src="/hero/calismalar-hero.jpg"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+          />
+          {/* Alt fade — okunabilirlik */}
+          <div className="from-background/0 via-background/30 to-background absolute inset-0 bg-gradient-to-b" />
+          {/* Sol fade — başlık keskin okunsun */}
+          <div className="from-background/70 absolute inset-0 bg-gradient-to-r via-transparent to-transparent" />
+
+          {/* Text overlay — sol-altta */}
+          <div className="absolute inset-x-0 bottom-0">
+            <div className="mx-auto max-w-screen-2xl px-4 pb-6 sm:px-6 lg:px-10 lg:pb-8">
+              <div className="grid items-end gap-4 md:grid-cols-12">
+                <div className="md:col-span-8">
+                  <div className="text-muted-foreground inline-flex items-center gap-3 text-xs tracking-widest uppercase">
+                    <span className="bg-brand size-1.5 rounded-full" />
+                    Çalışmalar
+                  </div>
+                  <h1 className="font-heading mt-3 text-4xl leading-[0.95] font-black tracking-tight sm:text-5xl lg:text-6xl">
+                    Yaptıklarımız.
+                  </h1>
+                  {aktif ? (
+                    <div className="mt-3 inline-flex items-center gap-2 text-sm">
+                      <span className="text-muted-foreground">Filtre:</span>
+                      <span className="bg-brand/10 text-brand border-brand/30 rounded-full border px-3 py-1 text-xs tracking-wider uppercase">
+                        {kategoriOptions.find((k) => k.value === aktif)?.label ?? aktif}
+                      </span>
+                      <Link
+                        href="/calismalar"
+                        className="text-muted-foreground hover:text-foreground text-xs underline underline-offset-2"
+                      >
+                        Temizle
+                      </Link>
+                    </div>
+                  ) : null}
+                </div>
+                <p className="text-muted-foreground md:col-span-4 md:text-right md:text-base">
+                  {works?.length ?? 0} çalışma
+                </p>
+              </div>
             </div>
-          ) : null}
+          </div>
         </div>
-        <p className="text-muted-foreground md:col-span-5 md:text-right md:text-base">
-          {works?.length ?? 0} çalışma
-        </p>
-      </div>
 
-      {/* Filtre rozetleri */}
-      <div className="mt-10 flex flex-wrap gap-2">
-        <Link
-          href="/calismalar"
-          className={cn(
-            "border-border rounded-full border px-4 py-1.5 text-xs tracking-wider uppercase transition-colors",
-            !aktif
-              ? "bg-foreground text-background border-foreground"
-              : "text-muted-foreground hover:text-foreground hover:border-foreground/40",
-          )}
-        >
-          Hepsi
-        </Link>
-        {kategoriOptions.map((k) => {
-          const active = aktif === k.value;
-          return (
-            <Link
-              key={k.value}
-              href={`/calismalar?kategori=${k.value}`}
-              className={cn(
-                "border-border rounded-full border px-4 py-1.5 text-xs tracking-wider uppercase transition-colors",
-                active
-                  ? "bg-foreground text-background border-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:border-foreground/40",
-              )}
-            >
-              {k.label}
-            </Link>
-          );
-        })}
-      </div>
+        {/* Banner altı — filtre rozetleri */}
+        <div className="border-border/40 mx-auto max-w-screen-2xl border-b px-4 py-8 sm:px-6 lg:px-10 lg:py-10">
+          <div className="flex flex-wrap gap-2">
+          <Link
+            href="/calismalar"
+            className={cn(
+              "border-border rounded-full border px-4 py-1.5 text-xs tracking-wider uppercase transition-colors",
+              !aktif
+                ? "bg-foreground text-background border-foreground"
+                : "text-muted-foreground hover:text-foreground hover:border-foreground/40",
+            )}
+          >
+            Hepsi
+          </Link>
+          {kategoriOptions.map((k) => {
+            const active = aktif === k.value;
+            return (
+              <Link
+                key={k.value}
+                href={`/calismalar?kategori=${k.value}`}
+                className={cn(
+                  "border-border rounded-full border px-4 py-1.5 text-xs tracking-wider uppercase transition-colors",
+                  active
+                    ? "bg-foreground text-background border-foreground"
+                    : "text-muted-foreground hover:text-foreground hover:border-foreground/40",
+                )}
+              >
+                {k.label}
+              </Link>
+            );
+          })}
+          </div>
+        </div>
+      </header>
 
-      {/* Liste */}
-      <div className="mt-14">
+      {/* Liste — açık BG */}
+      <div className="bg-muted">
+        <section className="mx-auto max-w-screen-2xl px-4 py-20 sm:px-6 lg:px-10 lg:py-28">
         {!works || works.length === 0 ? (
           <p className="text-muted-foreground">
             {aktif
@@ -170,7 +197,8 @@ export default async function CalismalarPage({
             })}
           </div>
         )}
+        </section>
       </div>
-    </div>
+    </article>
   );
 }

@@ -1,7 +1,10 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowUpRight, Sparkles, Zap } from "lucide-react";
 
+import { OpenChatButton } from "@/components/site/open-chat-button";
+import { RelatedWorks } from "@/components/site/related-works";
 import { Button } from "@/components/ui/button";
 import {
   getServicePage,
@@ -38,47 +41,68 @@ function ServicePageContent({ data }: { data: ServicePageData }) {
 
   return (
     <article>
-      {/* Hero */}
-      <header className="border-border/40 mx-auto max-w-screen-2xl border-b px-4 pt-16 pb-12 sm:px-6 lg:px-10 lg:pt-24">
-        <div className="text-muted-foreground inline-flex items-center gap-3 text-xs tracking-widest uppercase">
-          {data.oneCikan ? (
-            <>
-              <Sparkles className="text-brand size-3.5" />
-              Vurgu Hizmet
-            </>
-          ) : (
-            <>
-              <span className="bg-brand size-1.5 rounded-full" />
-              Hizmet
-            </>
-          )}
+      {/* Hero — banner görsel + text overlay (üst), subtitle + CTA (alt) */}
+      <header>
+        {/* Üst banner — hizmete özel atmospheric görsel, sol-altta rozet + başlık */}
+        <div className="relative h-56 w-full overflow-hidden sm:h-72 lg:h-96">
+          <Image
+            src={`/hero/services/${data.slug}.jpg`}
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+          />
+          <div className="from-background/0 via-background/30 to-background absolute inset-0 bg-gradient-to-b" />
+          <div className="from-background/70 absolute inset-0 bg-gradient-to-r via-transparent to-transparent" />
+
+          <div className="absolute inset-x-0 bottom-0">
+            <div className="mx-auto max-w-screen-2xl px-4 pb-6 sm:px-6 lg:px-10 lg:pb-8">
+              <div className="text-muted-foreground inline-flex items-center gap-3 text-xs tracking-widest uppercase">
+                {data.oneCikan ? (
+                  <>
+                    <Sparkles className="text-brand size-3.5" />
+                    Vurgu Hizmet
+                  </>
+                ) : (
+                  <>
+                    <span className="bg-brand size-1.5 rounded-full" />
+                    Hizmet
+                  </>
+                )}
+              </div>
+              <h1 className="font-heading mt-3 max-w-4xl text-4xl leading-[0.95] font-black tracking-tight sm:text-5xl lg:text-6xl">
+                {data.label}
+              </h1>
+            </div>
+          </div>
         </div>
-        <h1 className="font-heading mt-5 max-w-4xl text-5xl leading-[0.95] font-black tracking-tight sm:text-7xl lg:text-[clamp(3.5rem,7vw,7rem)]">
-          {data.label}
-        </h1>
-        <p className="text-muted-foreground mt-8 max-w-2xl text-base leading-relaxed sm:text-lg">
-          {data.heroSubtitle}
-        </p>
-        <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-          <Button asChild size="lg" className="h-12 px-7">
-            <Link href="/iletisim">
-              Bir brief paylaş
-              <ArrowUpRight className="ml-1 size-4" />
-            </Link>
-          </Button>
-          {isAi ? (
-            <Button asChild size="lg" variant="ghost">
+
+        {/* Banner altı — subtitle + CTA */}
+        <div className="border-border/40 mx-auto max-w-screen-2xl border-b px-4 py-8 sm:px-6 lg:px-10 lg:py-10">
+          <p className="text-muted-foreground max-w-2xl text-base leading-relaxed sm:text-lg">
+            {data.heroSubtitle}
+          </p>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <Button asChild size="lg" className="h-12 px-7">
               <Link href="/iletisim">
-                <Sparkles className="mr-1 size-4" />
-                Canlı AI demo dene
+                Bir brief paylaş
+                <ArrowUpRight className="ml-1 size-4" />
               </Link>
             </Button>
-          ) : null}
+            {isAi ? (
+              <OpenChatButton size="lg" variant="ghost">
+                <Sparkles className="mr-1 size-4" />
+                Canlı AI demo dene
+              </OpenChatButton>
+            ) : null}
+          </div>
         </div>
       </header>
 
-      {/* Ne yapıyoruz */}
-      <section className="border-border/40 mx-auto max-w-screen-2xl border-b px-4 py-20 sm:px-6 lg:px-10 lg:py-28">
+      {/* Ne yapıyoruz — açık BG */}
+      <div className="bg-muted">
+        <section className="border-border/40 mx-auto max-w-screen-2xl border-b px-4 py-20 sm:px-6 lg:px-10 lg:py-28">
         <div className="grid gap-10 md:grid-cols-12 md:gap-12">
           <div className="md:col-span-5">
             <div className="text-muted-foreground inline-flex items-center gap-3 text-xs tracking-widest uppercase">
@@ -118,8 +142,9 @@ function ServicePageContent({ data }: { data: ServicePageData }) {
           })}
         </div>
       </section>
+      </div>
 
-      {/* Süreç */}
+      {/* Süreç — koyu (default) */}
       <section className="border-border/40 mx-auto max-w-screen-2xl border-b px-4 py-20 sm:px-6 lg:px-10 lg:py-28">
         <div className="grid gap-10 md:grid-cols-12">
           <div className="md:col-span-5">
@@ -160,8 +185,9 @@ function ServicePageContent({ data }: { data: ServicePageData }) {
         </div>
       </section>
 
-      {/* Stack / yaklaşım */}
-      <section className="border-border/40 mx-auto max-w-screen-2xl border-b px-4 py-20 sm:px-6 lg:px-10 lg:py-28">
+      {/* Stack / yaklaşım — açık BG */}
+      <div className="bg-muted">
+        <section className="border-border/40 mx-auto max-w-screen-2xl border-b px-4 py-20 sm:px-6 lg:px-10 lg:py-28">
         <div className="grid gap-10 md:grid-cols-12">
           <div className="md:col-span-5">
             <div className="text-muted-foreground inline-flex items-center gap-3 text-xs tracking-widest uppercase">
@@ -199,6 +225,10 @@ function ServicePageContent({ data }: { data: ServicePageData }) {
           </div>
         </div>
       </section>
+      </div>
+
+      {/* İlgili çalışmalar — koyu (default) */}
+      <RelatedWorks serviceSlug={data.slug} serviceLabel={data.label} />
 
       {/* AI Kurulumları için özel canlı demo CTA */}
       {data.customCta ? (
@@ -230,8 +260,8 @@ function ServicePageContent({ data }: { data: ServicePageData }) {
           </div>
         </section>
       ) : (
-        // Normal hizmetler için standart CTA bandı
-        <section className="border-border/40 border-t">
+        // Normal hizmetler için standart CTA bandı — açık BG
+        <section className="bg-muted border-border/40 border-t">
           <div className="mx-auto flex max-w-screen-2xl flex-col items-start justify-between gap-6 px-4 py-16 sm:flex-row sm:items-center sm:px-6 lg:px-10">
             <h2 className="font-heading max-w-xl text-2xl leading-tight font-black tracking-tight sm:text-3xl">
               {data.label} ihtiyacın mı var?{" "}

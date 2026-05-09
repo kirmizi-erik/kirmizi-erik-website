@@ -39,14 +39,13 @@ export function IletisimForm() {
         <div className="bg-brand/10 text-brand mx-auto inline-flex size-16 items-center justify-center rounded-full">
           <CheckCircle2 className="size-8" />
         </div>
-        <h2 className="font-heading mt-6 text-2xl font-bold">Brief&apos;in alındı!</h2>
+        <h2 className="font-heading mt-6 text-2xl font-bold">Mesajınız bize ulaştı.</h2>
         <p className="text-muted-foreground mt-3 text-sm">
-          Birkaç iş günü içinde sana <strong>{eposta}</strong> üzerinden döneceğiz.
-          Acil bir konu varsa{" "}
-          <a href="mailto:info@kirmizierik.com.tr" className="text-brand hover:underline">
-            info@kirmizierik.com.tr
+          Çok acil ise{" "}
+          <a href="tel:+905322618222" className="text-brand hover:underline">
+            +90 532 261 82 22
           </a>{" "}
-          ya da telefon en hızlı yol.
+          'den bize hemen ulaşabilirsiniz.
         </p>
         <div className="mt-6 flex justify-center gap-2">
           <Button asChild variant="ghost" size="sm">
@@ -121,8 +120,13 @@ export function IletisimForm() {
             id="telefon"
             name="telefon"
             type="tel"
+            inputMode="tel"
             value={telefon}
-            onChange={(e) => setTelefon(e.target.value)}
+            onChange={(e) => {
+              // Sadece rakam, boşluk, +, (, ), - kabul et
+              const filtered = e.target.value.replace(/[^\d\s+()\-]/g, "");
+              setTelefon(filtered);
+            }}
             placeholder="+90 555 ..."
             autoComplete="tel"
             pattern="[\d\s\+\(\)\-]{7,}"
@@ -200,13 +204,21 @@ export function IletisimForm() {
           className="border-input bg-background focus-visible:ring-ring w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:outline-none"
           placeholder="Markandan, hedeflerinden, aklındaki çözüm fikirlerinden bahset. Ne kadar açıklayıcı olursan biz o kadar net cevap döneriz."
         />
-        <p className="text-muted-foreground text-xs">
-          {brief.length}/5000 — en az 20 karakter
-        </p>
+
+        {/* Karakter sayacı (solda) + Brief'i gönder butonu (sağda) */}
+        <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-muted-foreground text-xs">
+            {brief.length}/5000 — en az 20 karakter
+          </p>
+          <Button type="submit" size="lg" disabled={isPending || !kvkk} className="sm:ml-auto">
+            {isPending ? "Gönderiliyor..." : "Brief'i gönder"}
+            <ArrowUpRight className="ml-1 size-4" />
+          </Button>
+        </div>
       </div>
 
-      {/* KVKK */}
-      <label className="flex cursor-pointer items-start gap-2 text-xs">
+      {/* KVKK — butonun altında, sağa hizalı */}
+      <label className="flex cursor-pointer items-start justify-end gap-2 text-xs">
         <input
           type="checkbox"
           name="kvkk_onay"
@@ -227,19 +239,6 @@ export function IletisimForm() {
         </span>
       </label>
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-muted-foreground text-xs">
-          Birkaç iş günü içinde döneriz. Acil ise{" "}
-          <a href="tel:+905322618222" className="hover:text-foreground">
-            +90 532 261 82 22
-          </a>
-          .
-        </p>
-        <Button type="submit" size="lg" disabled={isPending || !kvkk}>
-          {isPending ? "Gönderiliyor..." : "Brief'i gönder"}
-          <ArrowUpRight className="ml-1 size-4" />
-        </Button>
-      </div>
     </form>
   );
 }

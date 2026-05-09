@@ -8,7 +8,6 @@ import { ShareButtons } from "@/components/site/share-buttons";
 import { parseVideoUrl } from "@/lib/embed";
 import { createClient } from "@/lib/supabase/server";
 import { kategoriOptions } from "@/lib/validations/case-study";
-import type { Metrik } from "@/lib/validations/case-study";
 
 type PageProps = { params: Promise<{ slug: string }> };
 
@@ -54,7 +53,6 @@ export default async function CalismaDetayPage({ params }: PageProps) {
 
   if (!w) notFound();
 
-  const metrikler = (w.metrikler ?? []) as Metrik[];
   const video = parseVideoUrl(w.kapak_video_url);
   const yayinTarihi = formatTarih(w.yayin_tarihi);
 
@@ -162,56 +160,12 @@ export default async function CalismaDetayPage({ params }: PageProps) {
           </div>
         ) : null}
 
-        {/* Metrikler — varsa kompakt grid */}
-        {metrikler.length > 0 ? (
-          <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {metrikler.map((m, i) => (
-              <div
-                key={i}
-                className="border-border/60 from-card/60 rounded-xl border bg-gradient-to-br to-transparent p-4"
-              >
-                <div className="text-brand text-2xl font-bold tracking-tight">
-                  {m.value}
-                </div>
-                <div className="text-muted-foreground mt-0.5 text-xs tracking-wider uppercase">
-                  {m.label}
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : null}
       </div>
 
-      {/* Problem / Çözüm / Sonuç — okunabilir kolon */}
-      {w.problem || w.cozum || w.sonuc ? (
-        <section className="mx-auto mt-16 max-w-3xl space-y-12">
-          {w.problem ? (
-            <div>
-              <div className="text-muted-foreground mb-3 inline-flex items-center gap-3 text-xs tracking-widest uppercase">
-                <span className="bg-brand size-1.5 rounded-full" />
-                Problem
-              </div>
-              <Markdown>{w.problem}</Markdown>
-            </div>
-          ) : null}
-          {w.cozum ? (
-            <div>
-              <div className="text-muted-foreground mb-3 inline-flex items-center gap-3 text-xs tracking-widest uppercase">
-                <span className="bg-brand-mor size-1.5 rounded-full" />
-                Çözüm
-              </div>
-              <Markdown>{w.cozum}</Markdown>
-            </div>
-          ) : null}
-          {w.sonuc ? (
-            <div>
-              <div className="text-muted-foreground mb-3 inline-flex items-center gap-3 text-xs tracking-widest uppercase">
-                <span className="bg-brand-yaprak size-1.5 rounded-full" />
-                Sonuç
-              </div>
-              <Markdown>{w.sonuc}</Markdown>
-            </div>
-          ) : null}
+      {/* Açıklama */}
+      {w.aciklama ? (
+        <section className="mx-auto mt-12 max-w-3xl">
+          <Markdown>{w.aciklama}</Markdown>
         </section>
       ) : null}
 
@@ -234,23 +188,6 @@ export default async function CalismaDetayPage({ params }: PageProps) {
               />
             ))}
           </div>
-        </section>
-      ) : null}
-
-      {/* Ekip */}
-      {w.ekip_krediler && w.ekip_krediler.length > 0 ? (
-        <section className="border-border/40 mx-auto mt-12 max-w-3xl border-t pt-10">
-          <div className="text-muted-foreground mb-4 inline-flex items-center gap-3 text-xs tracking-widest uppercase">
-            <span className="bg-brand size-1.5 rounded-full" />
-            Ekip
-          </div>
-          <ul className="divide-border/40 divide-y">
-            {w.ekip_krediler.map((k: string, i: number) => (
-              <li key={i} className="text-foreground py-2.5 text-sm">
-                {k}
-              </li>
-            ))}
-          </ul>
         </section>
       ) : null}
 
