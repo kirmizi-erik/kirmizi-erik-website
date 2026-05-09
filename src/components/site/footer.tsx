@@ -130,8 +130,57 @@ export async function SiteFooter() {
             </ul>
           </div>
 
+          {/* Yasal & Şirket */}
+          <div className="md:col-span-2">
+            <h3 className="text-sm font-semibold tracking-wide uppercase">
+              Şirket
+            </h3>
+            <ul className="mt-4 space-y-2.5 text-sm">
+              <li>
+                <Link
+                  href="/biz-kimiz"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Biz Kimiz
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/calismalar"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Çalışmalar
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/iletisim"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  İletişim
+                </Link>
+              </li>
+              <li className="border-border/40 mt-3 border-t pt-3">
+                <Link
+                  href="/kvkk"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  KVKK
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/gizlilik"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Gizlilik
+                </Link>
+              </li>
+            </ul>
+          </div>
+
           {/* İletişim */}
-          <div className="md:col-span-4">
+          <div className="md:col-span-2">
             <h3 className="text-sm font-semibold tracking-wide uppercase">
               İletişim
             </h3>
@@ -168,22 +217,11 @@ export async function SiteFooter() {
           </div>
         </div>
 
-        {/* Alt çizgi */}
-        <div className="border-border/60 mt-12 flex flex-col items-start justify-between gap-4 border-t pt-8 sm:flex-row sm:items-center">
+        {/* Alt çizgi — copyright */}
+        <div className="border-border/60 mt-12 border-t pt-8">
           <p className="text-muted-foreground text-xs">
             © {yil} {siteConfig.name}. Tüm hakları saklıdır.
           </p>
-          <div className="text-muted-foreground flex items-center gap-5 text-xs">
-            <Link href="/biz-kimiz" className="hover:text-foreground transition-colors">
-              Biz Kimiz
-            </Link>
-            <Link href="/gizlilik" className="hover:text-foreground transition-colors">
-              Gizlilik
-            </Link>
-            <Link href="/kvkk" className="hover:text-foreground transition-colors">
-              KVKK
-            </Link>
-          </div>
         </div>
       </div>
     </footer>
