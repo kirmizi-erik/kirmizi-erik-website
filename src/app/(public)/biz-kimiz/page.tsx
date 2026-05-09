@@ -176,7 +176,7 @@ export default function BizKimizPage() {
             <div className="md:col-span-5">
               <div className="bg-background border-border/60 relative aspect-[4/5] overflow-hidden rounded-2xl border">
                 <Image
-                  src="/team/ozkan-portre.jpg"
+                  src="/team/ozkan.jpg"
                   alt="Özkan Kurt — Kırmızı Erik kurucusu"
                   fill
                   sizes="(max-width: 768px) 100vw, 40vw"
