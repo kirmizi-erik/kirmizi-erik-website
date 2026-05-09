@@ -65,10 +65,12 @@ export default function HizmetlerHubPage() {
         const grupHizmetleri = (() => {
           const arr = hizmetler.filter((h) => h.grup === g);
           const vurgu = arr.find((h) => "oneCikan" in h && h.oneCikan);
-          if (!vurgu || arr.length < 3) return arr;
+          if (!vurgu) return arr;
           const others = arr.filter((h) => h !== vurgu);
+          const first = others[0];
+          if (!first || others.length < 2) return arr;
           // Sıra: [ilk, vurgu, kalan...]
-          return [others[0], vurgu, ...others.slice(1)];
+          return [first, vurgu, ...others.slice(1)];
         })();
         const acik = gIdx % 2 === 0; // 01 ve 03 → gri; 02 → siyah
 
