@@ -14,8 +14,9 @@ export const siteConfig = {
 
 export const navItems = [
   { href: "/", label: "Anasayfa" },
+  { href: "/biz-kimiz", label: "Biz Kimiz" },
   { href: "/calismalar", label: "Çalışmalar" },
-  { href: "/hizmetler/ai-kurulumlari", label: "Hizmetler" },
+  { href: "/hizmetler", label: "Hizmetler" },
   { href: "/iletisim", label: "İletişim" },
 ] as const;
 

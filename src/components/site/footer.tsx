@@ -45,17 +45,14 @@ export async function SiteFooter() {
         <div className="grid gap-10 md:grid-cols-12">
           {/* Sol blok — marka */}
           <div className="md:col-span-5">
-            <Link href="/" className="inline-flex items-center gap-3">
+            <Link href="/" className="inline-flex items-center">
               <Image
-                src="/logo/icon-32.png"
+                src="/logo/Logo-beyaz.png"
                 alt={siteConfig.name}
-                width={32}
-                height={32}
-                className="size-8 shrink-0"
+                width={179}
+                height={40}
+                className="h-10 w-auto"
               />
-              <span className="text-base font-medium tracking-tight">
-                Kırmızı Erik
-              </span>
             </Link>
             <p className="text-muted-foreground mt-4 max-w-md text-sm leading-relaxed">
               {siteConfig.description}
@@ -177,6 +174,9 @@ export async function SiteFooter() {
             © {yil} {siteConfig.name}. Tüm hakları saklıdır.
           </p>
           <div className="text-muted-foreground flex items-center gap-5 text-xs">
+            <Link href="/biz-kimiz" className="hover:text-foreground transition-colors">
+              Biz Kimiz
+            </Link>
             <Link href="/gizlilik" className="hover:text-foreground transition-colors">
               Gizlilik
             </Link>

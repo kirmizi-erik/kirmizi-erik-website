@@ -10,7 +10,7 @@ export function ServicesSection() {
   return (
     <section
       id="hizmetler"
-      className="border-border/40 mx-auto max-w-screen-2xl border-t px-4 py-24 sm:px-6 lg:px-10 lg:py-32"
+      className="border-border/40 mx-auto max-w-screen-2xl scroll-mt-20 border-t px-4 py-24 sm:px-6 lg:px-10 lg:py-32"
     >
       {/* Bölüm başlığı */}
       <div className="grid gap-10 md:grid-cols-12 md:gap-12">
@@ -32,18 +32,23 @@ export function ServicesSection() {
         </p>
       </div>
 
-      {/* 3 sütun grup */}
+      {/* 3 sütun grup — desktop'ta Yazılım & AI yatay olarak ortada (vurgu hizmet) */}
       <div className="mt-16 grid gap-6 md:grid-cols-3">
         {gruplar.map((g, idx) => {
           const grupHizmetleri = hizmetler.filter((h) => h.grup === g);
           const bilgi = hizmetGrupBilgi[g];
           const oneCikanGrupMu = g === "yazilim"; // AI Kurulumları öne çıkıyor
 
+          // Desktop sıralama: [01 Görsel] [03 Yazılım] [02 Dijital]
+          const orderClass =
+            g === "yazilim" ? "md:order-2" : g === "dijital" ? "md:order-3" : "md:order-1";
+
           return (
             <div
               key={g}
               className={cn(
                 "group relative flex flex-col rounded-2xl border p-7 transition-colors",
+                orderClass,
                 oneCikanGrupMu
                   ? "border-brand/40 bg-gradient-to-b from-brand/[0.05] to-transparent"
                   : "border-border/60 hover:border-foreground/30 bg-card/40",

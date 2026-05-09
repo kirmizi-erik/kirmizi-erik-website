@@ -28,7 +28,8 @@ export function parseVideoUrl(url: string | null | undefined): VideoSource {
       kind: "youtube",
       videoId: id,
       embedUrl: `https://www.youtube.com/embed/${id}?rel=0&modestbranding=1`,
-      thumbnail: `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`,
+      // hqdefault her video için garanti var; maxresdefault sadece HD'de var
+      thumbnail: `https://i.ytimg.com/vi/${id}/hqdefault.jpg`,
     };
   }
 

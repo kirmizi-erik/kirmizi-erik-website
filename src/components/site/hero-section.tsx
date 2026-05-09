@@ -115,10 +115,13 @@ export async function HeroSection() {
           </Button>
         </div>
 
-        <div className="text-muted-foreground mt-16 flex items-center gap-3 text-xs tracking-wider uppercase">
+        <a
+          href="#hizmetler"
+          className="text-muted-foreground hover:text-foreground mt-16 inline-flex items-center gap-3 text-xs tracking-wider uppercase transition-colors"
+        >
           <ArrowDown className="size-4 animate-bounce" />
           Aşağı kaydır
-        </div>
+        </a>
       </div>
     </section>
   );
