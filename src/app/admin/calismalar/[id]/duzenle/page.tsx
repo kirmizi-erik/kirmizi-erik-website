@@ -5,7 +5,7 @@ import { ArrowLeft, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/server";
-import type { CaseStudyDurum, Metrik } from "@/lib/validations/case-study";
+import type { CaseStudyDurum } from "@/lib/validations/case-study";
 
 import { CaseForm } from "../../case-form";
 import { DeleteCaseButton } from "./delete-button";
@@ -73,11 +73,7 @@ export default async function CaseDuzenlePage({ params }: PageProps) {
               kategori: cs.kategori ?? [],
               kapak_url: cs.kapak_url,
               kapak_video_url: cs.kapak_video_url,
-              problem: cs.problem,
-              cozum: cs.cozum,
-              sonuc: cs.sonuc,
-              metrikler: (cs.metrikler ?? []) as Metrik[],
-              ekip_krediler: cs.ekip_krediler ?? [],
+              aciklama: cs.aciklama,
               galeri_urls: cs.galeri_urls ?? [],
               durum: cs.durum as CaseStudyDurum,
               one_cikan: cs.one_cikan,

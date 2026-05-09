@@ -21,13 +21,6 @@ export const kategoriOptions = [
   { value: "3d-2d", label: "3D/2D" },
 ] as const;
 
-export const metrikSchema = z.object({
-  label: z.string().min(1, "Etiket gerekli"),
-  value: z.string().min(1, "Değer gerekli"),
-});
-
-export type Metrik = z.infer<typeof metrikSchema>;
-
 export const caseStudyInputSchema = z.object({
   baslik: z.string().min(2, "En az 2 karakter").max(200),
   slug: z
@@ -41,11 +34,7 @@ export const caseStudyInputSchema = z.object({
   kategori: z.array(z.string()).default([]),
   kapak_url: z.string().url().optional().or(z.literal("")),
   kapak_video_url: z.string().url().optional().or(z.literal("")),
-  problem: z.string().optional().or(z.literal("")),
-  cozum: z.string().optional().or(z.literal("")),
-  sonuc: z.string().optional().or(z.literal("")),
-  metrikler: z.array(metrikSchema).default([]),
-  ekip_krediler: z.array(z.string().min(1)).default([]),
+  aciklama: z.string().max(20000).optional().or(z.literal("")),
   galeri_urls: z.array(z.string().url()).default([]),
   durum: durumSchema.default("taslak"),
   one_cikan: z.boolean().default(false),

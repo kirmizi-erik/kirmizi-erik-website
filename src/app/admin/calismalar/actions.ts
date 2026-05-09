@@ -21,8 +21,6 @@ function emptyToNull(s: unknown) {
 }
 
 function parseFromFormData(formData: FormData): CaseStudyInput {
-  const metriklerRaw = formData.get("metrikler") as string | null;
-  const ekipRaw = formData.get("ekip_krediler") as string | null;
   const galeriRaw = formData.get("galeri_urls") as string | null;
 
   const parseJsonArray = (raw: string | null) => {
@@ -44,11 +42,7 @@ function parseFromFormData(formData: FormData): CaseStudyInput {
     kategori: formData.getAll("kategori").map(String).filter(Boolean),
     kapak_url: String(formData.get("kapak_url") ?? "").trim(),
     kapak_video_url: String(formData.get("kapak_video_url") ?? "").trim(),
-    problem: String(formData.get("problem") ?? ""),
-    cozum: String(formData.get("cozum") ?? ""),
-    sonuc: String(formData.get("sonuc") ?? ""),
-    metrikler: parseJsonArray(metriklerRaw),
-    ekip_krediler: parseJsonArray(ekipRaw),
+    aciklama: String(formData.get("aciklama") ?? ""),
     galeri_urls: parseJsonArray(galeriRaw),
     durum: (formData.get("durum") as CaseStudyInput["durum"]) ?? "taslak",
     one_cikan: formData.get("one_cikan") === "on" || formData.get("one_cikan") === "true",
@@ -65,11 +59,7 @@ function normalizeForDb(input: CaseStudyInput) {
     kategori: input.kategori,
     kapak_url: emptyToNull(input.kapak_url),
     kapak_video_url: emptyToNull(input.kapak_video_url),
-    problem: emptyToNull(input.problem),
-    cozum: emptyToNull(input.cozum),
-    sonuc: emptyToNull(input.sonuc),
-    metrikler: input.metrikler,
-    ekip_krediler: input.ekip_krediler,
+    aciklama: emptyToNull(input.aciklama),
     galeri_urls: input.galeri_urls,
     durum: input.durum,
     one_cikan: input.one_cikan,

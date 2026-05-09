@@ -41,68 +41,56 @@ export type Database = {
     Tables: {
       case_studies: {
         Row: {
+          aciklama: string | null
           baslik: string
-          cozum: string | null
           created_at: string
           durum: string
-          ekip_krediler: string[]
           galeri_urls: string[]
           id: string
           kapak_url: string | null
           kapak_video_url: string | null
           kategori: string[]
-          metrikler: Json
           musteri_adi: string | null
           one_cikan: boolean
           ozet: string | null
-          problem: string | null
           sektor: string | null
           slug: string
-          sonuc: string | null
           updated_at: string
           yayin_tarihi: string | null
         }
         Insert: {
+          aciklama?: string | null
           baslik: string
-          cozum?: string | null
           created_at?: string
           durum?: string
-          ekip_krediler?: string[]
           galeri_urls?: string[]
           id?: string
           kapak_url?: string | null
           kapak_video_url?: string | null
           kategori?: string[]
-          metrikler?: Json
           musteri_adi?: string | null
           one_cikan?: boolean
           ozet?: string | null
-          problem?: string | null
           sektor?: string | null
           slug: string
-          sonuc?: string | null
           updated_at?: string
           yayin_tarihi?: string | null
         }
         Update: {
+          aciklama?: string | null
           baslik?: string
-          cozum?: string | null
           created_at?: string
           durum?: string
-          ekip_krediler?: string[]
           galeri_urls?: string[]
           id?: string
           kapak_url?: string | null
           kapak_video_url?: string | null
           kategori?: string[]
-          metrikler?: Json
           musteri_adi?: string | null
           one_cikan?: boolean
           ozet?: string | null
-          problem?: string | null
           sektor?: string | null
           slug?: string
-          sonuc?: string | null
           updated_at?: string
           yayin_tarihi?: string | null
         }
