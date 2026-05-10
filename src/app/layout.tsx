@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
+import { ClarityWithConsent } from "@/components/site/clarity-with-consent";
 import { CookieConsent } from "@/components/site/cookie-consent";
 import { GoogleAnalyticsWithConsent } from "@/components/site/google-analytics-with-consent";
 import { Toaster } from "@/components/ui/sonner";
@@ -14,6 +15,7 @@ import {
 import "./globals.css";
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? "G-B3QHXZ1XL5";
+const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID ?? "woxlc19y4v";
 
 const geistSans = Geist({
   variable: "--font-sans",
@@ -104,6 +106,7 @@ export default function RootLayout({
         <Toaster richColors closeButton position="top-right" />
         <CookieConsent />
         {GA_ID ? <GoogleAnalyticsWithConsent gaId={GA_ID} /> : null}
+        {CLARITY_ID ? <ClarityWithConsent projectId={CLARITY_ID} /> : null}
       </body>
     </html>
   );
