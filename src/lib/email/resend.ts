@@ -23,8 +23,12 @@ export type LeadNotificationInput = {
 };
 
 const FROM_DEFAULT = process.env.RESEND_FROM_EMAIL ?? "Kırmızı Erik <onboarding@resend.dev>";
-const TO_DEFAULT =
-  process.env.LEAD_NOTIFICATION_TO ?? "info@kirmizierik.com.tr";
+const TO_DEFAULT: string[] = (
+  process.env.LEAD_NOTIFICATION_TO ?? "info@kirmizierik.com.tr,kirmizierikmm@gmail.com"
+)
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
 /**
