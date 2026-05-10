@@ -45,9 +45,16 @@ async function loadAll(days: number): Promise<Loaded | Failed> {
     ]);
     return { ok: true, data: { summary, topPages, sources, devices, geo } };
   } catch (e) {
+    console.error("[admin/analytics]", e);
+    const err = e as { message?: string; code?: string | number; details?: unknown };
+    const parts = [
+      err?.message,
+      err?.code ? `code=${err.code}` : null,
+      err?.details ? `details=${JSON.stringify(err.details)}` : null,
+    ].filter(Boolean);
     return {
       ok: false,
-      error: e instanceof Error ? e.message : String(e),
+      error: parts.length ? parts.join(" · ") : JSON.stringify(e),
     };
   }
 }
