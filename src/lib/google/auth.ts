@@ -11,9 +11,14 @@ export function getOAuthClient(): Auth.OAuth2Client {
   const clientSecret = process.env.GOOGLE_OAUTH_CLIENT_SECRET;
   const refreshToken = process.env.GOOGLE_OAUTH_REFRESH_TOKEN;
 
-  if (!clientId || !clientSecret || !refreshToken) {
+  const missing: string[] = [];
+  if (!clientId) missing.push("GOOGLE_OAUTH_CLIENT_ID");
+  if (!clientSecret) missing.push("GOOGLE_OAUTH_CLIENT_SECRET");
+  if (!refreshToken) missing.push("GOOGLE_OAUTH_REFRESH_TOKEN");
+  if (missing.length) {
+    const lengths = `lengths: id=${clientId?.length ?? 0}, secret=${clientSecret?.length ?? 0}, refresh=${refreshToken?.length ?? 0}`;
     throw new Error(
-      "Google OAuth env değişkenleri eksik (GOOGLE_OAUTH_CLIENT_ID, GOOGLE_OAUTH_CLIENT_SECRET, GOOGLE_OAUTH_REFRESH_TOKEN)",
+      `Google OAuth env eksik: ${missing.join(", ")} (${lengths})`,
     );
   }
 
