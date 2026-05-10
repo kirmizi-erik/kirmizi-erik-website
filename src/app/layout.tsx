@@ -1,8 +1,15 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { GoogleAnalytics } from "@next/third-parties/google";
 
+import { CookieConsent } from "@/components/site/cookie-consent";
+import { GoogleAnalyticsWithConsent } from "@/components/site/google-analytics-with-consent";
 import { Toaster } from "@/components/ui/sonner";
+import {
+  jsonLdScript,
+  localBusinessSchema,
+  organizationSchema,
+  websiteSchema,
+} from "@/lib/schema";
 
 import "./globals.css";
 
@@ -78,10 +85,25 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="tr" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={jsonLdScript(organizationSchema)}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={jsonLdScript(localBusinessSchema)}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={jsonLdScript(websiteSchema)}
+        />
+      </head>
       <body className="bg-background text-foreground flex min-h-full flex-col">
         {children}
         <Toaster richColors closeButton position="top-right" />
-        {GA_ID ? <GoogleAnalytics gaId={GA_ID} /> : null}
+        <CookieConsent />
+        {GA_ID ? <GoogleAnalyticsWithConsent gaId={GA_ID} /> : null}
       </body>
     </html>
   );
