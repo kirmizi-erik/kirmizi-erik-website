@@ -223,9 +223,12 @@ function ErrorPanel({ error }: { error: string }) {
           Google Search Console API çağrısı başarısız oldu. Genelde sebep:
         </p>
         <ul className="text-muted-foreground mt-3 list-disc space-y-1 pl-5 text-sm">
-          <li>Service account&apos;a GSC&apos;de Restricted yetki verilmemiş</li>
           <li>
-            <code>GOOGLE_SERVICE_ACCOUNT_JSON</code> veya{" "}
+            <code>GOOGLE_OAUTH_CLIENT_ID</code>,{" "}
+            <code>GOOGLE_OAUTH_CLIENT_SECRET</code>,{" "}
+            <code>GOOGLE_OAUTH_REFRESH_TOKEN</code> env eksik
+          </li>
+          <li>
             <code>GSC_SITE_URL</code> env değişkeni eksik / yanlış
           </li>
           <li>Google Search Console API enable edilmemiş</li>

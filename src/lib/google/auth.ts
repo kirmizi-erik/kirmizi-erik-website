@@ -1,39 +1,25 @@
 import "server-only";
 
-type ServiceAccountCredentials = {
-  client_email: string;
-  private_key: string;
-  project_id?: string;
-};
+import { google, type Auth } from "googleapis";
 
-let cached: ServiceAccountCredentials | null = null;
+let _oauth2: Auth.OAuth2Client | null = null;
 
-export function getGoogleCredentials(): ServiceAccountCredentials {
-  if (cached) return cached;
+export function getOAuthClient(): Auth.OAuth2Client {
+  if (_oauth2) return _oauth2;
 
-  const raw = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
-  if (!raw) {
-    throw new Error("GOOGLE_SERVICE_ACCOUNT_JSON env değişkeni eksik");
-  }
+  const clientId = process.env.GOOGLE_OAUTH_CLIENT_ID;
+  const clientSecret = process.env.GOOGLE_OAUTH_CLIENT_SECRET;
+  const refreshToken = process.env.GOOGLE_OAUTH_REFRESH_TOKEN;
 
-  let parsed: ServiceAccountCredentials;
-  try {
-    const text = raw.trim().startsWith("{")
-      ? raw
-      : Buffer.from(raw, "base64").toString("utf-8");
-    parsed = JSON.parse(text);
-  } catch (e) {
+  if (!clientId || !clientSecret || !refreshToken) {
     throw new Error(
-      "GOOGLE_SERVICE_ACCOUNT_JSON çözümlenemedi (geçerli JSON veya base64 olmalı): " +
-        (e instanceof Error ? e.message : String(e)),
+      "Google OAuth env değişkenleri eksik (GOOGLE_OAUTH_CLIENT_ID, GOOGLE_OAUTH_CLIENT_SECRET, GOOGLE_OAUTH_REFRESH_TOKEN)",
     );
   }
 
-  if (!parsed.client_email || !parsed.private_key) {
-    throw new Error("Service account JSON eksik alanlar içeriyor");
-  }
+  const client = new google.auth.OAuth2(clientId, clientSecret);
+  client.setCredentials({ refresh_token: refreshToken });
 
-  parsed.private_key = parsed.private_key.replace(/\\n/g, "\n");
-  cached = parsed;
-  return parsed;
+  _oauth2 = client;
+  return client;
 }

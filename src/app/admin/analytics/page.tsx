@@ -301,10 +301,11 @@ function ErrorPanel({ error }: { error: string }) {
         </p>
         <ul className="text-muted-foreground mt-3 list-disc space-y-1 pl-5 text-sm">
           <li>
-            Service account&apos;a GA4 property&apos;de Viewer yetkisi verilmemiş
+            <code>GOOGLE_OAUTH_CLIENT_ID</code>,{" "}
+            <code>GOOGLE_OAUTH_CLIENT_SECRET</code>,{" "}
+            <code>GOOGLE_OAUTH_REFRESH_TOKEN</code> env eksik
           </li>
           <li>
-            <code>GOOGLE_SERVICE_ACCOUNT_JSON</code> veya{" "}
             <code>GA4_PROPERTY_ID</code> env değişkeni eksik / yanlış
           </li>
           <li>Google Analytics Data API enable edilmemiş</li>

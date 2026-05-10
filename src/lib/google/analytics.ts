@@ -2,18 +2,14 @@ import "server-only";
 
 import { BetaAnalyticsDataClient } from "@google-analytics/data";
 
-import { getGoogleCredentials } from "./auth";
+import { getOAuthClient } from "./auth";
 
 let _client: BetaAnalyticsDataClient | null = null;
 
 function getClient() {
   if (_client) return _client;
-  const creds = getGoogleCredentials();
   _client = new BetaAnalyticsDataClient({
-    credentials: {
-      client_email: creds.client_email,
-      private_key: creds.private_key,
-    },
+    authClient: getOAuthClient() as never,
   });
   return _client;
 }

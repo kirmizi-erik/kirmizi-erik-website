@@ -2,7 +2,7 @@ import "server-only";
 
 import { google } from "googleapis";
 
-import { getGoogleCredentials } from "./auth";
+import { getOAuthClient } from "./auth";
 
 const SITE_URL = process.env.GSC_SITE_URL ?? "https://www.kirmizierik.com.tr";
 
@@ -10,13 +10,7 @@ let _client: ReturnType<typeof google.searchconsole> | null = null;
 
 function getClient() {
   if (_client) return _client;
-  const creds = getGoogleCredentials();
-  const auth = new google.auth.JWT({
-    email: creds.client_email,
-    key: creds.private_key,
-    scopes: ["https://www.googleapis.com/auth/webmasters.readonly"],
-  });
-  _client = google.searchconsole({ version: "v1", auth });
+  _client = google.searchconsole({ version: "v1", auth: getOAuthClient() });
   return _client;
 }
 
