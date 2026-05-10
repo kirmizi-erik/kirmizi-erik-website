@@ -173,3 +173,74 @@ export async function fetchGeoBreakdown(
     users: Number(r.metricValues?.[0]?.value ?? 0),
   }));
 }
+
+export type CountryBreakdown = { country: string; users: number };
+
+export async function fetchCountryBreakdown(
+  range: AnalyticsRange,
+  limit = 10,
+): Promise<CountryBreakdown[]> {
+  const rows = await runReport({
+    dateRanges: [{ startDate: range.startDate, endDate: range.endDate }],
+    dimensions: [{ name: "country" }],
+    metrics: [{ name: "totalUsers" }],
+    orderBys: [{ metric: { metricName: "totalUsers" }, desc: true }],
+    limit,
+  });
+
+  return rows.map((r) => ({
+    country: r.dimensionValues?.[0]?.value ?? "Bilinmiyor",
+    users: Number(r.metricValues?.[0]?.value ?? 0),
+  }));
+}
+
+async function runRealtimeReport(body: object): Promise<ReportRow[]> {
+  const client = getClient();
+  const res = await client.properties.runRealtimeReport({
+    property: property(),
+    requestBody: body,
+  });
+  return (res.data.rows ?? []) as ReportRow[];
+}
+
+export type RealtimeSummary = { activeUsers: number };
+
+export async function fetchRealtimeSummary(): Promise<RealtimeSummary> {
+  const rows = await runRealtimeReport({
+    metrics: [{ name: "activeUsers" }],
+  });
+  return {
+    activeUsers: Number(rows[0]?.metricValues?.[0]?.value ?? 0),
+  };
+}
+
+export type RealtimeCity = { city: string; country: string; users: number };
+
+export async function fetchRealtimeCities(limit = 10): Promise<RealtimeCity[]> {
+  const rows = await runRealtimeReport({
+    dimensions: [{ name: "city" }, { name: "country" }],
+    metrics: [{ name: "activeUsers" }],
+    orderBys: [{ metric: { metricName: "activeUsers" }, desc: true }],
+    limit,
+  });
+  return rows.map((r) => ({
+    city: r.dimensionValues?.[0]?.value ?? "(şehir yok)",
+    country: r.dimensionValues?.[1]?.value ?? "",
+    users: Number(r.metricValues?.[0]?.value ?? 0),
+  }));
+}
+
+export type RealtimePage = { path: string; users: number };
+
+export async function fetchRealtimePages(limit = 10): Promise<RealtimePage[]> {
+  const rows = await runRealtimeReport({
+    dimensions: [{ name: "unifiedScreenName" }],
+    metrics: [{ name: "activeUsers" }],
+    orderBys: [{ metric: { metricName: "activeUsers" }, desc: true }],
+    limit,
+  });
+  return rows.map((r) => ({
+    path: r.dimensionValues?.[0]?.value ?? "",
+    users: Number(r.metricValues?.[0]?.value ?? 0),
+  }));
+}

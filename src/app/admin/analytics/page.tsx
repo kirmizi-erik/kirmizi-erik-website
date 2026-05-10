@@ -2,6 +2,8 @@ import { AlertCircle, Globe, MousePointerClick, Smartphone, Users } from "lucide
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
+  fetchCountryBreakdown,
+  fetchDailyTrend,
   fetchDeviceBreakdown,
   fetchGeoBreakdown,
   fetchSummary,
@@ -17,6 +19,8 @@ import {
 } from "@/lib/google/range";
 
 import { RangeSelector } from "./range-selector";
+import { RealtimeCard } from "./realtime-card";
+import { Sparkline } from "./sparkline";
 
 export const metadata = { title: "Analytics" };
 export const dynamic = "force-dynamic";
@@ -25,9 +29,11 @@ type Loaded = {
   ok: true;
   data: {
     summary: Awaited<ReturnType<typeof fetchSummary>>;
+    daily: Awaited<ReturnType<typeof fetchDailyTrend>>;
     topPages: Awaited<ReturnType<typeof fetchTopPages>>;
     sources: Awaited<ReturnType<typeof fetchTrafficSources>>;
     devices: Awaited<ReturnType<typeof fetchDeviceBreakdown>>;
+    countries: Awaited<ReturnType<typeof fetchCountryBreakdown>>;
     geo: Awaited<ReturnType<typeof fetchGeoBreakdown>>;
   };
 };
@@ -36,14 +42,16 @@ type Failed = { ok: false; error: string };
 async function loadAll(days: number): Promise<Loaded | Failed> {
   try {
     const range = rangeFromDays(days);
-    const [summary, topPages, sources, devices, geo] = await Promise.all([
+    const [summary, daily, topPages, sources, devices, countries, geo] = await Promise.all([
       fetchSummary(range),
+      fetchDailyTrend(range),
       fetchTopPages(range, 10),
       fetchTrafficSources(range, 10),
       fetchDeviceBreakdown(range),
+      fetchCountryBreakdown(range, 10),
       fetchGeoBreakdown(range, 10),
     ]);
-    return { ok: true, data: { summary, topPages, sources, devices, geo } };
+    return { ok: true, data: { summary, daily, topPages, sources, devices, countries, geo } };
   } catch (e) {
     console.error("[admin/analytics]", e);
     const err = e as Record<string, unknown>;
@@ -96,15 +104,20 @@ export default async function AnalyticsPage({
         <ErrorPanel error={result.error} />
       ) : (
         <>
+          <RealtimeCard />
+
           <SummaryCards data={result.data.summary} />
+
+          <TrendCard data={result.data.daily} />
 
           <div className="grid gap-4 lg:grid-cols-2">
             <TopPagesCard pages={result.data.topPages} />
             <TrafficSourcesCard sources={result.data.sources} />
           </div>
 
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className="grid gap-4 lg:grid-cols-3">
             <DeviceCard devices={result.data.devices} />
+            <CountryCard countries={result.data.countries} />
             <GeoCard geo={result.data.geo} />
           </div>
         </>
@@ -263,6 +276,85 @@ function DeviceCard({ devices }: { devices: Loaded["data"]["devices"] }) {
                   <div
                     className="bg-foreground h-full"
                     style={{ width: `${(d.users / total) * 100}%` }}
+                  />
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function TrendCard({ data }: { data: Loaded["data"]["daily"] }) {
+  const total = data.reduce((s, d) => s + d.users, 0);
+  const peak = data.reduce(
+    (m, d) => (d.users > m.users ? d : m),
+    { date: "", users: 0, sessions: 0 },
+  );
+  const fmtDate = (d: string) =>
+    d.length === 8
+      ? `${d.slice(6, 8)}.${d.slice(4, 6)}.${d.slice(0, 4)}`
+      : d;
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex flex-wrap items-baseline justify-between gap-3">
+          <CardTitle className="text-base">Günlük kullanıcı trendi</CardTitle>
+          <div className="text-muted-foreground flex gap-4 text-xs">
+            <span>
+              Toplam: <span className="text-foreground font-medium">{formatNumber(total)}</span>
+            </span>
+            {peak.users > 0 && (
+              <span>
+                Pik: <span className="text-foreground font-medium">{peak.users}</span> ({fmtDate(peak.date)})
+              </span>
+            )}
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        {data.length === 0 ? (
+          <p className="text-muted-foreground text-sm">Veri yok.</p>
+        ) : (
+          <div className="text-foreground">
+            <Sparkline data={data} height={80} />
+            <div className="text-muted-foreground mt-2 flex justify-between text-xs">
+              <span>{fmtDate(data[0]?.date ?? "")}</span>
+              <span>{fmtDate(data[data.length - 1]?.date ?? "")}</span>
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function CountryCard({ countries }: { countries: Loaded["data"]["countries"] }) {
+  const total = countries.reduce((s, c) => s + c.users, 0) || 1;
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-base">Ülke dağılımı</CardTitle>
+      </CardHeader>
+      <CardContent>
+        {countries.length === 0 ? (
+          <p className="text-muted-foreground text-sm">Veri yok.</p>
+        ) : (
+          <ul className="space-y-2.5">
+            {countries.map((c) => (
+              <li key={c.country}>
+                <div className="mb-1 flex items-baseline justify-between gap-3">
+                  <span className="text-sm font-medium">{c.country}</span>
+                  <span className="text-muted-foreground text-xs">
+                    {formatNumber(c.users)} ({formatPercent(c.users / total)})
+                  </span>
+                </div>
+                <div className="bg-border/40 h-1.5 w-full overflow-hidden rounded-full">
+                  <div
+                    className="bg-foreground h-full"
+                    style={{ width: `${(c.users / total) * 100}%` }}
                   />
                 </div>
               </li>
