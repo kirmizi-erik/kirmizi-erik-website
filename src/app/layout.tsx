@@ -6,7 +6,7 @@ import { Toaster } from "@/components/ui/sonner";
 
 import "./globals.css";
 
-const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? "G-B3QHXZ1XL5";
 
 const geistSans = Geist({
   variable: "--font-sans",
@@ -81,8 +81,8 @@ export default function RootLayout({
       <body className="bg-background text-foreground flex min-h-full flex-col">
         {children}
         <Toaster richColors closeButton position="top-right" />
+        {GA_ID ? <GoogleAnalytics gaId={GA_ID} /> : null}
       </body>
-      {GA_ID ? <GoogleAnalytics gaId={GA_ID} /> : null}
     </html>
   );
 }
