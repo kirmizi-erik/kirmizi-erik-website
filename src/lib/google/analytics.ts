@@ -1,16 +1,14 @@
 import "server-only";
 
-import { BetaAnalyticsDataClient } from "@google-analytics/data";
+import { google } from "googleapis";
 
 import { getOAuthClient } from "./auth";
 
-let _client: BetaAnalyticsDataClient | null = null;
+let _client: ReturnType<typeof google.analyticsdata> | null = null;
 
 function getClient() {
   if (_client) return _client;
-  _client = new BetaAnalyticsDataClient({
-    authClient: getOAuthClient() as never,
-  });
+  _client = google.analyticsdata({ version: "v1beta", auth: getOAuthClient() });
   return _client;
 }
 
@@ -25,6 +23,20 @@ function property() {
 
 export type AnalyticsRange = { startDate: string; endDate: string };
 
+type ReportRow = {
+  dimensionValues?: { value?: string | null }[];
+  metricValues?: { value?: string | null }[];
+};
+
+async function runReport(body: object): Promise<ReportRow[]> {
+  const client = getClient();
+  const res = await client.properties.runReport({
+    property: property(),
+    requestBody: body,
+  });
+  return (res.data.rows ?? []) as ReportRow[];
+}
+
 export type AnalyticsSummary = {
   totalUsers: number;
   newUsers: number;
@@ -35,9 +47,7 @@ export type AnalyticsSummary = {
 };
 
 export async function fetchSummary(range: AnalyticsRange): Promise<AnalyticsSummary> {
-  const client = getClient();
-  const [response] = await client.runReport({
-    property: property(),
+  const rows = await runReport({
     dateRanges: [{ startDate: range.startDate, endDate: range.endDate }],
     metrics: [
       { name: "totalUsers" },
@@ -49,7 +59,7 @@ export async function fetchSummary(range: AnalyticsRange): Promise<AnalyticsSumm
     ],
   });
 
-  const row = response.rows?.[0];
+  const row = rows[0];
   const v = (i: number) => Number(row?.metricValues?.[i]?.value ?? 0);
   return {
     totalUsers: v(0),
@@ -68,16 +78,14 @@ export type DailyTrendPoint = {
 };
 
 export async function fetchDailyTrend(range: AnalyticsRange): Promise<DailyTrendPoint[]> {
-  const client = getClient();
-  const [response] = await client.runReport({
-    property: property(),
+  const rows = await runReport({
     dateRanges: [{ startDate: range.startDate, endDate: range.endDate }],
     dimensions: [{ name: "date" }],
     metrics: [{ name: "totalUsers" }, { name: "sessions" }],
     orderBys: [{ dimension: { dimensionName: "date" } }],
   });
 
-  return (response.rows ?? []).map((r) => ({
+  return rows.map((r) => ({
     date: r.dimensionValues?.[0]?.value ?? "",
     users: Number(r.metricValues?.[0]?.value ?? 0),
     sessions: Number(r.metricValues?.[1]?.value ?? 0),
@@ -92,9 +100,7 @@ export type TopPage = {
 };
 
 export async function fetchTopPages(range: AnalyticsRange, limit = 10): Promise<TopPage[]> {
-  const client = getClient();
-  const [response] = await client.runReport({
-    property: property(),
+  const rows = await runReport({
     dateRanges: [{ startDate: range.startDate, endDate: range.endDate }],
     dimensions: [{ name: "pagePath" }, { name: "pageTitle" }],
     metrics: [{ name: "screenPageViews" }, { name: "totalUsers" }],
@@ -102,7 +108,7 @@ export async function fetchTopPages(range: AnalyticsRange, limit = 10): Promise<
     limit,
   });
 
-  return (response.rows ?? []).map((r) => ({
+  return rows.map((r) => ({
     path: r.dimensionValues?.[0]?.value ?? "",
     title: r.dimensionValues?.[1]?.value ?? "",
     views: Number(r.metricValues?.[0]?.value ?? 0),
@@ -116,9 +122,7 @@ export async function fetchTrafficSources(
   range: AnalyticsRange,
   limit = 10,
 ): Promise<TrafficSource[]> {
-  const client = getClient();
-  const [response] = await client.runReport({
-    property: property(),
+  const rows = await runReport({
     dateRanges: [{ startDate: range.startDate, endDate: range.endDate }],
     dimensions: [{ name: "sessionDefaultChannelGroup" }],
     metrics: [{ name: "totalUsers" }, { name: "sessions" }],
@@ -126,7 +130,7 @@ export async function fetchTrafficSources(
     limit,
   });
 
-  return (response.rows ?? []).map((r) => ({
+  return rows.map((r) => ({
     source: r.dimensionValues?.[0]?.value ?? "Diğer",
     users: Number(r.metricValues?.[0]?.value ?? 0),
     sessions: Number(r.metricValues?.[1]?.value ?? 0),
@@ -136,16 +140,14 @@ export async function fetchTrafficSources(
 export type DeviceBreakdown = { device: string; users: number };
 
 export async function fetchDeviceBreakdown(range: AnalyticsRange): Promise<DeviceBreakdown[]> {
-  const client = getClient();
-  const [response] = await client.runReport({
-    property: property(),
+  const rows = await runReport({
     dateRanges: [{ startDate: range.startDate, endDate: range.endDate }],
     dimensions: [{ name: "deviceCategory" }],
     metrics: [{ name: "totalUsers" }],
     orderBys: [{ metric: { metricName: "totalUsers" }, desc: true }],
   });
 
-  return (response.rows ?? []).map((r) => ({
+  return rows.map((r) => ({
     device: r.dimensionValues?.[0]?.value ?? "Bilinmiyor",
     users: Number(r.metricValues?.[0]?.value ?? 0),
   }));
@@ -157,9 +159,7 @@ export async function fetchGeoBreakdown(
   range: AnalyticsRange,
   limit = 10,
 ): Promise<GeoBreakdown[]> {
-  const client = getClient();
-  const [response] = await client.runReport({
-    property: property(),
+  const rows = await runReport({
     dateRanges: [{ startDate: range.startDate, endDate: range.endDate }],
     dimensions: [{ name: "country" }, { name: "city" }],
     metrics: [{ name: "totalUsers" }],
@@ -167,7 +167,7 @@ export async function fetchGeoBreakdown(
     limit,
   });
 
-  return (response.rows ?? []).map((r) => ({
+  return rows.map((r) => ({
     country: r.dimensionValues?.[0]?.value ?? "",
     city: r.dimensionValues?.[1]?.value ?? "",
     users: Number(r.metricValues?.[0]?.value ?? 0),
