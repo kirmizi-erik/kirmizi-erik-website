@@ -46,15 +46,27 @@ async function loadAll(days: number): Promise<Loaded | Failed> {
     return { ok: true, data: { summary, topPages, sources, devices, geo } };
   } catch (e) {
     console.error("[admin/analytics]", e);
-    const err = e as { message?: string; code?: string | number; details?: unknown };
+    const err = e as Record<string, unknown>;
+    const safe = (v: unknown) => {
+      try {
+        return typeof v === "string" ? v : JSON.stringify(v);
+      } catch {
+        return String(v);
+      }
+    };
     const parts = [
-      err?.message,
-      err?.code ? `code=${err.code}` : null,
-      err?.details ? `details=${JSON.stringify(err.details)}` : null,
+      err?.message ? `message=${safe(err.message)}` : null,
+      err?.code ? `code=${safe(err.code)}` : null,
+      err?.status ? `status=${safe(err.status)}` : null,
+      err?.statusText ? `statusText=${safe(err.statusText)}` : null,
+      err?.details ? `details=${safe(err.details)}` : null,
+      err?.errors ? `errors=${safe(err.errors)}` : null,
     ].filter(Boolean);
     return {
       ok: false,
-      error: parts.length ? parts.join(" · ") : JSON.stringify(e),
+      error: parts.length
+        ? parts.join(" · ")
+        : `raw=${safe(e)} keys=${Object.keys(err ?? {}).join(",")}`,
     };
   }
 }
