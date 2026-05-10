@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 
 import { sendLeadNotification } from "@/lib/email/resend";
 import { SERVICES_CONTEXT_FOR_AI } from "@/lib/services-data";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import {
   chatLeadInputSchema,
   type ChatMessage,
@@ -254,7 +254,7 @@ export async function submitChatLead(formData: FormData): Promise<ChatLeadResult
   const reqHeaders = await headers();
   const userAgent = reqHeaders.get("user-agent") ?? "";
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("leads")
     .insert({

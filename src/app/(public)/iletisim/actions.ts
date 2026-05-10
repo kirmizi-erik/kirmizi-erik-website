@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 
 import { sendLeadNotification } from "@/lib/email/resend";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { leadInputSchema } from "@/lib/validations/lead";
 
 export type SubmitResult =
@@ -49,7 +49,7 @@ export async function submitLead(formData: FormData): Promise<SubmitResult> {
   const reqHeaders = await headers();
   const userAgent = reqHeaders.get("user-agent") ?? "";
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("leads")
     .insert({
