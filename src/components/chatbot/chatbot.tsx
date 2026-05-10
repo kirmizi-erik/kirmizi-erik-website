@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState, useTransition } from "react";
 import { createPortal } from "react-dom";
-import { MessageCircle, Send, X, Loader2, Sparkles } from "lucide-react";
+import Image from "next/image";
+import { Send, X, Loader2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -123,13 +124,58 @@ export function Chatbot() {
         aria-label={open ? "Sohbeti kapat" : "Sohbeti aç"}
         onClick={() => setOpen((v) => !v)}
         className={cn(
-          "fixed right-4 bottom-4 z-50 inline-flex size-14 items-center justify-center rounded-full shadow-lg shadow-black/40 transition-all sm:right-6 sm:bottom-6",
+          "fixed right-4 bottom-4 z-50 inline-flex items-center justify-center rounded-full transition-all sm:right-6 sm:bottom-6",
           open
-            ? "bg-foreground text-background scale-95"
-            : "bg-brand text-brand-foreground hover:scale-105",
+            ? "bg-foreground text-background size-14 scale-95 shadow-lg shadow-black/40"
+            : "size-20 hover:scale-105",
         )}
       >
-        {open ? <X className="size-6" /> : <MessageCircle className="size-6" />}
+        {open ? (
+          <X className="size-6" />
+        ) : (
+          <>
+            {/* Çevresinde dönen ring text */}
+            <svg
+              className="absolute inset-0 size-full"
+              viewBox="0 0 100 100"
+              style={{ animation: "spin 40s linear infinite" }}
+              aria-hidden="true"
+            >
+              <defs>
+                <path
+                  id="chatbot-ring-path"
+                  d="M 50,50 m -42,0 a 42,42 0 1,1 84,0 a 42,42 0 1,1 -84,0"
+                  fill="none"
+                />
+              </defs>
+              <text
+                className="fill-brand-yaprak"
+                style={{
+                  fontSize: "8.5px",
+                  fontWeight: 600,
+                  letterSpacing: "0.10em",
+                  textTransform: "uppercase",
+                }}
+              >
+                <textPath href="#chatbot-ring-path" startOffset="0">
+                  asistan · asistan · asistan · asistan ·
+                </textPath>
+              </text>
+            </svg>
+            {/* İç avatar */}
+            <span className="ring-brand/30 relative size-14 overflow-hidden rounded-full shadow-lg shadow-black/40 ring-2">
+              <Image
+                src="/avatar/asistan-256.png"
+                alt="Kırmızı Erik Asistanı"
+                width={56}
+                height={56}
+                className="size-full object-cover"
+                priority
+              />
+              <span className="bg-brand-yaprak ring-card absolute right-0 bottom-0 size-3 rounded-full ring-2" />
+            </span>
+          </>
+        )}
       </button>
 
       {/* Panel */}
@@ -143,8 +189,14 @@ export function Chatbot() {
             {/* Header */}
             <div className="border-border/60 from-brand/[0.08] flex items-center justify-between border-b bg-gradient-to-br to-transparent p-4">
               <div className="flex items-center gap-3">
-                <div className="bg-brand text-brand-foreground inline-flex size-9 items-center justify-center rounded-full">
-                  <Sparkles className="size-4" />
+                <div className="ring-brand/30 relative inline-flex size-9 items-center justify-center overflow-hidden rounded-full ring-2">
+                  <Image
+                    src="/avatar/asistan-256.png"
+                    alt="Kırmızı Erik Asistanı"
+                    width={36}
+                    height={36}
+                    className="size-full object-cover"
+                  />
                 </div>
                 <div>
                   <div className="text-sm font-semibold tracking-tight">
@@ -174,28 +226,51 @@ export function Chatbot() {
               style={{ scrollBehavior: "smooth" }}
             >
               <div className="space-y-3">
-                {messages.map((m, i) => (
-                  <div
-                    key={i}
-                    className={cn(
-                      "flex",
-                      m.role === "user" ? "justify-end" : "justify-start",
-                    )}
-                  >
+                {messages.map((m, i) => {
+                  const isUser = m.role === "user";
+                  return (
                     <div
+                      key={i}
                       className={cn(
-                        "max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap",
-                        m.role === "user"
-                          ? "bg-brand text-brand-foreground"
-                          : "bg-muted text-foreground",
+                        "flex items-end gap-2",
+                        isUser ? "justify-end" : "justify-start",
                       )}
                     >
-                      {m.content}
+                      {!isUser ? (
+                        <span className="ring-brand/20 relative size-7 shrink-0 overflow-hidden rounded-full ring-1">
+                          <Image
+                            src="/avatar/asistan-256.png"
+                            alt=""
+                            width={28}
+                            height={28}
+                            className="size-full object-cover"
+                          />
+                        </span>
+                      ) : null}
+                      <div
+                        className={cn(
+                          "max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap",
+                          isUser
+                            ? "bg-brand text-brand-foreground"
+                            : "bg-muted text-foreground",
+                        )}
+                      >
+                        {m.content}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
                 {isPending ? (
-                  <div className="flex justify-start">
+                  <div className="flex items-end justify-start gap-2">
+                    <span className="ring-brand/20 relative size-7 shrink-0 overflow-hidden rounded-full ring-1">
+                      <Image
+                        src="/avatar/asistan-256.png"
+                        alt=""
+                        width={28}
+                        height={28}
+                        className="size-full object-cover"
+                      />
+                    </span>
                     <div className="bg-muted text-muted-foreground inline-flex items-center gap-2 rounded-2xl px-4 py-2.5 text-sm">
                       <Loader2 className="size-3.5 animate-spin" />
                       Yazıyor…

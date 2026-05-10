@@ -1,0 +1,26 @@
+{
+  "asset": "asistan.png",
+  "purpose": "Kırmızı Erik AI Brief Asistanı — chat widget avatar",
+  "selected_version": "v3",
+  "generated_at": "2026-05-10",
+  "job_id": "10121231-dc4b-4ff3-9cb4-f6fd56104268",
+  "model": "nano_banana_2",
+  "model_name": "Nano Banana Pro",
+  "aspect_ratio": "1:1",
+  "resolution": "4k",
+  "dimensions": "4096x4096",
+  "output_url": "https://d8j0ntlcm91z4.cloudfront.net/user_37sfGIGzSIgKJ17GhcUF0z2Z45N/hf_20260510_135834_10121231-dc4b-4ff3-9cb4-f6fd56104268.png",
+  "files": {
+    "master_4k": "asistan.png",
+    "widget_512": "asistan-512.png",
+    "widget_256": "asistan-256.png"
+  },
+  "drafts_removed_2026_05_10": [
+    "asistan-v1.png (dark BG, turtleneck — rejected)",
+    "asistan-v2.png (dark BG, white shirt — rejected)",
+    "asistan-v3.png (sci-fi tech office — selected, copied to asistan.png)"
+  ],
+  "concept": "Modern AI virtual assistant — auburn-copper wavy hair, navy futuristic tech jacket with silver/blue panels, AI headset with boom mic, bright modern open-plan tech office BG with daylight windows and blurred city skyline",
+  "prompt": "Modern AI virtual assistant portrait, confident professional woman in her early 30s working at a high-end creative-tech advertising agency. Warm auburn-copper wavy long hair, soft natural waves, side-parted, falling past shoulders, glossy and healthy. Mediterranean / European features, warm hazel eyes with intelligent expression, subtle composed smile with closed lips, soft natural makeup, healthy radiant skin. Wearing a sleek futuristic tech jacket / fitted technical bodysuit: deep navy blue (#1E2C4E) with brushed silver structural panels at shoulders and ribcage, electric-blue piping along the seams, front zip with metallic pull, high mock collar — premium sci-fi AI workspace aesthetic, refined and elegant, not cosplay. Wearing a modern AI headset: matte silver-and-blue over-ear headphones with slim integrated boom microphone curving toward mouth, subtle blue LED accent, premium industrial product-design feel. Background: bright modern open-plan tech office, floor-to-ceiling glass windows on the left with diffused soft daylight pouring in, distant city skyline silhouette gently blurred, monitor desks and ergonomic chairs far in background heavily out of focus, deep creamy bokeh. Lighting: bright soft natural daylight from window left as key, gentle bounce fill on the right, subtle cool ambient. Composition: head-and-shoulder framing perfectly centered for circular avatar crop, slight breathing room above the head, sitter facing camera with calm assistant authority and quiet confidence. Cinematic 85mm equivalent, shallow depth of field, sharp eyes in focus, ultra-detailed natural skin texture with realistic pores, photorealistic editorial polish. 4K photo quality.",
+  "negative": "no full body shot, no helmet, no cosplay look, no plastic skin, no airbrushed face, no oversaturation, no neon glare, no text, no logos, no watermarks, no toothy smile, no fake AI doll look, no dark studio background, no turtleneck, no sweater"
+}
