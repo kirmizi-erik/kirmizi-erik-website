@@ -1,6 +1,6 @@
 "use client";
 
-import { ExternalLink, FolderKanban, LayoutDashboard, Mail, Settings } from "lucide-react";
+import { BarChart3, ExternalLink, FolderKanban, LayoutDashboard, Mail, Search, Settings } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -11,6 +11,8 @@ const navItems = [
   { href: "/admin", label: "Genel bakış", icon: LayoutDashboard, exact: true },
   { href: "/admin/calismalar", label: "Çalışmalar", icon: FolderKanban },
   { href: "/admin/leadler", label: "Lead'ler", icon: Mail },
+  { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
+  { href: "/admin/seo", label: "SEO", icon: Search },
   { href: "/admin/ayarlar", label: "Site ayarları", icon: Settings },
 ];
 
