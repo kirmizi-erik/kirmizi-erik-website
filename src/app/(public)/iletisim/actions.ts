@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 
 import { sendLeadNotification } from "@/lib/email/resend";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { leadInputSchema } from "@/lib/validations/lead";
 
@@ -18,6 +19,14 @@ const emptyToNull = (s: unknown) => {
 };
 
 export async function submitLead(formData: FormData): Promise<SubmitResult> {
+  const rl = await checkRateLimit("lead");
+  if (!rl.ok) {
+    return {
+      ok: false,
+      error: `Çok fazla deneme, ${Math.ceil(rl.retryAfterSeconds / 60)} dk sonra tekrar dene`,
+    };
+  }
+
   const raw = {
     ad_soyad: formData.get("ad_soyad"),
     eposta: formData.get("eposta"),

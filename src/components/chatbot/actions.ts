@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 
 import { sendLeadNotification } from "@/lib/email/resend";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { SERVICES_CONTEXT_FOR_AI } from "@/lib/services-data";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
@@ -119,6 +120,14 @@ function getClient(): Anthropic | null {
  * Sohbet mesajı gönder, AI cevabını al (non-streaming, kısa cevaplar için).
  */
 export async function chatAction(messages: ChatMessage[]): Promise<ChatActionResult> {
+  const rl = await checkRateLimit("chat");
+  if (!rl.ok) {
+    return {
+      ok: false,
+      error: `Çok sık mesaj gönderdin, ${rl.retryAfterSeconds} sn sonra tekrar dene`,
+    };
+  }
+
   const client = getClient();
   if (!client) {
     return {
@@ -186,6 +195,14 @@ export async function chatAction(messages: ChatMessage[]): Promise<ChatActionRes
  * Conversation transcript brief alanına yazılır, AI ile özet üretilir.
  */
 export async function submitChatLead(formData: FormData): Promise<ChatLeadResult> {
+  const rl = await checkRateLimit("lead");
+  if (!rl.ok) {
+    return {
+      ok: false,
+      error: `Çok fazla deneme, ${Math.ceil(rl.retryAfterSeconds / 60)} dk sonra tekrar dene`,
+    };
+  }
+
   const conversationRaw = formData.get("conversation");
   let conversation: ChatMessage[] = [];
   try {
