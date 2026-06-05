@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState, useTransition } from "react";
 import { createPortal } from "react-dom";
-import Image from "next/image";
 import { Send, X, Loader2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
@@ -21,6 +20,37 @@ const KARSILAMA_MESAJI = `Merhaba, Kırmızı Erik asistanıyım. Reklam, video,
 type ContactPrefs = {
   showForm: boolean;
 };
+
+function AssistantAvatar() {
+  return (
+    <svg
+      viewBox="0 0 64 64"
+      aria-hidden="true"
+      className="size-full"
+    >
+      <circle cx="32" cy="32" r="30" fill="#6366f1" />
+      <path
+        d="M19 22h26a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H34l-6 5v-5H19a4 4 0 0 1-4-4V26a4 4 0 0 1 4-4z"
+        fill="none"
+        stroke="#fff"
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
+      <text
+        x="32"
+        y="37"
+        textAnchor="middle"
+        fill="#fff"
+        fontSize="13"
+        fontWeight="800"
+        fontFamily="ui-sans-serif, system-ui, -apple-system, sans-serif"
+        letterSpacing="0.5"
+      >
+        AI
+      </text>
+    </svg>
+  );
+}
 
 export function Chatbot() {
   const [mounted, setMounted] = useState(false);
@@ -164,14 +194,7 @@ export function Chatbot() {
             </svg>
             {/* İç avatar */}
             <span className="ring-brand/30 relative size-14 overflow-hidden rounded-full shadow-lg shadow-black/40 ring-2">
-              <Image
-                src="/avatar/asistan-256.png"
-                alt="Kırmızı Erik Asistanı"
-                width={56}
-                height={56}
-                className="size-full object-cover"
-                priority
-              />
+              <AssistantAvatar />
               <span className="bg-brand-yaprak ring-card absolute right-0 bottom-0 size-3 rounded-full ring-2" />
             </span>
           </>
@@ -190,13 +213,7 @@ export function Chatbot() {
             <div className="border-border/60 from-brand/[0.08] flex items-center justify-between border-b bg-gradient-to-br to-transparent p-4">
               <div className="flex items-center gap-3">
                 <div className="ring-brand/30 relative inline-flex size-9 items-center justify-center overflow-hidden rounded-full ring-2">
-                  <Image
-                    src="/avatar/asistan-256.png"
-                    alt="Kırmızı Erik Asistanı"
-                    width={36}
-                    height={36}
-                    className="size-full object-cover"
-                  />
+                  <AssistantAvatar />
                 </div>
                 <div>
                   <div className="text-sm font-semibold tracking-tight">
@@ -238,13 +255,7 @@ export function Chatbot() {
                     >
                       {!isUser ? (
                         <span className="ring-brand/20 relative size-7 shrink-0 overflow-hidden rounded-full ring-1">
-                          <Image
-                            src="/avatar/asistan-256.png"
-                            alt=""
-                            width={28}
-                            height={28}
-                            className="size-full object-cover"
-                          />
+                          <AssistantAvatar />
                         </span>
                       ) : null}
                       <div
@@ -263,13 +274,7 @@ export function Chatbot() {
                 {isPending ? (
                   <div className="flex items-end justify-start gap-2">
                     <span className="ring-brand/20 relative size-7 shrink-0 overflow-hidden rounded-full ring-1">
-                      <Image
-                        src="/avatar/asistan-256.png"
-                        alt=""
-                        width={28}
-                        height={28}
-                        className="size-full object-cover"
-                      />
+                      <AssistantAvatar />
                     </span>
                     <div className="bg-muted text-muted-foreground inline-flex items-center gap-2 rounded-2xl px-4 py-2.5 text-sm">
                       <Loader2 className="size-3.5 animate-spin" />
