@@ -45,13 +45,18 @@ export async function SiteFooter() {
         <div className="grid gap-10 md:grid-cols-12">
           {/* Sol blok — marka */}
           <div className="md:col-span-5">
-            <Link href="/" className="inline-flex items-center">
+            <Link
+              href="/"
+              aria-label={siteConfig.name}
+              className="inline-flex cursor-pointer items-center select-none"
+            >
               <Image
                 src="/logo/Logo-beyaz.png"
                 alt={siteConfig.name}
                 width={179}
                 height={40}
-                className="h-10 w-auto"
+                draggable={false}
+                className="pointer-events-none h-10 w-auto select-none"
               />
             </Link>
             <p className="text-muted-foreground mt-4 max-w-md text-sm leading-relaxed">

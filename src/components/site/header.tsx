@@ -39,7 +39,7 @@ export function SiteHeader() {
         <Link
           href="/"
           aria-label={siteConfig.name}
-          className="flex items-center transition-opacity hover:opacity-90"
+          className="flex cursor-pointer items-center transition-opacity select-none hover:opacity-90"
         >
           <Image
             src="/logo/Logo-beyaz.png"
@@ -47,7 +47,8 @@ export function SiteHeader() {
             width={143}
             height={32}
             priority
-            className="h-8 w-auto"
+            draggable={false}
+            className="pointer-events-none h-8 w-auto select-none"
           />
         </Link>
 
