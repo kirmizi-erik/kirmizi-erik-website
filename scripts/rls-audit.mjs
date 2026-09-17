@@ -58,7 +58,7 @@ const { data: seed, error: seedErr } = await admin
 console.log("Admin seed:", seed?.id ?? "FAILED:", seedErr?.message ?? "");
 
 if (seed?.id) {
-  const { error: delErr, data: delData, status: delStatus } = await anon
+  const { error: delErr, status: delStatus } = await anon
     .from("leads")
     .delete()
     .eq("id", seed.id)

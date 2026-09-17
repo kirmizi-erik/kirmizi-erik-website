@@ -4,18 +4,15 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { ClarityWithConsent } from "@/components/site/clarity-with-consent";
 import { CookieConsent } from "@/components/site/cookie-consent";
 import { GoogleAnalyticsWithConsent } from "@/components/site/google-analytics-with-consent";
+import { MetaPixelWithConsent } from "@/components/site/meta-pixel-with-consent";
 import { Toaster } from "@/components/ui/sonner";
-import {
-  jsonLdScript,
-  localBusinessSchema,
-  organizationSchema,
-  websiteSchema,
-} from "@/lib/schema";
+import { jsonLdScript, localBusinessSchema, organizationSchema, websiteSchema } from "@/lib/schema";
 
 import "./globals.css";
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? "G-B3QHXZ1XL5";
 const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID ?? "woxlc19y4v";
+const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID ?? "";
 
 const geistSans = Geist({
   variable: "--font-sans",
@@ -56,14 +53,12 @@ export const metadata: Metadata = {
     locale: "tr_TR",
     siteName: "Kırmızı Erik",
     title: "Kırmızı Erik — 360° Kreatif Reklam Ajansı",
-    description:
-      "Bir fikir, dokuz hizmet, sıfır sınır. 25 yıllık birikim, 300'e yakın marka.",
+    description: "Bir fikir, dokuz hizmet, sıfır sınır. 25 yıllık birikim, 300'e yakın marka.",
   },
   twitter: {
     card: "summary_large_image",
     title: "Kırmızı Erik — 360° Kreatif Reklam Ajansı",
-    description:
-      "Bir fikir, dokuz hizmet, sıfır sınır. 25 yıllık birikim, 300'e yakın marka.",
+    description: "Bir fikir, dokuz hizmet, sıfır sınır. 25 yıllık birikim, 300'e yakın marka.",
   },
   robots: {
     index: true,
@@ -96,10 +91,7 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={jsonLdScript(localBusinessSchema)}
         />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={jsonLdScript(websiteSchema)}
-        />
+        <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(websiteSchema)} />
       </head>
       <body className="bg-background text-foreground flex min-h-full flex-col">
         {children}
@@ -107,6 +99,7 @@ export default function RootLayout({
         <CookieConsent />
         {GA_ID ? <GoogleAnalyticsWithConsent gaId={GA_ID} /> : null}
         {CLARITY_ID ? <ClarityWithConsent projectId={CLARITY_ID} /> : null}
+        {META_PIXEL_ID ? <MetaPixelWithConsent pixelId={META_PIXEL_ID} /> : null}
       </body>
     </html>
   );

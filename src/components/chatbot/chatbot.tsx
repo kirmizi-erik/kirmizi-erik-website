@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { ChatMessage } from "@/lib/validations/chat";
+import { trackLead } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 
 import { chatAction, submitChatLead } from "./actions";
@@ -23,11 +24,7 @@ type ContactPrefs = {
 
 function AssistantAvatar() {
   return (
-    <svg
-      viewBox="0 0 64 64"
-      aria-hidden="true"
-      className="size-full"
-    >
+    <svg viewBox="0 0 64 64" aria-hidden="true" className="size-full">
       <circle cx="32" cy="32" r="30" fill="#6366f1" />
       <path
         d="M19 22h26a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H34l-6 5v-5H19a4 4 0 0 1-4-4V26a4 4 0 0 1 4-4z"
@@ -193,7 +190,7 @@ export function Chatbot() {
               </text>
             </svg>
             {/* İç avatar */}
-            <span className="ring-brand/30 relative size-14 overflow-hidden rounded-full shadow-lg shadow-black/40 ring-2">
+            <span className="ring-brand/30 relative size-14 overflow-hidden rounded-full shadow-lg ring-2 shadow-black/40">
               <AssistantAvatar />
               <span className="bg-brand-yaprak ring-card absolute right-0 bottom-0 size-3 rounded-full ring-2" />
             </span>
@@ -216,9 +213,7 @@ export function Chatbot() {
                   <AssistantAvatar />
                 </div>
                 <div>
-                  <div className="text-sm font-semibold tracking-tight">
-                    Kırmızı Erik Asistanı
-                  </div>
+                  <div className="text-sm font-semibold tracking-tight">Kırmızı Erik Asistanı</div>
                   <div className="text-muted-foreground flex items-center gap-1.5 text-xs">
                     <span className="bg-brand-yaprak size-1.5 rounded-full" />
                     Genelde 1-2 dk içinde döner
@@ -261,9 +256,7 @@ export function Chatbot() {
                       <div
                         className={cn(
                           "max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap",
-                          isUser
-                            ? "bg-brand text-brand-foreground"
-                            : "bg-muted text-foreground",
+                          isUser ? "bg-brand text-brand-foreground" : "bg-muted text-foreground",
                         )}
                       >
                         {m.content}
@@ -378,8 +371,7 @@ function ContactFormCard({
         İletişim bilgilerin
       </div>
       <p className="text-foreground/90 mt-2 text-sm">
-        Birkaç kısa bilgi al, ekibimiz en kısa sürede dönsün. Bu konuşma da
-        ekibimize iletilecek.
+        Birkaç kısa bilgi al, ekibimiz en kısa sürede dönsün. Bu konuşma da ekibimize iletilecek.
       </p>
 
       <form
@@ -397,6 +389,7 @@ function ContactFormCard({
           startTransition(async () => {
             const r = await submitChatLead(fd);
             if (r.ok) {
+              trackLead("AI Brief Asistanı");
               toast.success("Teşekkürler, dönüş yapacağız.");
               onSubmitted();
             } else {
@@ -462,11 +455,7 @@ function ContactFormCard({
                     : "border-border text-muted-foreground hover:text-foreground",
                 )}
               >
-                {t === "telefon"
-                  ? "Telefon"
-                  : t === "eposta"
-                    ? "E-posta"
-                    : "İkisi de OK"}
+                {t === "telefon" ? "Telefon" : t === "eposta" ? "E-posta" : "İkisi de OK"}
               </button>
             ))}
           </div>
@@ -476,13 +465,7 @@ function ContactFormCard({
           <Button type="submit" size="sm" disabled={isPending} className="flex-1">
             {isPending ? "Gönderiliyor…" : "Gönder"}
           </Button>
-          <Button
-            type="button"
-            size="sm"
-            variant="ghost"
-            onClick={onCancel}
-            disabled={isPending}
-          >
+          <Button type="button" size="sm" variant="ghost" onClick={onCancel} disabled={isPending}>
             Vazgeç
           </Button>
         </div>

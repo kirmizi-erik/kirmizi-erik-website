@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
 const STORAGE_KEY = "kirmizierik:cookie-consent";
 
@@ -15,41 +15,39 @@ function readConsent(): Consent | null {
 
 function writeConsent(value: Consent) {
   window.localStorage.setItem(STORAGE_KEY, value);
-  window.dispatchEvent(
-    new CustomEvent("kirmizierik:consent-changed", { detail: value }),
-  );
+  window.dispatchEvent(new CustomEvent("kirmizierik:consent-changed", { detail: value }));
+}
+
+function subscribeConsent(callback: () => void) {
+  window.addEventListener("kirmizierik:consent-changed", callback);
+  return () => window.removeEventListener("kirmizierik:consent-changed", callback);
 }
 
 export function CookieConsent() {
-  const [consent, setConsent] = useState<Consent | null>(null);
-  const [mounted, setMounted] = useState(false);
+  const consent = useSyncExternalStore(
+    subscribeConsent,
+    readConsent,
+    // SSR'de banner render edilmez; hydration sonrası gerçek değer okunur.
+    () => "unknown" as const,
+  );
 
-  useEffect(() => {
-    setMounted(true);
-    setConsent(readConsent());
-  }, []);
-
-  if (!mounted || consent !== null) return null;
+  if (consent !== null) return null;
 
   const choose = (value: Consent) => {
     writeConsent(value);
-    setConsent(value);
   };
 
   return (
     <div
       role="dialog"
       aria-label="Çerez tercihleri"
-      className="fixed inset-x-0 bottom-0 z-50 px-4 pb-4 sm:bottom-4 sm:right-4 sm:left-auto sm:max-w-sm sm:px-0 sm:pr-4"
+      className="fixed inset-x-0 bottom-0 z-50 px-4 pb-4 sm:right-4 sm:bottom-4 sm:left-auto sm:max-w-sm sm:px-0 sm:pr-4"
     >
       <div className="border-border/60 bg-background/95 supports-[backdrop-filter]:bg-background/85 rounded-2xl border p-5 shadow-2xl backdrop-blur-md">
-        <h2 className="text-sm font-semibold tracking-tight">
-          Çerez tercihleri
-        </h2>
+        <h2 className="text-sm font-semibold tracking-tight">Çerez tercihleri</h2>
         <p className="text-muted-foreground mt-2 text-xs leading-relaxed">
-          Site deneyimini iyileştirmek ve trafiği anlamak için Google Analytics
-          kullanıyoruz. Onay verirsen anonim olarak kullanım verisi toplanır.
-          Detay için{" "}
+          Site deneyimini iyileştirmek ve trafiği anlamak için Google Analytics kullanıyoruz. Onay
+          verirsen anonim olarak kullanım verisi toplanır. Detay için{" "}
           <Link
             href="/kvkk"
             target="_blank"

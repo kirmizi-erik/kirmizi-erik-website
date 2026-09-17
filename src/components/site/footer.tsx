@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Instagram, Facebook, Youtube, Mail, Phone, MapPin } from "lucide-react";
 
+import { TrackedContactLink, WhatsAppIcon } from "@/components/site/contact-links";
 import { hizmetler, siteConfig } from "@/lib/site-data";
 import { createClient } from "@/lib/supabase/server";
 
@@ -108,9 +109,7 @@ export async function SiteFooter() {
 
           {/* Hizmetler */}
           <div className="md:col-span-3">
-            <h3 className="text-sm font-semibold tracking-wide uppercase">
-              Hizmetler
-            </h3>
+            <h3 className="text-sm font-semibold tracking-wide uppercase">Hizmetler</h3>
             <ul className="mt-4 space-y-2.5 text-sm">
               {aktifHizmetler.map((h) => (
                 <li key={h.slug}>
@@ -132,9 +131,7 @@ export async function SiteFooter() {
 
           {/* Yasal & Şirket */}
           <div className="md:col-span-2">
-            <h3 className="text-sm font-semibold tracking-wide uppercase">
-              Şirket
-            </h3>
+            <h3 className="text-sm font-semibold tracking-wide uppercase">Şirket</h3>
             <ul className="mt-4 space-y-2.5 text-sm">
               <li>
                 <Link
@@ -181,30 +178,42 @@ export async function SiteFooter() {
 
           {/* İletişim */}
           <div className="md:col-span-2">
-            <h3 className="text-sm font-semibold tracking-wide uppercase">
-              İletişim
-            </h3>
+            <h3 className="text-sm font-semibold tracking-wide uppercase">İletişim</h3>
             <ul className="mt-4 space-y-3 text-sm">
               {s?.contact_email ? (
                 <li>
-                  <a
+                  <TrackedContactLink
+                    channel="email"
                     href={`mailto:${s.contact_email}`}
                     className="text-muted-foreground hover:text-foreground inline-flex items-start gap-2.5 transition-colors"
                   >
                     <Mail className="mt-0.5 size-4 shrink-0" />
                     <span>{s.contact_email}</span>
-                  </a>
+                  </TrackedContactLink>
                 </li>
               ) : null}
               {s?.contact_phone ? (
                 <li>
-                  <a
+                  <TrackedContactLink
+                    channel="phone"
                     href={`tel:${s.contact_phone.replace(/\s/g, "")}`}
                     className="text-muted-foreground hover:text-foreground inline-flex items-start gap-2.5 transition-colors"
                   >
                     <Phone className="mt-0.5 size-4 shrink-0" />
                     <span>{s.contact_phone}</span>
-                  </a>
+                  </TrackedContactLink>
+                </li>
+              ) : null}
+              {s?.contact_phone ? (
+                <li>
+                  <TrackedContactLink
+                    channel="whatsapp"
+                    href={`https://wa.me/${s.contact_phone.replace(/\D/g, "")}`}
+                    className="text-muted-foreground hover:text-foreground inline-flex items-start gap-2.5 transition-colors"
+                  >
+                    <WhatsAppIcon className="mt-0.5 size-4 shrink-0" />
+                    <span>WhatsApp</span>
+                  </TrackedContactLink>
                 </li>
               ) : null}
               {s?.contact_address ? (

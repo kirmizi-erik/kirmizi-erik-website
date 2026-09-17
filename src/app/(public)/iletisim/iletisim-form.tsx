@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { butceOptions } from "@/lib/validations/lead";
 import { kategoriOptions } from "@/lib/validations/case-study";
+import { trackLead } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 
 import { submitLead } from "./actions";
@@ -29,9 +30,7 @@ export function IletisimForm() {
   const [kvkk, setKvkk] = useState(false);
 
   const toggleHizmet = (val: string) =>
-    setHizmetler((prev) =>
-      prev.includes(val) ? prev.filter((v) => v !== val) : [...prev, val],
-    );
+    setHizmetler((prev) => (prev.includes(val) ? prev.filter((v) => v !== val) : [...prev, val]));
 
   if (submitted) {
     return (
@@ -73,6 +72,7 @@ export function IletisimForm() {
         startTransition(async () => {
           const r = await submitLead(formData);
           if (r.ok) {
+            trackLead("İletişim Formu");
             setSubmitted(true);
           } else {
             toast.error(r.error);
@@ -207,9 +207,7 @@ export function IletisimForm() {
 
         {/* Karakter sayacı (solda) + Brief'i gönder butonu (sağda) */}
         <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-muted-foreground text-xs">
-            {brief.length}/5000 — en az 20 karakter
-          </p>
+          <p className="text-muted-foreground text-xs">{brief.length}/5000 — en az 20 karakter</p>
           <Button type="submit" size="lg" disabled={isPending || !kvkk} className="sm:ml-auto">
             {isPending ? "Gönderiliyor..." : "Brief'i gönder"}
             <ArrowUpRight className="ml-1 size-4" />
@@ -238,7 +236,6 @@ export function IletisimForm() {
           okudum, kişisel verilerimin işlenmesine onay veriyorum.
         </span>
       </label>
-
     </form>
   );
 }
