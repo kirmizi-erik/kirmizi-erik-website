@@ -9,7 +9,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { ChatMessage } from "@/lib/validations/chat";
-import { trackLead } from "@/lib/analytics";
+import {
+  trackChatFirstMessage,
+  trackChatOpen,
+  trackChatQuickReply,
+  trackLead,
+} from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 
 import { chatAction, submitChatLead } from "./actions";
@@ -32,6 +37,42 @@ function getSessionId(): string {
 }
 
 const KARSILAMA_MESAJI = `Merhaba, Kırmızı Erik asistanıyım. Reklam, video, sosyal medya, web/uygulama, AI kurulumları — ne tür bir ihtiyacın var?`;
+
+// Hizmet sayfasına özel karşılama (reklam trafiği → landing → chat mesaj tutarlılığı)
+const HIZMET_KARSILAMA: Record<string, string> = {
+  "video-produksiyon": "video prodüksiyon",
+  fotograf: "fotoğraf çekimi",
+  dijital: "dijital pazarlama",
+  sosyal: "sosyal medya yönetimi",
+  uygulama: "uygulama geliştirme",
+  web: "web sitesi",
+  ai: "AI kurulumları",
+  grafik: "grafik tasarım",
+  "3d-2d": "3D/2D animasyon",
+};
+
+function pageGreeting(pathname: string): string {
+  const match = /^\/hizmetler\/([^/]+)/.exec(pathname);
+  const label = match?.[1] ? HIZMET_KARSILAMA[match[1]] : undefined;
+  if (label) {
+    return `Merhaba, Kırmızı Erik asistanıyım. ${label.charAt(0).toLocaleUpperCase("tr-TR")}${label.slice(1)} ile mi ilgileniyorsun? Projenden kısaca bahset, sana yol göstereyim.`;
+  }
+  return KARSILAMA_MESAJI;
+}
+
+// Açılışta hızlı seçim chip'leri — boş kutu kaygısını azaltır, mobilde kritik
+const QUICK_CHIPS = [
+  {
+    label: "Video / Çekim",
+    message: "Video prodüksiyon hizmetiniz hakkında bilgi almak istiyorum",
+  },
+  { label: "Sosyal Medya", message: "Sosyal medya yönetimi hakkında bilgi almak istiyorum" },
+  {
+    label: "AI & Web",
+    message: "AI kurulumları ve web sitesi hizmetleriniz hakkında bilgi almak istiyorum",
+  },
+  { label: "Referanslar", message: "Referanslarınızı ve örnek işlerinizi görebilir miyim?" },
+];
 
 type ContactPrefs = {
   showForm: boolean;
@@ -75,10 +116,25 @@ export function Chatbot() {
   const [contactPrefs, setContactPrefs] = useState<ContactPrefs>({ showForm: false });
   const [submittedLead, setSubmittedLead] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const openTracked = useRef(false);
+
+  const openChat = () => {
+    setOpen(true);
+    if (!openTracked.current) {
+      openTracked.current = true;
+      trackChatOpen(window.location.pathname);
+    }
+  };
 
   // Dışarıdan chatbot'u açma — `kirmizierik:open-chat` custom event'iyle (örn. AI Kurulumları "Canlı AI demo dene" butonu)
   useEffect(() => {
-    const handler = () => setOpen(true);
+    const handler = () => {
+      setOpen(true);
+      if (!openTracked.current) {
+        openTracked.current = true;
+        trackChatOpen(window.location.pathname);
+      }
+    };
     window.addEventListener("kirmizierik:open-chat", handler);
     return () => window.removeEventListener("kirmizierik:open-chat", handler);
   }, []);
@@ -94,8 +150,11 @@ export function Chatbot() {
         const parsed = JSON.parse(saved) as ChatMessage[];
         if (Array.isArray(parsed) && parsed.length > 0) {
           setMessages(parsed);
+          return;
         }
       }
+      // Kayıtlı sohbet yok → sayfaya özel karşılama (hizmet sayfası / reklam landing'i)
+      setMessages([{ role: "assistant", content: pageGreeting(window.location.pathname) }]);
     } catch {
       // ignore — default karşılama mesajı kalsın
     }
@@ -118,9 +177,14 @@ export function Chatbot() {
     scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages, contactPrefs.showForm, isPending]);
 
-  const sendMessage = () => {
-    const text = input.trim();
+  const sendMessage = (preset?: string) => {
+    const text = (preset ?? input).trim();
     if (!text || isPending) return;
+
+    // Huninin gerçek engagement sinyali: ilk kullanıcı mesajı
+    if (!messages.some((m) => m.role === "user")) {
+      trackChatFirstMessage(window.location.pathname);
+    }
 
     const newUserMessage: ChatMessage = { role: "user", content: text };
     const newMessages = [...messages, newUserMessage];
@@ -155,7 +219,7 @@ export function Chatbot() {
         // ignore
       }
     }
-    setMessages([{ role: "assistant", content: KARSILAMA_MESAJI }]);
+    setMessages([{ role: "assistant", content: pageGreeting(window.location.pathname) }]);
     setContactPrefs({ showForm: false });
     setSubmittedLead(false);
     setInput("");
@@ -172,7 +236,7 @@ export function Chatbot() {
       <button
         type="button"
         aria-label={open ? "Sohbeti kapat" : "Sohbeti aç"}
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => (open ? setOpen(false) : openChat())}
         className={cn(
           "fixed right-4 bottom-4 z-50 inline-flex items-center justify-center rounded-full transition-all sm:right-6 sm:bottom-6",
           open
@@ -204,11 +268,10 @@ export function Chatbot() {
                   fontSize: "8.5px",
                   fontWeight: 600,
                   letterSpacing: "0.10em",
-                  textTransform: "uppercase",
                 }}
               >
                 <textPath href="#chatbot-ring-path" startOffset="0">
-                  asistan · asistan · asistan · asistan ·
+                  ASİSTAN · ASİSTAN · ASİSTAN · ASİSTAN ·
                 </textPath>
               </text>
             </svg>
@@ -239,7 +302,7 @@ export function Chatbot() {
                   <div className="text-sm font-semibold tracking-tight">Kırmızı Erik Asistanı</div>
                   <div className="text-muted-foreground flex items-center gap-1.5 text-xs">
                     <span className="bg-brand-yaprak size-1.5 rounded-full" />
-                    Genelde 1-2 dk içinde döner
+                    Çevrimiçi · anında yanıtlıyor
                   </div>
                 </div>
               </div>
@@ -287,6 +350,25 @@ export function Chatbot() {
                     </div>
                   );
                 })}
+                {/* Hızlı seçim chip'leri — sohbet henüz başlamamışken */}
+                {!isPending && !messages.some((m) => m.role === "user") ? (
+                  <div className="flex flex-wrap gap-2 pt-1 pl-9">
+                    {QUICK_CHIPS.map((chip) => (
+                      <button
+                        key={chip.label}
+                        type="button"
+                        onClick={() => {
+                          trackChatQuickReply(chip.label);
+                          sendMessage(chip.message);
+                        }}
+                        className="border-brand/30 text-foreground/90 hover:bg-brand/10 hover:border-brand cursor-pointer rounded-full border px-3 py-1.5 text-xs transition-colors"
+                      >
+                        {chip.label}
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
+
                 {isPending ? (
                   <div className="flex items-end justify-start gap-2">
                     <span className="ring-brand/20 relative size-7 shrink-0 overflow-hidden rounded-full ring-1">
@@ -389,9 +471,9 @@ function ContactFormCard({
 
   return (
     <div className="border-brand/30 from-brand/[0.05] mt-4 rounded-2xl border bg-gradient-to-br to-transparent p-4">
-      <div className="text-brand inline-flex items-center gap-2 text-xs tracking-widest uppercase">
+      <div className="text-brand inline-flex items-center gap-2 text-xs tracking-widest">
         <Sparkles className="size-3.5" />
-        İletişim bilgilerin
+        İLETİŞİM BİLGİLERİN
       </div>
       <p className="text-foreground/90 mt-2 text-sm">
         Birkaç kısa bilgi al, ekibimiz en kısa sürede dönsün. Bu konuşma da ekibimize iletilecek.
@@ -455,8 +537,9 @@ function ContactFormCard({
           <Input
             id="chat-telefon"
             type="tel"
+            inputMode="tel"
             value={telefon}
-            onChange={(e) => setTelefon(e.target.value)}
+            onChange={(e) => setTelefon(e.target.value.replace(/[^\d+\s()-]/g, ""))}
             placeholder="+90 555 ..."
             pattern="[\d\s\+\(\)\-]{7,}"
             required

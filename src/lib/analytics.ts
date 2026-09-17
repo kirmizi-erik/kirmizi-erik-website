@@ -1,4 +1,4 @@
-import { trackMetaEvent, trackMetaLead } from "./meta-pixel";
+import { trackMetaCustomEvent, trackMetaEvent, trackMetaLead } from "./meta-pixel";
 
 declare global {
   interface Window {
@@ -21,4 +21,22 @@ export function trackLead(source: string) {
 export function trackContactClick(channel: "whatsapp" | "phone" | "email") {
   trackGaEvent("contact_click", { channel });
   trackMetaEvent("Contact", { channel });
+}
+
+// ──────────────────────────────────────────────────────────────────
+// Chat hunisi: chat_open → chat_first_message → generate_lead
+// Reklam kampanyaları generate_lead/Lead'e optimize edilir; ara adımlar
+// retargeting kitlesi (chat açıp lead bırakmayan) kurmak için.
+// ──────────────────────────────────────────────────────────────────
+export function trackChatOpen(page: string) {
+  trackGaEvent("chat_open", { page });
+}
+
+export function trackChatFirstMessage(page: string) {
+  trackGaEvent("chat_first_message", { page });
+  trackMetaCustomEvent("ChatEngaged", { page });
+}
+
+export function trackChatQuickReply(label: string) {
+  trackGaEvent("chat_quick_reply", { label });
 }
