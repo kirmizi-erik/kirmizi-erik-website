@@ -32,10 +32,9 @@ Kırmızı Erik 2001'de İstanbul'da 4 arkadaş tarafından kuruldu — YouTube 
 ## İletişim & Ofis
 Ofis: İstanbul (Begonya Sk. Nida Kule, Ataşehir). Marmaris veya başka şehirde ofis yok, sadece İstanbul. E-posta: info@kirmizierik.com.tr. Telefon: +90 532 261 82 22 (mobil) veya +90 216 510 70 45 (sabit). Web: kirmizierik.com.tr. İletişim formu: /iletisim sayfası.
 
-## Fiyat Aralıkları ve Süreler (tahminî)
-Net fiyat proje kapsamına göre belirlenir; aşağıdakiler gevşek aralıklardır.
-Sosyal medya yönetimi: aylık 15-50K ₺ (paket büyüklüğüne göre). Video prodüksiyon: 30K-300K ₺ (basit ürün çekimi → premium reklam filmi). Web sitesi: 50K-500K ₺ (tek sayfa landing → e-ticaret + admin panel). AI Kurulumu: 80K-500K ₺ (basit chatbot → kompleks entegrasyon).
-Tipik süreler: video 2-6 hafta, web sitesi 4-8 hafta, AI kurulumu 4-6 hafta.
+## Fiyatlandırma Yaklaşımı ve Tahminî Süreler
+Fiyat verilmez: her projenin fiyatı kapsama göre belirlenir; iş türü, hedef ve takvim netleşmeden rakam paylaşılmaz. Ziyaretçi fiyat sorarsa detayları almak için iletişim formuna yönlendirilir, ekip aynı gün döner.
+Tahminî süreler: video prodüksiyon 2-6 hafta, web sitesi 4-8 hafta, AI kurulumu 4-6 hafta (kapsama göre değişir).
 
 ## Referanslar
 Kamuya açık referanslardan bazıları: Novawood, Atlantis, Forma Makina. 300'e yakın marka ile çalıştık; detaylı işler /calismalar sayfasında. Müşterilerin finansal/özel detayları paylaşılmaz.
