@@ -90,13 +90,16 @@ export default async function YazismaDetayPage({ params }: { params: Promise<{ i
                 )}
                 {m.unanswered && <Badge variant="destructive">Cevapsız</Badge>}
                 {m.role === "user" && (
-                  <Link
-                    href={`/admin/bilgi-bankasi?soru=${encodeURIComponent(m.content.slice(0, 500))}`}
-                    className="inline-flex items-center gap-1 underline-offset-2 hover:underline"
-                    title="Bu soruyu bilgi bankasına ekle"
-                  >
-                    <BookPlus className="size-3" /> Bilgi bankasına ekle
-                  </Link>
+                  <>
+                    <span className="font-mono">S-{m.id}</span>
+                    <Link
+                      href={`/admin/bilgi-bankasi?kod=S-${m.id}`}
+                      className="inline-flex items-center gap-1 underline-offset-2 hover:underline"
+                      title="Bu soruyu ve botun cevabını bilgi bankasına taşı"
+                    >
+                      <BookPlus className="size-3" /> Cevabı düzenle
+                    </Link>
+                  </>
                 )}
               </div>
             </div>

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { chatbotDb } from "@/lib/chatbot/db";
 
 import {
@@ -16,7 +17,37 @@ import {
 export const metadata = { title: "Bilgi Bankası" };
 export const dynamic = "force-dynamic";
 
-type SearchParams = Promise<{ soru?: string }>;
+type SearchParams = Promise<{ soru?: string; kod?: string }>;
+
+// "S-123" kodundan ziyaretçi sorusunu + botun verdiği cevabı getirir (Novawood deseni)
+async function lookupByCode(kod: string) {
+  const id = Number(kod.replace(/^s-?/i, "").trim());
+  if (!Number.isInteger(id) || id <= 0) return null;
+
+  const db = chatbotDb();
+  const { data: question } = await db
+    .from("chat_messages")
+    .select("id, conversation_id, content, created_at")
+    .eq("id", id)
+    .eq("role", "user")
+    .single();
+  if (!question) return null;
+
+  const { data: answer } = await db
+    .from("chat_messages")
+    .select("content")
+    .eq("conversation_id", question.conversation_id)
+    .eq("role", "assistant")
+    .gt("id", question.id)
+    .order("id", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+
+  return {
+    question: question.content as string,
+    answer: (answer?.content as string | undefined) ?? "",
+  };
+}
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("tr-TR", {
@@ -28,7 +59,10 @@ function formatDate(iso: string) {
 
 export default async function BilgiBankasiPage({ searchParams }: { searchParams: SearchParams }) {
   const params = await searchParams;
-  const prefillQuestion = params.soru?.slice(0, 500);
+  const kod = params.kod?.trim();
+  const fromCode = kod ? await lookupByCode(kod) : null;
+  const prefillQuestion = fromCode?.question ?? params.soru?.slice(0, 500);
+  const prefillAnswer = fromCode?.answer;
 
   const db = chatbotDb();
   const [entriesRes, chunkRes] = await Promise.all([
@@ -56,9 +90,30 @@ export default async function BilgiBankasiPage({ searchParams }: { searchParams:
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Yeni Soru/Cevap</CardTitle>
+          <form method="get" className="flex items-center gap-2 pt-1">
+            <Input
+              name="kod"
+              defaultValue={kod ?? ""}
+              placeholder="Soru kodu (örn. S-12)"
+              className="h-8 max-w-40 font-mono text-sm"
+            />
+            <Button type="submit" variant="secondary" size="sm">
+              Getir
+            </Button>
+            {kod && !fromCode && <span className="text-destructive text-xs">Kod bulunamadı</span>}
+            {fromCode && (
+              <span className="text-muted-foreground text-xs">
+                {kod} yüklendi — cevabı düzeltip kaydet
+              </span>
+            )}
+          </form>
         </CardHeader>
         <CardContent>
-          <KnowledgeCreateForm prefillQuestion={prefillQuestion} />
+          <KnowledgeCreateForm
+            key={kod ?? params.soru ?? "blank"}
+            prefillQuestion={prefillQuestion}
+            prefillAnswer={prefillAnswer}
+          />
         </CardContent>
       </Card>
 

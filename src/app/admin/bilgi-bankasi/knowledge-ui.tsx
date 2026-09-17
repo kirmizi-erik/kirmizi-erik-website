@@ -33,9 +33,11 @@ const textareaClass =
 function KnowledgeFields({
   entry,
   prefillQuestion,
+  prefillAnswer,
 }: {
   entry?: KnowledgeEntry;
   prefillQuestion?: string;
+  prefillAnswer?: string;
 }) {
   return (
     <div className="space-y-3">
@@ -56,7 +58,7 @@ function KnowledgeFields({
           name="answer_tr"
           required
           rows={4}
-          defaultValue={entry?.answer_tr ?? ""}
+          defaultValue={entry?.answer_tr ?? prefillAnswer ?? ""}
           placeholder="Asistanın vermesini istediğin cevap"
           className={textareaClass}
         />
@@ -113,7 +115,13 @@ function useKbSubmit() {
   return { pending, run };
 }
 
-export function KnowledgeCreateForm({ prefillQuestion }: { prefillQuestion?: string }) {
+export function KnowledgeCreateForm({
+  prefillQuestion,
+  prefillAnswer,
+}: {
+  prefillQuestion?: string;
+  prefillAnswer?: string;
+}) {
   const { pending, run } = useKbSubmit();
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -128,7 +136,7 @@ export function KnowledgeCreateForm({ prefillQuestion }: { prefillQuestion?: str
       }
       className="space-y-4"
     >
-      <KnowledgeFields prefillQuestion={prefillQuestion} />
+      <KnowledgeFields prefillQuestion={prefillQuestion} prefillAnswer={prefillAnswer} />
       <Button type="submit" disabled={pending}>
         {pending && <Loader2 className="size-4 animate-spin" />}
         {pending ? "Ekleniyor…" : "Ekle ve eğit"}
