@@ -2,6 +2,8 @@ import "server-only";
 
 import { servicePages } from "@/lib/services-data";
 
+import { chatbotDb } from "./db";
+
 export type KbDoc = {
   title: string;
   content: string;
@@ -37,7 +39,7 @@ Fiyat verilmez: her projenin fiyatı kapsama göre belirlenir; iş türü, hedef
 Tahminî süreler: video prodüksiyon 2-6 hafta, web sitesi 4-8 hafta, AI kurulumu 4-6 hafta (kapsama göre değişir).
 
 ## Referanslar
-Kamuya açık referanslardan bazıları: Novawood, Atlantis, Forma Makina. 300'e yakın marka ile çalıştık; detaylı işler /calismalar sayfasında. Müşterilerin finansal/özel detayları paylaşılmaz.
+300'e yakın marka ile çalıştık; kamuya açık referanslardan bazıları: Novawood, Atlantis, Forma Makina. Referans/örnek iş isteyenlere yayındaki çalışmaların linki verilir; tüm portföy /calismalar sayfasında. Müşterilerin finansal/özel detayları paylaşılmaz.
 
 ## AI Kurulumları (vurgu hizmet)
 AI Kurulumları vurgu hizmetimizdir — sitedeki bu sohbet asistanı bizim canlı demomuz; aynısını (RAG bilgi bankalı, panelden eğitilebilir chatbot) müşteriler için de kuruyoruz. Detay: /hizmetler/ai`;
@@ -55,11 +57,13 @@ function splitSections(doc: string): Array<{ title: string; content: string }> {
 }
 
 /**
- * Site korpusu: firma-genel bölümleri + 9 hizmet (her hizmet atomik chunk).
- * Kaynak tek: services-data.ts — site içeriği değişince /api/chatbot-admin/reingest
- * ile yeniden indekslenir (rebuild gerekmez).
+ * Site korpusu — sitenin TAMAMI:
+ * - firma-genel bölümleri (statik)
+ * - 9 hizmet sayfasının tam içeriği (services-data.ts)
+ * - yayındaki tüm çalışmalar/referanslar (case_studies tablosu, linkli)
+ * Site içeriği değişince /api/chatbot-admin/reingest ile yeniden indekslenir.
  */
-export function buildSiteDocs(): KbDoc[] {
+export async function buildSiteDocs(): Promise<KbDoc[]> {
   const docs: KbDoc[] = [];
 
   for (const section of splitSections(FIRMA_GENEL)) {
@@ -71,18 +75,73 @@ export function buildSiteDocs(): KbDoc[] {
     });
   }
 
+  // Hizmet sayfaları — tam içerik (kart açıklamaları dahil)
   for (const s of servicePages) {
-    const yapilanlar = s.yapilanlar.map((y) => y.baslik).join(" · ");
+    const yapilanlar = s.yapilanlar.map((y) => `${y.baslik}: ${y.aciklama}`).join("\n");
     const surec = s.surec.map((step) => step.baslik).join(" → ");
-    const stack = s.stack.map((g) => `${g.label}: ${g.items.slice(0, 3).join(", ")}`).join(" | ");
+    const stack = s.stack.map((g) => `${g.label}: ${g.items.join(", ")}`).join(" | ");
 
     docs.push({
       title: `Hizmet: ${s.label}`,
-      content: `Kapsam: ${yapilanlar}\nSüreç: ${surec}\nStack/Araç: ${stack}\nAçıklama: ${s.heroSubtitle}`,
+      content:
+        `${s.heroSubtitle}\n\nKapsam:\n${yapilanlar}\n\nSüreç: ${surec}\nStack/Araç: ${stack}`.slice(
+          0,
+          3500,
+        ),
       sourceUrl: `/hizmetler/${s.slug}`,
       authority: 2,
-      embedText: `${s.label} | ${s.slug} | ${s.heroSubtitle} | ${yapilanlar}`,
+      embedText: `${s.label} | ${s.slug} | ${s.heroSubtitle} | ${s.yapilanlar
+        .map((y) => y.baslik)
+        .join(" · ")}`,
     });
+  }
+
+  // Yayındaki çalışmalar (referanslar) — DB'den, her biri kendi linkiyle
+  try {
+    const db = chatbotDb();
+    const { data: cases, error } = await db
+      .from("case_studies")
+      .select("baslik, slug, musteri_adi, sektor, kategori, ozet, aciklama")
+      .eq("durum", "yayinda")
+      .order("yayin_tarihi", { ascending: false });
+
+    if (!error && cases && cases.length > 0) {
+      docs.push({
+        title: "Referans Listesi (Yayındaki Çalışmalar)",
+        content: `Örnek işlerimizden bazıları:\n${cases
+          .map(
+            (c) =>
+              `- ${c.baslik}${c.musteri_adi ? ` (${c.musteri_adi})` : ""}: /calismalar/${c.slug}`,
+          )
+          .join("\n")}\nTüm portföy: /calismalar`,
+        sourceUrl: "/calismalar",
+        authority: 2,
+        embedText: `referans örnek iş portföy çalışma müşteri | ${cases
+          .map((c) => `${c.baslik} ${c.musteri_adi ?? ""}`)
+          .join(" | ")}`,
+      });
+
+      for (const c of cases) {
+        const parts = [
+          c.musteri_adi ? `Müşteri: ${c.musteri_adi}` : null,
+          c.sektor ? `Sektör: ${c.sektor}` : null,
+          Array.isArray(c.kategori) && c.kategori.length > 0
+            ? `Kategori: ${c.kategori.join(", ")}`
+            : null,
+          c.ozet,
+          c.aciklama,
+        ].filter(Boolean);
+        docs.push({
+          title: `Çalışma: ${c.baslik}`,
+          content: parts.join("\n").slice(0, 2500) || c.baslik,
+          sourceUrl: `/calismalar/${c.slug}`,
+          authority: 3,
+          embedText: `${c.baslik} | ${c.musteri_adi ?? ""} | ${c.sektor ?? ""} | ${c.ozet ?? ""}`,
+        });
+      }
+    }
+  } catch (e) {
+    console.warn("[kb] çalışmalar okunamadı, statik korpusla devam:", e);
   }
 
   return docs;

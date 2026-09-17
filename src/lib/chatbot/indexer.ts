@@ -45,7 +45,7 @@ export async function embedMissingChunks(): Promise<number> {
  */
 export async function reingestSiteKb(): Promise<{ chunks: number; embedded: number }> {
   const db = chatbotDb();
-  const docs = buildSiteDocs();
+  const docs = await buildSiteDocs();
 
   const { error: delErr } = await db.from("kb_chunks").delete().eq("source", "site");
   if (delErr) throw new Error(`site chunk silme: ${delErr.message}`);
