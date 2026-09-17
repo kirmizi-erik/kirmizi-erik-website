@@ -1,6 +1,7 @@
 import { Chatbot } from "@/components/chatbot/chatbot";
 import { SiteFooter } from "@/components/site/footer";
 import { SiteHeader } from "@/components/site/header";
+import { WhatsAppFloat } from "@/components/site/whatsapp-float";
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   const aiAvailable = !!process.env.ANTHROPIC_API_KEY;
@@ -10,6 +11,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
       <SiteHeader />
       <main className="flex-1">{children}</main>
       <SiteFooter />
+      <WhatsAppFloat />
       {aiAvailable ? <Chatbot /> : null}
     </div>
   );
