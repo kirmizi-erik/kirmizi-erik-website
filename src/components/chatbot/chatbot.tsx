@@ -15,6 +15,21 @@ import { cn } from "@/lib/utils";
 import { chatAction, submitChatLead } from "./actions";
 
 const STORAGE_KEY = "kirmizi-erik-chat-v1";
+const SESSION_KEY = "kirmizi-erik-chat-session";
+
+// Yazışma kaydı için kalıcı oturum kimliği (localStorage; sohbet
+// sıfırlanınca yenilenir → panelde yeni konuşma olarak görünür)
+function getSessionId(): string {
+  try {
+    const existing = localStorage.getItem(SESSION_KEY);
+    if (existing) return existing;
+    const fresh = crypto.randomUUID();
+    localStorage.setItem(SESSION_KEY, fresh);
+    return fresh;
+  } catch {
+    return crypto.randomUUID();
+  }
+}
 
 const KARSILAMA_MESAJI = `Merhaba, Kırmızı Erik asistanıyım. Reklam, video, sosyal medya, web/uygulama, AI kurulumları — ne tür bir ihtiyacın var?`;
 
@@ -116,7 +131,10 @@ export function Chatbot() {
     const contextMessages = newMessages.slice(-20);
 
     startTransition(async () => {
-      const result = await chatAction(contextMessages);
+      const result = await chatAction(contextMessages, {
+        sessionId: getSessionId(),
+        pageUrl: window.location.pathname,
+      });
       if (result.ok) {
         setMessages((prev) => [...prev, { role: "assistant", content: result.reply }]);
         if (result.suggestContact) {
@@ -130,7 +148,12 @@ export function Chatbot() {
 
   const resetConversation = () => {
     if (typeof window !== "undefined") {
-      localStorage.removeItem(STORAGE_KEY);
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(SESSION_KEY);
+      } catch {
+        // ignore
+      }
     }
     setMessages([{ role: "assistant", content: KARSILAMA_MESAJI }]);
     setContactPrefs({ showForm: false });

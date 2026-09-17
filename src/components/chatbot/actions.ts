@@ -4,72 +4,31 @@ import Anthropic from "@anthropic-ai/sdk";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 
+import { getContext } from "@/lib/chatbot/retriever";
+import { isUnanswered, recordTurn } from "@/lib/chatbot/transcript";
 import { sendLeadNotification } from "@/lib/email/resend";
 import { checkRateLimit } from "@/lib/rate-limit";
-import { SERVICES_CONTEXT_FOR_AI } from "@/lib/services-data";
 import { createAdminClient } from "@/lib/supabase/admin";
-import {
-  chatLeadInputSchema,
-  type ChatMessage,
-} from "@/lib/validations/chat";
+import { chatLeadInputSchema, chatMessageSchema, type ChatMessage } from "@/lib/validations/chat";
 
 export type ChatActionResult =
   | { ok: true; reply: string; suggestContact: boolean }
   | { ok: false; error: string };
 
-export type ChatLeadResult =
-  | { ok: true; id: string }
-  | { ok: false; error: string };
+export type ChatMeta = {
+  sessionId?: string;
+  pageUrl?: string;
+};
 
-const SYSTEM_PROMPT = `Sen Kırmızı Erik Reklam Ajansı'nın resmi sohbet asistanısın. İstanbul Ataşehir'de ofisi olan, 25 yıllık 360° kreatif bir reklam ajansıyız.
+export type ChatLeadResult = { ok: true; id: string } | { ok: false; error: string };
 
-# Kimliğimiz
-- Marka: Kırmızı Erik
-- Tip: 360° Kreatif Reklam Ajansı
-- Kuruluş: 2001 (İstanbul, 4 arkadaş tarafından)
-- Konum: İstanbul (Begonya Sk. Nida Kule, Ataşehir)
-- E-posta: info@kirmizierik.com.tr
-- Telefon: +90 532 261 82 22 (mobil) veya +90 216 510 70 45 (sabit)
-- Web: kirmizierik.com.tr
-- Kurucu / Ajans Başkanı: Özkan Kurt (bugün ajansı tek başına yönetiyor; her brief için o işe özel uzman ekip kurulur — kreatif yönetmen, prodüksiyon, dijital, yazılım rolleri)
-- Önemli: Marmaris ofisi yok, sadece İstanbul.
+const SYSTEM_PROMPT = `Sen Kırmızı Erik Reklam Ajansı'nın resmi sohbet asistanısın. İstanbul Ataşehir'de ofisi olan, 25 yıllık 360° kreatif bir reklam ajansıyız (kuruluş 2001, kurucu: Özkan Kurt). E-posta: info@kirmizierik.com.tr · Telefon: +90 532 261 82 22 (mobil) veya +90 216 510 70 45 (sabit). Marmaris veya başka şehirde ofis yok, sadece İstanbul.
 
-# Tarihçemiz & Rakamlar
-- 2001'de YouTube yokken kurulduk; reklam dijitalleşmenin başındayken sektöre girdik.
-- 25 yıl boyunca **binlerce proje** tamamladık, **300'e yakın marka** ile çalıştık, **6 ülkede** hizmet verdik.
-- **Google Dijital Pazarlama Ödülleri** ve **üniversite ödülleri** sahibiyiz.
-- İsmin hikâyesi: Reklam tarlasında dijitalin ilk filiz verdiği yıllarda yetişen taze, kırmızı bir erik. Erik = tazelik / dinamizm, Kırmızı = enerji / cesaret. (Müşteri sorarsa kısaca anlat.)
-
-# Özkan Kurt (Kurucu / Ajans Başkanı)
-- 2001'de Kırmızı Erik'i kuran 4 arkadaştan biri; bugün ajansı tek başına yönetiyor.
-- 25 yıllık reklam ajansı ve kreatif direktörlük tecrübesi.
-- Yazılım ve yeni teknolojileri yakından takip eder; YouTube'dan AI'ya her dalgayı erken denedi.
-- Kişisel duruşu: konsept odaklı, "satan iş" peşinde; brief'i derinlemesine sorgulamayı tercih eder, hazır şablon iş yapmaz.
-- Özkan'a / kuruluşa / tarihçeye dair sorularda **/biz-kimiz** sayfasına yönlendir.
-
-# Duruşumuz (Manifesto özeti)
-Kullanıcı "neden sizi seçelim", "nasıl çalışırsınız", "diğer ajanslardan farkınız" gibi şeyler sorarsa şu beş duruşu kısaca özetle (5'i birden değil, 1-2 tanesini bağlama göre):
-1. Tek çatı, tek brief — çekim/dijital/yazılım üçü aynı ekiple, müşteri 3 ajansla koordinasyona girmez.
-2. Ödüllü iş güzeldir, satan iş şarttır — kreatifte cesur, ROI'da net.
-3. AI'da deneyimli — "bu yıl AI yılı" demiyoruz, 5 yıldır kuruyoruz.
-4. İhale değil iş ortağı — brief alıp kaybolmuyoruz, ~300 markayla yıllarca yan yana yürüdük.
-5. Sürpriz fatura yok — süreç şeffaf, fiyat net, gizli kalem yok.
-
-# Çalışma Sürecimiz (5 aşama)
-Müşteri "nasıl çalışıyorsunuz" sorarsa kısaca özetle:
-1. **Brief & Keşif** — markayı, hedefi, takvimi anlama
-2. **Strateji & Konsept** — önce 'neden', sonra 'nasıl'
-3. **Kreatif & Üretim** — çekim/tasarım/kod aynı çatı altında
-4. **Test & Onay** — ara mockup, prototip, A/B
-5. **Lansman & Ölçüm** — yayında biten iş yoktur, performans takibi
-
-# 9 Hizmetimiz (DETAY)
-
-Aşağıda her hizmetin kapsamı, süreç adımları ve kullandığımız araçlar var. Müşteri sorularını bu detaylarla cevapla. **Sayfa yönlendirmesi:** Müşteri belirli bir hizmetin detayını isterse "Detaylı bilgi için /hizmetler/{slug} sayfasına bakabilirsin" diyebilirsin.
-
-${SERVICES_CONTEXT_FOR_AI}
-
-**AI Kurulumları** ⭐ vurgu hizmetimiz — bu sohbet asistanı bizim canlı demomuz, başkaları için de aynısını kuruyoruz.
+# Görevin
+- Ziyaretçinin sorusunu SADECE aşağıda "Relevant Information" bölümünde verilen bilgilerle cevapla. Cevap orada yoksa dürüstçe "bu konuda net bilgim yok" de ve iletişim formunu veya /iletisim sayfasını öner — asla bilgi uydurma.
+- Önceliğin: nitelikli talep (lead) kazanmak. Sorularını cevapla, ilgiyi hissettiğinde iletişim formuna yönlendir.
+- Rakam, fiyat, tarih, ödül gibi bilgileri sadece Relevant Information'da geçtiği şekliyle ver; kendinden sayı üretme.
+- Sayfa yönlendirmesi: SADECE Relevant Information'da "(Detay: ...)" olarak geçen yolları veya şu sabit sayfaları verebilirsin: /biz-kimiz, /calismalar, /iletisim. Başka yol uydurma.
 
 # Sohbet Tonu (KRİTİK — kuralları sıkı uygula)
 - Türkçe yaz. Profesyonel ama soğuk değil — samimi-doğal ton.
@@ -82,13 +41,8 @@ ${SERVICES_CONTEXT_FOR_AI}
 - Müşteri detay isterse o zaman derinleş; ilk cevap mutlaka kısa olsun.
 
 # Fiyat / Süre Yaklaşımı
-- Fiyat sorulduğunda: NET FİYAT VERME. Aralık ver veya "projeye göre değişir, kapsamı netleştirelim" de.
-- Tipik aralıklar (sadece sorulursa, gevşek):
-  * Sosyal medya yönetimi: aylık 15-50K ₺ (paket büyüklüğüne göre)
-  * Video prodüksiyon: 30K-300K ₺ (basit ürün → premium reklam filmi)
-  * Web sitesi: 50K-500K ₺ (tek sayfa landing → e-ticaret + admin)
-  * AI Kurulumu: 80K-500K ₺ (basit chatbot → kompleks entegrasyon)
-- Süre sorulursa: video 2-6 hafta, web 4-8 hafta, AI kurulumu 4-6 hafta. Tahminî de.
+- Fiyat sorulduğunda: NET FİYAT VERME. Relevant Information'da fiyat aralığı varsa "tahminî" vurgusuyla o aralığı verebilirsin; yoksa "projeye göre değişir, kapsamı netleştirelim" de.
+- Süre için de aynı kural: sadece Relevant Information'daki tahminî süreleri kullan.
 
 # Önemli Davranış Kuralları
 1. **Hizmet dışı sorulara cevap verme.** Kişi başka bir şey sorarsa nazikçe "Bu konuda yardımcı olamam, ama reklam/dijital/yazılım/AI ihtiyacın varsa buradayım" de.
@@ -118,8 +72,13 @@ function getClient(): Anthropic | null {
 
 /**
  * Sohbet mesajı gönder, AI cevabını al (non-streaming, kısa cevaplar için).
+ * RAG: soruya göre bilgi bankasından bağlam çekilir (hibrit arama);
+ * tur sonunda yazışma panele düşmek üzere kaydedilir (fail-soft).
  */
-export async function chatAction(messages: ChatMessage[]): Promise<ChatActionResult> {
+export async function chatAction(
+  messages: ChatMessage[],
+  meta?: ChatMeta,
+): Promise<ChatActionResult> {
   const rl = await checkRateLimit("chat");
   if (!rl.ok) {
     return {
@@ -142,6 +101,13 @@ export async function chatAction(messages: ChatMessage[]): Promise<ChatActionRes
     return { ok: false, error: "Geçersiz konuşma uzunluğu" };
   }
 
+  // Client'tan gelen dizi sunucuda da doğrulanır (şekil + uzunluk sınırları)
+  for (const m of messages) {
+    if (!chatMessageSchema.safeParse(m).success) {
+      return { ok: false, error: "Geçersiz mesaj içeriği" };
+    }
+  }
+
   // Son mesaj user'dan olmalı
   const last = messages[messages.length - 1];
   if (!last || last.role !== "user") {
@@ -149,19 +115,25 @@ export async function chatAction(messages: ChatMessage[]): Promise<ChatActionRes
   }
 
   try {
+    const context = await getContext(last.content);
+    const dynamicBlock = `## Bugünün Tarihi\n${new Date().toISOString().slice(0, 10)}\n\n## Relevant Information\nAşağıdaki bilgileri kullanarak cevapla. Cevap bu bilgilerde yoksa dürüstçe söyle ve iletişim formunu öner.\n\n${context || "(Bu soru için bilgi bankasında eşleşen kayıt bulunamadı.)"}`;
+
+    const started = Date.now();
     const response = await client.messages.create({
       model: "claude-haiku-4-5",
       max_tokens: 800,
-      // System prompt sabit → ephemeral cache (5dk TTL).
       system: [
         {
+          // Sabit blok → ephemeral cache (5dk TTL); bağlam ayrı blokta
           type: "text",
           text: SYSTEM_PROMPT,
           cache_control: { type: "ephemeral" },
         },
+        { type: "text", text: dynamicBlock },
       ],
       messages: messages.map((m) => ({ role: m.role, content: m.content })),
     });
+    const latencyMs = Date.now() - started;
 
     const textBlock = response.content.find((b) => b.type === "text");
     if (!textBlock || textBlock.type !== "text") {
@@ -172,6 +144,23 @@ export async function chatAction(messages: ChatMessage[]): Promise<ChatActionRes
     const suggestContact = reply.includes("[SUGGEST_CONTACT]");
     // İşareti kullanıcıya gösterme
     reply = reply.replace(/\[SUGGEST_CONTACT\]/g, "").trim();
+
+    // Yazışmayı kaydet (panelde görünür) — hata sohbeti asla kırmaz
+    const sessionId = meta?.sessionId?.slice(0, 64);
+    if (sessionId && /^[\w-]{8,64}$/.test(sessionId)) {
+      const reqHeaders = await headers();
+      const ip = reqHeaders.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null;
+      await recordTurn({
+        sessionId,
+        locale: "tr",
+        ip,
+        pageUrl: meta?.pageUrl ?? null,
+        question: last.content,
+        answer: reply,
+        latencyMs,
+        unanswered: isUnanswered(reply),
+      });
+    }
 
     return { ok: true, reply, suggestContact };
   } catch (error) {
@@ -231,10 +220,7 @@ export async function submitChatLead(formData: FormData): Promise<ChatLeadResult
 
   // Konuşmayı düz metin transcript'e çevir
   const transcript = conversation
-    .map(
-      (m) =>
-        `[${m.role === "user" ? "Müşteri" : "Asistan"}]\n${m.content.trim()}`,
-    )
+    .map((m) => `[${m.role === "user" ? "Müşteri" : "Asistan"}]\n${m.content.trim()}`)
     .join("\n\n");
 
   // AI ile kısa özet + hizmet kategorileri çıkar (opsiyonel — fail olursa skip)
@@ -248,7 +234,7 @@ export async function submitChatLead(formData: FormData): Promise<ChatLeadResult
         model: "claude-haiku-4-5",
         max_tokens: 400,
         system:
-          "Sen bir reklam ajansı asistanısın. Müşteri sohbetinden 1-2 cümle özet çıkar (Türkçe) ve ilgilendiği hizmetleri tespit et. Cevabı tam olarak şu JSON formatında ver: {\"ozet\":\"...\",\"hizmetler\":[\"video\",\"sosyal\",...]}. Hizmetler şu slug'lardan: video, fotograf, dijital, sosyal, uygulama, web, ai, grafik, 3d-2d.",
+          'Sen bir reklam ajansı asistanısın. Müşteri sohbetinden 1-2 cümle özet çıkar (Türkçe) ve ilgilendiği hizmetleri tespit et. Cevabı tam olarak şu JSON formatında ver: {"ozet":"...","hizmetler":["video","sosyal",...]}. Hizmetler şu slug\'lardan: video, fotograf, dijital, sosyal, uygulama, web, ai, grafik, 3d-2d.',
         messages: [
           {
             role: "user",
@@ -256,8 +242,7 @@ export async function submitChatLead(formData: FormData): Promise<ChatLeadResult
           },
         ],
       });
-      const text =
-        summary.content.find((b) => b.type === "text")?.text ?? "";
+      const text = summary.content.find((b) => b.type === "text")?.text ?? "";
       const json = JSON.parse(text.replace(/^```json\n?|\n?```$/g, ""));
       aiOzet = typeof json.ozet === "string" ? json.ozet : null;
       hizmetKategori = Array.isArray(json.hizmetler)
