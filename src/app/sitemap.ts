@@ -15,6 +15,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/biz-kimiz`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${baseUrl}/calismalar`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
     { url: `${baseUrl}/hizmetler`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
+    {
+      url: `${baseUrl}/ai-gorunurluk`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
     { url: `${baseUrl}/iletisim`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${baseUrl}/gizlilik`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
     { url: `${baseUrl}/kvkk`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },

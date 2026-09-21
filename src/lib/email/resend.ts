@@ -115,6 +115,104 @@ export async function sendLeadNotification(
   }
 }
 
+export type ScanReportEmailInput = {
+  to: string;
+  hostname: string;
+  skor: number;
+  not: string;
+  ozet: string;
+  katmanlar: { baslik: string; puan: number; ozet: string }[];
+  bulgular: { onem: string; mesaj: string; cozum: string }[];
+};
+
+/** Ziyaretçiye AI görünürlük tarama raporunu gönderir (fail-soft). */
+export async function sendScanReportEmail(
+  input: ScanReportEmailInput,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const resend = getResend();
+  if (!resend) {
+    console.log("[email] RESEND_API_KEY yok, tarama raporu skip");
+    return { ok: false, error: "RESEND_API_KEY yapılandırılmadı" };
+  }
+
+  const renk = input.skor >= 80 ? "#16a34a" : input.skor >= 55 ? "#d97706" : "#DC0E18";
+  const katmanRows = input.katmanlar
+    .map(
+      (k) => `<tr>
+        <td style="padding:10px 12px;border-bottom:1px solid #e5e7eb;font-weight:600;">${escapeHtml(k.baslik)}</td>
+        <td style="padding:10px 12px;border-bottom:1px solid #e5e7eb;text-align:center;font-weight:700;color:${k.puan >= 80 ? "#16a34a" : k.puan >= 55 ? "#d97706" : "#DC0E18"};">${k.puan}</td>
+        <td style="padding:10px 12px;border-bottom:1px solid #e5e7eb;color:#4b5563;font-size:13px;">${escapeHtml(k.ozet)}</td>
+      </tr>`,
+    )
+    .join("");
+
+  const bulguHtml = input.bulgular.length
+    ? input.bulgular
+        .map(
+          (
+            b,
+          ) => `<div style="border:1px solid #e5e7eb;border-left:4px solid ${b.onem === "kritik" ? "#DC0E18" : "#d97706"};border-radius:8px;padding:12px 16px;margin-bottom:10px;">
+            <p style="margin:0;font-weight:600;font-size:14px;">${escapeHtml(b.mesaj)}</p>
+            <p style="margin:6px 0 0 0;color:#4b5563;font-size:13px;">Çözüm: ${escapeHtml(b.cozum)}</p>
+          </div>`,
+        )
+        .join("")
+    : `<p style="color:#4b5563;">Öne çıkan bir eksik bulunamadı — tebrikler.</p>`;
+
+  const html = `<!DOCTYPE html>
+<html><body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:640px;margin:0 auto;padding:20px;color:#111;">
+  <div style="border-bottom:3px solid #DC0E18;padding-bottom:12px;margin-bottom:24px;">
+    <h1 style="margin:0;font-size:22px;font-weight:700;">AI Görünürlük Raporu</h1>
+    <p style="margin:4px 0 0 0;color:#6b7280;font-size:13px;">${escapeHtml(input.hostname)} · Kırmızı Erik</p>
+  </div>
+
+  <div style="text-align:center;margin:24px 0;">
+    <div style="display:inline-block;border:6px solid ${renk};border-radius:999px;width:110px;height:110px;line-height:98px;font-size:36px;font-weight:800;color:${renk};">${input.skor}</div>
+    <p style="margin:10px 0 0 0;font-weight:700;font-size:18px;">Not: ${escapeHtml(input.not)}</p>
+    <p style="margin:6px auto 0 auto;max-width:440px;color:#4b5563;">${escapeHtml(input.ozet)}</p>
+  </div>
+
+  <table style="width:100%;border-collapse:collapse;margin:24px 0;font-size:14px;">
+    <tr>
+      <th style="text-align:left;padding:8px 12px;background:#f9fafb;border-bottom:2px solid #e5e7eb;">Katman</th>
+      <th style="text-align:center;padding:8px 12px;background:#f9fafb;border-bottom:2px solid #e5e7eb;">Puan</th>
+      <th style="text-align:left;padding:8px 12px;background:#f9fafb;border-bottom:2px solid #e5e7eb;">Durum</th>
+    </tr>
+    ${katmanRows}
+  </table>
+
+  <h2 style="font-size:16px;margin:28px 0 12px 0;">Bulgular ve çözümler</h2>
+  ${bulguHtml}
+
+  <div style="background:#f9fafb;border-radius:12px;padding:20px;margin:28px 0;text-align:center;">
+    <p style="margin:0 0 12px 0;font-weight:600;">Bu düzeltmeleri sizin için biz yapalım mı?</p>
+    <p style="margin:0 0 16px 0;color:#4b5563;font-size:14px;">Web, SEO ve şirketlere özel AI kurulumları Kırmızı Erik'in işi. Raporunuz elimizde — görüşmeye hazırız.</p>
+    <a href="${SITE_URL}/iletisim" style="display:inline-block;background:#DC0E18;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600;">Görüşme planla</a>
+  </div>
+
+  <p style="font-size:11px;color:#6b7280;text-align:center;margin-top:24px;border-top:1px solid #e5e7eb;padding-top:12px;">
+    Kırmızı Erik · kirmizierik.com.tr · Bu rapor ${escapeHtml(input.hostname)} adresinin herkese açık sayfaları üzerinden otomatik üretilmiştir.
+  </p>
+</body></html>`;
+
+  try {
+    const { error } = await resend.emails.send({
+      from: FROM_DEFAULT,
+      to: [input.to],
+      subject: `${input.hostname} — AI Görünürlük Raporu (${input.skor}/100)`,
+      html,
+    });
+    if (error) {
+      console.error("[email] scan report resend error", error);
+      return { ok: false, error: error.message };
+    }
+    return { ok: true };
+  } catch (err) {
+    console.error("[email] scan report exception", err);
+    return { ok: false, error: "E-posta gönderilemedi" };
+  }
+}
+
 function escapeHtml(s: string): string {
   return s
     .replace(/&/g, "&amp;")

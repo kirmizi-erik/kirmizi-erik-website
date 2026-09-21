@@ -4,19 +4,22 @@ import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import { headers } from "next/headers";
 
-type LimiterName = "chat" | "lead";
+type LimiterName = "chat" | "lead" | "scan";
 
-const config: Record<LimiterName, { tokens: number; window: `${number} ${"s" | "m" | "h" | "d"}` }> = {
+const config: Record<
+  LimiterName,
+  { tokens: number; window: `${number} ${"s" | "m" | "h" | "d"}` }
+> = {
   chat: { tokens: 15, window: "1 m" },
   lead: { tokens: 3, window: "10 m" },
+  scan: { tokens: 3, window: "1 d" },
 };
 
 let _redis: Redis | null = null;
 function getRedis(): Redis | null {
   if (_redis) return _redis;
   const url = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL;
-  const token =
-    process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
   if (!url || !token) return null;
   _redis = new Redis({ url, token });
   return _redis;
@@ -52,9 +55,7 @@ export type RateLimitResult =
   | { ok: true; remaining: number }
   | { ok: false; retryAfterSeconds: number };
 
-export async function checkRateLimit(
-  name: LimiterName,
-): Promise<RateLimitResult> {
+export async function checkRateLimit(name: LimiterName): Promise<RateLimitResult> {
   const limiter = getLimiter(name);
   if (!limiter) {
     if (process.env.NODE_ENV === "production") {
@@ -67,9 +68,6 @@ export async function checkRateLimit(
   const result = await limiter.limit(id);
   if (result.success) return { ok: true, remaining: result.remaining };
 
-  const retryAfterSeconds = Math.max(
-    1,
-    Math.ceil((result.reset - Date.now()) / 1000),
-  );
+  const retryAfterSeconds = Math.max(1, Math.ceil((result.reset - Date.now()) / 1000));
   return { ok: false, retryAfterSeconds };
 }
