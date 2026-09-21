@@ -59,10 +59,8 @@ export function SiteHeader() {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "rounded-full px-3 py-1.5 text-sm font-medium transition-colors",
-                    active
-                      ? "bg-brand-mor text-white"
-                      : "bg-brand-mor/15 text-brand-mor hover:bg-brand-mor/25",
+                    "rounded-full px-3 py-1.5 text-sm font-medium text-white transition-colors",
+                    active ? "bg-brand" : "bg-brand/85 hover:bg-brand",
                   )}
                 >
                   {item.label}
@@ -118,8 +116,8 @@ export function SiteHeader() {
                     "rounded-md px-3 py-2.5 text-base transition-colors",
                     vurgu
                       ? active
-                        ? "bg-brand-mor font-medium text-white"
-                        : "bg-brand-mor/15 text-brand-mor hover:bg-brand-mor/25 font-medium"
+                        ? "bg-brand font-medium text-white"
+                        : "bg-brand/85 hover:bg-brand font-medium text-white"
                       : active
                         ? "bg-muted text-foreground"
                         : "text-muted-foreground hover:bg-muted/60",
