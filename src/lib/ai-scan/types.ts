@@ -9,16 +9,62 @@ export const LAYER_WEIGHTS: Record<LayerKey, number> = {
 };
 
 export const LAYER_LABELS: Record<LayerKey, { baslik: string; soru: string }> = {
-  erisim: { baslik: "Erişim", soru: "AI botları gerçekten içeri girebiliyor mu?" },
+  erisim: {
+    baslik: "Erişim",
+    soru: "ChatGPT, Claude gibi asistanların botları sitenize girebiliyor mu?",
+  },
   cikarilabilirlik: {
     baslik: "Çıkarılabilirlik",
-    soru: "JavaScript çalıştırmayan bot ne görüyor?",
+    soru: "Bir bot sayfanızı açtığında gerçek metninizi okuyabiliyor mu?",
   },
-  altyapi: { baslik: "Altyapı Dosyaları", soru: "robots, sitemap ve llms.txt yerinde mi?" },
-  anlam: { baslik: "Anlam Katmanı", soru: "Yapılandırılmış veri bir grafik kuruyor mu?" },
+  altyapi: {
+    baslik: "Altyapı Dosyaları",
+    soru: "Botlara yol gösteren dosyalar (robots, sitemap, llms.txt) yerinde mi?",
+  },
+  anlam: {
+    baslik: "Anlam Katmanı",
+    soru: "Sitenizin ne ve kim olduğunu makinelere anlatan etiketler kurulu mu?",
+  },
   alintilanabilirlik: {
     baslik: "Alıntılanabilirlik",
-    soru: "Alıntılanacak net bir pasaj var mı?",
+    soru: "Yapay zekâ cevap verirken sitenizden alıntı yapabilir mi?",
+  },
+};
+
+/** Katman başına sabit vurgu rengi — sonuç kartları + sayfa açıklaması aynı dili konuşur. */
+export const LAYER_COLORS: Record<
+  LayerKey,
+  { border: string; text: string; bg: string; ring: string }
+> = {
+  erisim: {
+    border: "border-l-sky-400",
+    text: "text-sky-400",
+    bg: "bg-sky-400/10",
+    ring: "border-sky-400/50",
+  },
+  cikarilabilirlik: {
+    border: "border-l-violet-400",
+    text: "text-violet-400",
+    bg: "bg-violet-400/10",
+    ring: "border-violet-400/50",
+  },
+  altyapi: {
+    border: "border-l-teal-400",
+    text: "text-teal-400",
+    bg: "bg-teal-400/10",
+    ring: "border-teal-400/50",
+  },
+  anlam: {
+    border: "border-l-fuchsia-400",
+    text: "text-fuchsia-400",
+    bg: "bg-fuchsia-400/10",
+    ring: "border-fuchsia-400/50",
+  },
+  alintilanabilirlik: {
+    border: "border-l-orange-400",
+    text: "text-orange-400",
+    bg: "bg-orange-400/10",
+    ring: "border-orange-400/50",
   },
 };
 
