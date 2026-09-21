@@ -6,7 +6,7 @@ import { Calendar, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Markdown } from "@/components/site/markdown";
 import { parseVideoUrl } from "@/lib/embed";
-import { kategoriOptions } from "@/lib/validations/case-study";
+import { calismaKategoriOptions } from "@/lib/validations/case-study";
 
 type PreviewData = {
   baslik: string;
@@ -27,7 +27,7 @@ type Props = {
 };
 
 function kategoriLabel(slug: string): string {
-  return kategoriOptions.find((o) => o.value === slug)?.label ?? slug;
+  return calismaKategoriOptions.find((o) => o.value === slug)?.label ?? slug;
 }
 
 export function CasePreviewModal({ data, onClose }: Props) {
@@ -71,10 +71,7 @@ export function CasePreviewModal({ data, onClose }: Props) {
       </div>
 
       {/* Scroll edilebilir içerik */}
-      <div
-        className="bg-background flex-1 overflow-y-auto"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="bg-background flex-1 overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         <article className="mx-auto max-w-screen-xl px-4 py-12 sm:px-6 lg:px-10 lg:py-16">
           {/* Video / kapak */}
           <div className="mx-auto max-w-4xl">
@@ -115,7 +112,7 @@ export function CasePreviewModal({ data, onClose }: Props) {
                 ) : null}
               </div>
             ) : (
-              <div className="border-border bg-muted/20 text-muted-foreground relative aspect-video overflow-hidden rounded-2xl border flex items-center justify-center text-sm">
+              <div className="border-border bg-muted/20 text-muted-foreground relative flex aspect-video items-center justify-center overflow-hidden rounded-2xl border text-sm">
                 Kapak görseli/videosu yok
               </div>
             )}
@@ -129,9 +126,7 @@ export function CasePreviewModal({ data, onClose }: Props) {
 
             <div className="border-border/40 mt-4 flex flex-col gap-4 border-b pb-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex flex-wrap items-center gap-2 text-sm">
-                {data.musteri_adi ? (
-                  <span className="font-medium">{data.musteri_adi}</span>
-                ) : null}
+                {data.musteri_adi ? <span className="font-medium">{data.musteri_adi}</span> : null}
                 {data.musteri_adi && data.kategori.length > 0 ? (
                   <span className="text-muted-foreground/40">·</span>
                 ) : null}

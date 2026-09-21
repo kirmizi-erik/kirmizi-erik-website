@@ -13,9 +13,6 @@ import { cn } from "@/lib/utils";
 const SERVICE_TO_CATEGORY: Record<string, string> = {
   "video-produksiyon": "video",
   "fotograf-cekimleri": "fotograf",
-  "dijital-pazarlama": "dijital",
-  "sosyal-medya-yonetimi": "sosyal",
-  "uygulama-gelistirme": "uygulama",
   "web-tasarim-yazilim": "web",
   "ai-kurulumlari": "ai",
   "grafik-tasarim": "grafik",
@@ -48,7 +45,7 @@ function MiniWorkCard({ w }: { w: WorkRow }) {
     <Link
       href={`/calismalar/${w.slug}`}
       aria-label={w.baslik}
-      className="group relative block aspect-video overflow-hidden rounded-xl border border-border/60 bg-muted/40 transition-colors hover:border-foreground/30"
+      className="group border-border/60 bg-muted/40 hover:border-foreground/30 relative block aspect-video overflow-hidden rounded-xl border transition-colors"
     >
       {directVideo ? (
         <video
@@ -77,26 +74,20 @@ function MiniWorkCard({ w }: { w: WorkRow }) {
         <div className="flex items-end justify-between gap-3">
           <div className="min-w-0">
             {w.musteri_adi ? (
-              <div className="text-muted-foreground text-[11px]">
-                {w.musteri_adi}
-              </div>
+              <div className="text-muted-foreground text-[11px]">{w.musteri_adi}</div>
             ) : null}
             <h3 className="text-foreground mt-0.5 truncate text-sm font-semibold tracking-tight sm:text-base">
               {w.baslik}
             </h3>
           </div>
-          <ArrowUpRight className="text-foreground size-4 shrink-0 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          <ArrowUpRight className="text-foreground size-4 shrink-0 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </div>
       </div>
     </Link>
   );
 }
 
-export async function RelatedWorks({
-  serviceSlug,
-  serviceLabel,
-  limit = 6,
-}: Props) {
+export async function RelatedWorks({ serviceSlug, serviceLabel, limit = 6 }: Props) {
   const categoryValue = SERVICE_TO_CATEGORY[serviceSlug];
   if (!categoryValue) return null;
 
@@ -137,12 +128,7 @@ export async function RelatedWorks({
       </div>
 
       {liste.length > 0 ? (
-        <div
-          className={cn(
-            "mt-10 grid gap-4 sm:gap-5",
-            "sm:grid-cols-2 lg:grid-cols-3",
-          )}
-        >
+        <div className={cn("mt-10 grid gap-4 sm:gap-5", "sm:grid-cols-2 lg:grid-cols-3")}>
           {liste.map((w) => (
             <MiniWorkCard key={w.slug} w={w} />
           ))}
@@ -150,8 +136,8 @@ export async function RelatedWorks({
       ) : (
         <div className="border-border/40 bg-card/30 mt-10 rounded-2xl border p-10 text-center">
           <p className="text-muted-foreground text-sm">
-            Bu kategoride yayınlanmış çalışma henüz yok. Admin panelden bir
-            çalışmayı bu kategoriye ekleyince burada otomatik görünecek.
+            Bu kategoride yayınlanmış çalışma henüz yok. Admin panelden bir çalışmayı bu kategoriye
+            ekleyince burada otomatik görünecek.
           </p>
         </div>
       )}

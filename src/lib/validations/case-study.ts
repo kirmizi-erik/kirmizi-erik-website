@@ -21,6 +21,19 @@ export const kategoriOptions = [
   { value: "3d-2d", label: "3D/2D" },
 ] as const;
 
+/**
+ * Çalışmalar (portföy) bölümünde gösterilmeyen kategoriler. Bu hizmetler hâlâ
+ * satılıyor — iletişim formunda seçilebilirler, ama portföyde kategori değiller.
+ */
+const CALISMA_DISI_KATEGORILER: string[] = ["dijital", "sosyal", "uygulama"];
+
+export const calismaKategoriOptions = kategoriOptions.filter(
+  (k) => !CALISMA_DISI_KATEGORILER.includes(k.value),
+);
+
+export const isCalismaKategori = (value: string) =>
+  calismaKategoriOptions.some((k) => k.value === value);
+
 export const caseStudyInputSchema = z.object({
   baslik: z.string().min(2, "En az 2 karakter").max(200),
   slug: z
