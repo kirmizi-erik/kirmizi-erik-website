@@ -7,6 +7,7 @@ import { HeroSection } from "@/components/site/hero-section";
 import { OpenChatButton } from "@/components/site/open-chat-button";
 import { ServicesSection } from "@/components/site/services-section";
 import { Button } from "@/components/ui/button";
+import { faqPageSchema, homeFaq, jsonLdScript } from "@/lib/schema";
 
 export default function HomePage() {
   return (
@@ -89,6 +90,33 @@ export default function HomePage() {
       <div className="bg-muted">
         <BrandsStrip />
       </div>
+
+      {/* SSS — bot-okunur, alıntılanabilir pasajlar (FAQPage şemasıyla aynı kaynak) */}
+      <section className="border-border/40 border-t">
+        <div className="mx-auto max-w-screen-2xl px-4 py-20 sm:px-6 lg:px-10 lg:py-24">
+          <div className="grid gap-10 lg:grid-cols-12">
+            <div className="lg:col-span-4">
+              <h2 className="font-heading text-3xl leading-[0.95] font-black tracking-tight sm:text-4xl">
+                Sık sorulan
+                <br />
+                <span className="text-brand">sorular</span>
+              </h2>
+              <p className="text-muted-foreground mt-4 text-base leading-relaxed">
+                Kısa ve net: ajans, hizmetler ve çalışma biçimi hakkında en çok merak edilenler.
+              </p>
+            </div>
+            <div className="space-y-8 lg:col-span-8">
+              {homeFaq.map((f) => (
+                <div key={f.soru} className="border-border/40 border-b pb-8 last:border-0">
+                  <h3 className="font-heading text-lg font-bold sm:text-xl">{f.soru}</h3>
+                  <p className="text-muted-foreground mt-3 text-base leading-relaxed">{f.cevap}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(faqPageSchema)} />
 
       {/* Alt CTA bandı — koyu */}
       <section className="border-border/40 mx-auto max-w-screen-2xl border-t px-4 py-24 sm:px-6 lg:px-10 lg:py-28">

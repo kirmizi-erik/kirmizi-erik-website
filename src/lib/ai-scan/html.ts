@@ -79,11 +79,13 @@ export function analyzeHtml(html: string, hostname: string): HtmlAnalysis {
     if (seg.length >= 120) quotableSections += 1;
   }
 
-  const brandToken = bareHost.split(".")[0] ?? "";
+  // Marka tespiti: hostname token'ı ("kirmizierik") metindeki yazımla
+  // ("Kırmızı Erik") eşleşsin diye iki taraf da fold edilir (diakritik +
+  // boşluk düşürme).
+  const brandToken = trFold(bareHost.split(".")[0] ?? "");
+  const foldedText = trFold(text).replace(/\s+/g, "");
   const brandMentions =
-    brandToken.length >= 3
-      ? countMatches(text.toLocaleLowerCase("tr-TR"), new RegExp(escapeRe(brandToken), "g"))
-      : 0;
+    brandToken.length >= 3 ? countMatches(foldedText, new RegExp(escapeRe(brandToken), "g")) : 0;
 
   const firstP = stripped.match(/<p[\s>]([\s\S]*?)<\/p>/i)?.[1] ?? "";
   const firstParagraphChars = firstP
@@ -179,6 +181,19 @@ function detectAnalytics(html: string): string[] {
   if (/hotjar/i.test(html)) out.push("Hotjar");
   if (/plausible\.io/i.test(html)) out.push("Plausible");
   return out;
+}
+
+function trFold(s: string): string {
+  return s
+    .replace(/İ/g, "i")
+    .replace(/I/g, "ı")
+    .toLocaleLowerCase("tr-TR")
+    .replace(/ç/g, "c")
+    .replace(/ğ/g, "g")
+    .replace(/ı/g, "i")
+    .replace(/ö/g, "o")
+    .replace(/ş/g, "s")
+    .replace(/ü/g, "u");
 }
 
 function countMatches(s: string, re: RegExp): number {
