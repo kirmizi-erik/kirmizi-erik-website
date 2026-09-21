@@ -56,6 +56,9 @@ export default function HomePage() {
                   Siteniz yapay zekâya <span className="text-brand-mor">görünüyor mu?</span>
                 </h2>
                 <p className="text-muted-foreground mt-4 text-base leading-relaxed">
+                  <strong className="text-foreground font-medium">
+                    Google&apos;da SEO ne işe yarıyorsa, yapay zekâda da bu.
+                  </strong>{" "}
                   ChatGPT, Claude ve Perplexity&apos;nin cevaplarında yer alıp almadığınızı 20
                   saniyede ölçün — beş katmanlı puan, bulgular ve çözüm listesi ücretsiz.
                 </p>

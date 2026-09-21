@@ -9,7 +9,7 @@ import { ScanClient } from "./scan-client";
 export const metadata = {
   title: "KeScan — Ücretsiz AI Görünürlük Testi",
   description:
-    "Sitenizi ücretsiz tarayın: ChatGPT, Claude, Perplexity ve Google'ın AI cevaplarında yer almak için taranabilirlik, okunabilirlik ve alıntılanabilirlik puanınızı görün.",
+    "Google için SEO ne ise, yapay zekâ için de KeScan onu ölçer. Sitenizi ücretsiz tarayın: ChatGPT, Claude, Perplexity ve Google'ın AI cevaplarında yer almak için taranabilirlik, okunabilirlik ve alıntılanabilirlik puanınızı görün.",
 };
 
 // Tarama 5 bot kimliği + altyapı dosyalarını gerçek isteklerle çeker
@@ -45,9 +45,12 @@ export default function AiGorunurlukPage() {
               Siteniz yapay zekâya <span className="text-brand">görünüyor mu?</span>
             </h1>
             <p className="text-muted-foreground mx-auto mt-5 max-w-2xl text-base leading-relaxed sm:text-lg">
-              ChatGPT, Claude, Perplexity ve Google&apos;ın yapay zekâ cevaplarında yer almak için
-              siteniz önce taranabilir, sonra okunabilir, en sonunda alıntılanabilir olmalı. Beş
-              katmanda ölçüyoruz.
+              <strong className="text-foreground font-medium">
+                Google&apos;da SEO ne işe yarıyorsa, yapay zekâda da bu.
+              </strong>{" "}
+              Artık müşteriniz ürününüzü Google&apos;da aramadan önce ChatGPT&apos;ye soruyor. Orada
+              önerilebilmek için siteniz önce taranabilir, sonra okunabilir, en sonunda
+              alıntılanabilir olmalı. KeScan bu beş katmanı ölçüp puanlar.
             </p>
             <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
               <span className="text-muted-foreground text-xs tracking-widest">
