@@ -29,9 +29,7 @@ export function SiteHeader() {
     <header
       className={cn(
         "sticky top-0 z-50 w-full transition-colors",
-        scrolled
-          ? "border-b border-border/60 bg-background/80 backdrop-blur-xl"
-          : "bg-transparent",
+        scrolled ? "border-border/60 bg-background/80 border-b backdrop-blur-xl" : "bg-transparent",
       )}
     >
       <div className="mx-auto flex h-16 max-w-screen-2xl items-center justify-between px-4 sm:px-6 lg:px-10">
@@ -54,19 +52,30 @@ export function SiteHeader() {
         {/* Desktop nav */}
         <nav className="hidden items-center gap-8 md:flex">
           {navItems.map((item) => {
-            const active =
-              item.href === "/"
-                ? pathname === "/"
-                : pathname.startsWith(item.href);
+            const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+            if (item.href === "/ai-gorunurluk") {
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "rounded-full px-3 py-1.5 text-sm font-medium transition-colors",
+                    active
+                      ? "bg-brand-mor text-white"
+                      : "bg-brand-mor/15 text-brand-mor hover:bg-brand-mor/25",
+                  )}
+                >
+                  {item.label}
+                </Link>
+              );
+            }
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 className={cn(
                   "text-sm transition-colors",
-                  active
-                    ? "text-foreground"
-                    : "text-muted-foreground hover:text-foreground",
+                  active ? "text-foreground" : "text-muted-foreground hover:text-foreground",
                 )}
               >
                 {item.label}
@@ -95,13 +104,11 @@ export function SiteHeader() {
 
       {/* Mobil menu drawer */}
       {open ? (
-        <div className="border-border/60 border-t bg-background/95 backdrop-blur md:hidden">
+        <div className="border-border/60 bg-background/95 border-t backdrop-blur md:hidden">
           <nav className="mx-auto flex max-w-screen-2xl flex-col gap-1 px-4 py-4 sm:px-6">
             {navItems.map((item) => {
-              const active =
-                item.href === "/"
-                  ? pathname === "/"
-                  : pathname.startsWith(item.href);
+              const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+              const vurgu = item.href === "/ai-gorunurluk";
               return (
                 <Link
                   key={item.href}
@@ -109,9 +116,13 @@ export function SiteHeader() {
                   onClick={closeMenu}
                   className={cn(
                     "rounded-md px-3 py-2.5 text-base transition-colors",
-                    active
-                      ? "bg-muted text-foreground"
-                      : "text-muted-foreground hover:bg-muted/60",
+                    vurgu
+                      ? active
+                        ? "bg-brand-mor font-medium text-white"
+                        : "bg-brand-mor/15 text-brand-mor hover:bg-brand-mor/25 font-medium"
+                      : active
+                        ? "bg-muted text-foreground"
+                        : "text-muted-foreground hover:bg-muted/60",
                   )}
                 >
                   {item.label}
@@ -119,7 +130,9 @@ export function SiteHeader() {
               );
             })}
             <Button asChild className="mt-2 w-full">
-              <Link href="/iletisim" onClick={closeMenu}>Brief paylaş</Link>
+              <Link href="/iletisim" onClick={closeMenu}>
+                Brief paylaş
+              </Link>
             </Button>
           </nav>
         </div>
