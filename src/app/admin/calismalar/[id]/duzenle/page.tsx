@@ -8,29 +8,21 @@ import { createClient } from "@/lib/supabase/server";
 import type { CaseStudyDurum } from "@/lib/validations/case-study";
 
 import { CaseForm } from "../../case-form";
-import { DeleteCaseButton } from "./delete-button";
+import { DeleteCaseButton } from "../../delete-case-button";
 
 type PageProps = { params: Promise<{ id: string }> };
 
 export async function generateMetadata({ params }: PageProps) {
   const { id } = await params;
   const supabase = await createClient();
-  const { data } = await supabase
-    .from("case_studies")
-    .select("baslik")
-    .eq("id", id)
-    .single();
+  const { data } = await supabase.from("case_studies").select("baslik").eq("id", id).single();
   return { title: data?.baslik ?? "Çalışma" };
 }
 
 export default async function CaseDuzenlePage({ params }: PageProps) {
   const { id } = await params;
   const supabase = await createClient();
-  const { data: cs, error } = await supabase
-    .from("case_studies")
-    .select("*")
-    .eq("id", id)
-    .single();
+  const { data: cs, error } = await supabase.from("case_studies").select("*").eq("id", id).single();
 
   if (error || !cs) notFound();
 

@@ -17,13 +17,10 @@ import {
 import { cn } from "@/lib/utils";
 
 import { parseVideoUrl } from "@/lib/embed";
-import {
-  IMAGE_GUIDELINES,
-  MAX_IMAGE_SIZE_MB,
-  MAX_VIDEO_SIZE_MB,
-} from "@/lib/upload-limits";
+import { IMAGE_GUIDELINES, MAX_IMAGE_SIZE_MB, MAX_VIDEO_SIZE_MB } from "@/lib/upload-limits";
 
-import { createCaseStudy, updateCaseStudy, uploadMedia } from "./actions";
+import { createCaseStudy, updateCaseStudy } from "./actions";
+import { uploadFile } from "./upload-file";
 import { CasePreviewModal } from "./case-preview-modal";
 
 type CaseFormProps = {
@@ -68,9 +65,7 @@ export function CaseForm({ mode, initial }: CaseFormProps) {
   const [oneCikan, setOneCikan] = useState<boolean>(initial?.one_cikan ?? false);
 
   const toggleKategori = (val: string) =>
-    setKategori((prev) =>
-      prev.includes(val) ? prev.filter((v) => v !== val) : [...prev, val],
-    );
+    setKategori((prev) => (prev.includes(val) ? prev.filter((v) => v !== val) : [...prev, val]));
 
   const handleUpload = async (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -82,9 +77,7 @@ export function CaseForm({ mode, initial }: CaseFormProps) {
 
     setBusy(target);
     for (const file of files) {
-      const fd = new FormData();
-      fd.append("file", file);
-      const res = await uploadMedia(fd);
+      const res = await uploadFile(file);
 
       if (!res.ok) {
         toast.error(`${file.name}: ${res.error}`);
@@ -102,7 +95,9 @@ export function CaseForm({ mode, initial }: CaseFormProps) {
       }
     }
     setBusy(null);
-    toast.success(target === "galeri" && files.length > 1 ? `${files.length} görsel yüklendi` : "Yüklendi");
+    toast.success(
+      target === "galeri" && files.length > 1 ? `${files.length} görsel yüklendi` : "Yüklendi",
+    );
   };
 
   const submitForm = (formData: FormData, overrideDurum?: CaseStudyDurum) => {
@@ -251,7 +246,7 @@ export function CaseForm({ mode, initial }: CaseFormProps) {
               </div>
             </div>
 
-            <div className="md:col-span-2 space-y-2">
+            <div className="space-y-2 md:col-span-2">
               <label className="flex cursor-pointer items-center gap-2">
                 <input
                   type="checkbox"
@@ -267,8 +262,9 @@ export function CaseForm({ mode, initial }: CaseFormProps) {
                 <div className="border-brand/40 bg-brand/5 text-brand flex items-start gap-2 rounded-md border p-3 text-xs">
                   <span className="bg-brand mt-1 size-1.5 shrink-0 rounded-full" />
                   <div>
-                    <strong>Heads up:</strong> &quot;Öne çıkan&quot; işaretli ama <strong>Durum: {durumLabel[durum]}</strong>.
-                    Anasayfada görünmesi için durumu <strong>Yayında</strong> yapman gerek.
+                    <strong>Heads up:</strong> &quot;Öne çıkan&quot; işaretli ama{" "}
+                    <strong>Durum: {durumLabel[durum]}</strong>. Anasayfada görünmesi için durumu{" "}
+                    <strong>Yayında</strong> yapman gerek.
                   </div>
                 </div>
               ) : null}
@@ -288,11 +284,15 @@ export function CaseForm({ mode, initial }: CaseFormProps) {
                 {kapakUrl ? (
                   <>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={kapakUrl} alt="" className="absolute inset-0 size-full object-cover" />
+                    <img
+                      src={kapakUrl}
+                      alt=""
+                      className="absolute inset-0 size-full object-cover"
+                    />
                     <button
                       type="button"
                       onClick={() => setKapakUrl("")}
-                      className="absolute right-2 top-2 inline-flex size-7 items-center justify-center rounded-full bg-black/70 text-white hover:bg-black"
+                      className="absolute top-2 right-2 inline-flex size-7 items-center justify-center rounded-full bg-black/70 text-white hover:bg-black"
                     >
                       <X className="size-3.5" />
                     </button>
@@ -319,7 +319,10 @@ export function CaseForm({ mode, initial }: CaseFormProps) {
                   <strong>Önerilen:</strong> {IMAGE_GUIDELINES.cover.recommended} ·{" "}
                   {IMAGE_GUIDELINES.cover.aspect}
                 </div>
-                <div>Max {MAX_IMAGE_SIZE_MB} MB · jpg/png/webp · {IMAGE_GUIDELINES.cover.note}</div>
+                <div>
+                  Max {MAX_IMAGE_SIZE_MB} MB · jpg/png/webp · otomatik webp + 2000 px ·{" "}
+                  {IMAGE_GUIDELINES.cover.note}
+                </div>
               </div>
             </div>
 
@@ -397,9 +400,7 @@ export function CaseForm({ mode, initial }: CaseFormProps) {
                   <strong>Önerilen:</strong> {IMAGE_GUIDELINES.videoPreview.recommended} ·{" "}
                   {IMAGE_GUIDELINES.videoPreview.aspect}
                 </div>
-                <div>
-                  Max {MAX_VIDEO_SIZE_MB} MB · mp4/webm · YouTube/Vimeo URL de kabul edilir
-                </div>
+                <div>Max {MAX_VIDEO_SIZE_MB} MB · mp4/webm · YouTube/Vimeo URL de kabul edilir</div>
               </div>
             </div>
           </div>
@@ -414,13 +415,16 @@ export function CaseForm({ mode, initial }: CaseFormProps) {
             {galeri.length > 0 ? (
               <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6">
                 {galeri.map((g) => (
-                  <div key={g} className="border-border relative aspect-square overflow-hidden rounded-md border">
+                  <div
+                    key={g}
+                    className="border-border relative aspect-square overflow-hidden rounded-md border"
+                  >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={g} alt="" className="absolute inset-0 size-full object-cover" />
                     <button
                       type="button"
                       onClick={() => setGaleri((arr) => arr.filter((x) => x !== g))}
-                      className="absolute right-1 top-1 inline-flex size-6 items-center justify-center rounded-full bg-black/70 text-white hover:bg-black"
+                      className="absolute top-1 right-1 inline-flex size-6 items-center justify-center rounded-full bg-black/70 text-white hover:bg-black"
                     >
                       <X className="size-3" />
                     </button>
@@ -449,7 +453,9 @@ export function CaseForm({ mode, initial }: CaseFormProps) {
                 <strong>Önerilen:</strong> {IMAGE_GUIDELINES.gallery.recommended} ·{" "}
                 {IMAGE_GUIDELINES.gallery.aspect}
               </div>
-              <div>Her görsel max {MAX_IMAGE_SIZE_MB} MB · jpg/png/webp</div>
+              <div>
+                Her görsel max {MAX_IMAGE_SIZE_MB} MB · jpg/png/webp · otomatik webp + 2000 px
+              </div>
             </div>
           </div>
         </section>
@@ -470,9 +476,7 @@ export function CaseForm({ mode, initial }: CaseFormProps) {
               className="border-input bg-background focus-visible:ring-ring w-full rounded-md border px-3 py-2 text-sm leading-relaxed focus-visible:ring-2 focus-visible:outline-none"
               placeholder="İşi anlat — ne, nasıl, neden? Markdown destekli (## başlık, **kalın**, *italik*, listeler, link)."
             />
-            <p className="text-muted-foreground text-xs">
-              Markdown destekli · max 20.000 karakter
-            </p>
+            <p className="text-muted-foreground text-xs">Markdown destekli · max 20.000 karakter</p>
           </div>
         </section>
 

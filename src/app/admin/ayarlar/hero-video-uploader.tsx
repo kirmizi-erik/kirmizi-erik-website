@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { IMAGE_GUIDELINES, MAX_VIDEO_SIZE_MB } from "@/lib/upload-limits";
 
-import { uploadMedia } from "../calismalar/actions";
+import { uploadFile } from "../calismalar/upload-file";
 
 type Props = {
   name: string;
@@ -29,9 +29,7 @@ export function HeroVideoUploader({ name, defaultValue }: Props) {
     e.target.value = "";
 
     setBusy(true);
-    const fd = new FormData();
-    fd.append("file", file);
-    const res = await uploadMedia(fd);
+    const res = await uploadFile(file);
     setBusy(false);
 
     if (!res.ok) {

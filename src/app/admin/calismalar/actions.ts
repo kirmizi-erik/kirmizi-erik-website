@@ -3,12 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { optimizeUpload } from "@/lib/image";
 import { createClient } from "@/lib/supabase/server";
 import { MAX_IMAGE_SIZE_MB, MAX_VIDEO_SIZE_MB } from "@/lib/upload-limits";
-import {
-  caseStudyInputSchema,
-  type CaseStudyInput,
-} from "@/lib/validations/case-study";
+import { caseStudyInputSchema, type CaseStudyInput } from "@/lib/validations/case-study";
 
 export type ActionResult<T = void> =
   | { ok: true; data?: T; message?: string }
@@ -67,9 +65,7 @@ function normalizeForDb(input: CaseStudyInput) {
   };
 }
 
-export async function createCaseStudy(
-  formData: FormData,
-): Promise<ActionResult<{ id: string }>> {
+export async function createCaseStudy(formData: FormData): Promise<ActionResult<{ id: string }>> {
   const input = parseFromFormData(formData);
   const parsed = caseStudyInputSchema.safeParse(input);
   if (!parsed.success) {
@@ -78,11 +74,7 @@ export async function createCaseStudy(
 
   const supabase = await createClient();
   const row = normalizeForDb(parsed.data);
-  const { data, error } = await supabase
-    .from("case_studies")
-    .insert(row)
-    .select("id")
-    .single();
+  const { data, error } = await supabase.from("case_studies").insert(row).select("id").single();
 
   if (error) {
     if (error.code === "23505") {
@@ -97,10 +89,7 @@ export async function createCaseStudy(
   redirect(`/admin/calismalar/${data.id}/duzenle`);
 }
 
-export async function updateCaseStudy(
-  id: string,
-  formData: FormData,
-): Promise<ActionResult> {
+export async function updateCaseStudy(id: string, formData: FormData): Promise<ActionResult> {
   const input = parseFromFormData(formData);
   const parsed = caseStudyInputSchema.safeParse(input);
   if (!parsed.success) {
@@ -120,9 +109,7 @@ export async function updateCaseStudy(
   const yayinDegisiyor = current?.durum !== "yayinda" && row.durum === "yayinda";
   const finalRow = {
     ...row,
-    yayin_tarihi: yayinDegisiyor
-      ? new Date().toISOString()
-      : (current?.yayin_tarihi ?? null),
+    yayin_tarihi: yayinDegisiyor ? new Date().toISOString() : (current?.yayin_tarihi ?? null),
   };
 
   const { error } = await supabase.from("case_studies").update(finalRow).eq("id", id);
@@ -153,58 +140,108 @@ export async function deleteCaseStudy(id: string): Promise<ActionResult> {
   redirect("/admin/calismalar");
 }
 
-export async function uploadMedia(
-  formData: FormData,
-): Promise<ActionResult<{ url: string; path: string }>> {
-  const file = formData.get("file");
-  if (!(file instanceof File) || file.size === 0) {
-    return { ok: false, error: "Dosya bulunamadı" };
+/*
+ * Yükleme iki adımda: dosya baytları Vercel'den GEÇMEZ.
+ * Vercel fonksiyonları istek gövdesini 4.5 MB'ta keser (413) — bu yüzden
+ * tarayıcı dosyayı imzalı URL ile doğrudan Supabase'e yükler, sunucu ardından
+ * görseli Supabase'den çekip optimize eder. Böylece büyük kamera fotoğrafları
+ * ve videolar da sorunsuz yüklenir.
+ */
+
+const BUCKET = "case-media";
+const STORAGE_PATH = /^\d{13}-[a-z0-9-]{1,60}\.[a-z0-9]{1,5}$/;
+
+export async function createUploadUrl(
+  filename: string,
+  contentType: string,
+  size: number,
+): Promise<ActionResult<{ path: string; token: string }>> {
+  const isVideo = contentType.startsWith("video/");
+  const isImage = contentType.startsWith("image/");
+  if (!isVideo && !isImage) {
+    return { ok: false, error: "Yalnızca görsel veya video yüklenebilir." };
   }
 
-  const isVideo = file.type.startsWith("video/");
   const maxMB = isVideo ? MAX_VIDEO_SIZE_MB : MAX_IMAGE_SIZE_MB;
-  const maxBytes = maxMB * 1024 * 1024;
-  if (file.size > maxBytes) {
-    const sizeMB = (file.size / 1024 / 1024).toFixed(1);
+  if (size <= 0 || size > maxMB * 1024 * 1024) {
+    const sizeMB = (size / 1024 / 1024).toFixed(1);
     return {
       ok: false,
       error: `Dosya çok büyük (${sizeMB} MB). ${isVideo ? "Video" : "Görsel"} için maksimum ${maxMB} MB.`,
     };
   }
 
+  const safe =
+    filename
+      .replace(/\.[^.]+$/, "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 60) || "media";
+  const ext =
+    (filename.split(".").pop() ?? "bin")
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, "")
+      .slice(0, 5) || "bin";
+  const path = `${Date.now()}-${safe}.${ext}`;
+
   const supabase = await createClient();
-  const ext = file.name.split(".").pop()?.toLowerCase() ?? "bin";
-  const safe = file.name
-    .replace(/\.[^.]+$/, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 60);
-  const path = `${Date.now()}-${safe || "media"}.${ext}`;
+  const { data, error } = await supabase.storage.from(BUCKET).createSignedUploadUrl(path);
+  if (error || !data) {
+    console.error("[createUploadUrl]", error?.message);
+    return { ok: false, error: `Yükleme başlatılamadı: ${error?.message ?? "bilinmeyen hata"}` };
+  }
+  return { ok: true, data: { path: data.path, token: data.token } };
+}
+
+export async function finalizeUpload(
+  path: string,
+  contentType: string,
+): Promise<ActionResult<{ url: string; path: string }>> {
+  if (!STORAGE_PATH.test(path)) {
+    return { ok: false, error: "Geçersiz dosya yolu." };
+  }
+
+  const supabase = await createClient();
+  const publicUrl = (p: string) => supabase.storage.from(BUCKET).getPublicUrl(p).data.publicUrl;
+
+  if (!contentType.startsWith("image/")) {
+    return { ok: true, data: { url: publicUrl(path), path } };
+  }
 
   try {
-    const { error: upErr } = await supabase.storage
-      .from("case-media")
-      .upload(path, file, {
-        cacheControl: "31536000",
-        upsert: false,
-        contentType: file.type || undefined,
-      });
-    if (upErr) {
-      console.error("[uploadMedia] storage error", {
-        message: upErr.message,
-        name: file.name,
-        size: file.size,
-      });
-      return { ok: false, error: `Yüklenemedi: ${upErr.message}` };
+    const { data: blob, error: dlErr } = await supabase.storage.from(BUCKET).download(path);
+    if (dlErr || !blob) throw new Error(dlErr?.message ?? "indirilemedi");
+
+    const original = Buffer.from(await blob.arrayBuffer());
+    const optimized = await optimizeUpload(original, path, contentType);
+
+    // SVG/GIF veya optimize edilemeyen görsel: yüklenen dosya olduğu gibi kalır.
+    if (optimized.buffer === original) {
+      return { ok: true, data: { url: publicUrl(path), path } };
     }
 
-    const { data: pub } = supabase.storage.from("case-media").getPublicUrl(path);
-    return { ok: true, data: { url: pub.publicUrl, path } };
+    // Zaten webp yüklendiyse ad değişmez — aynı yolun üzerine yazılır.
+    const sameFile = optimized.filename === path;
+    const { error: upErr } = await supabase.storage
+      .from(BUCKET)
+      .upload(optimized.filename, optimized.buffer, {
+        cacheControl: "31536000",
+        upsert: sameFile,
+        contentType: optimized.contentType,
+      });
+    if (upErr) throw new Error(upErr.message);
+
+    if (!sameFile)
+      await supabase.storage
+        .from(BUCKET)
+        .remove([path])
+        .catch(() => {});
+
+    return { ok: true, data: { url: publicUrl(optimized.filename), path: optimized.filename } };
   } catch (err) {
-    // Yakalanmamış exception (network timeout, fetch fail, vb.)
-    console.error("[uploadMedia] exception", err);
-    const msg = err instanceof Error ? err.message : "Bilinmeyen hata";
-    return { ok: false, error: `Yükleme hatası: ${msg}` };
+    // Optimizasyon patlasa bile ham dosya zaten yüklü — onu kullan, yükleme boşa gitmesin.
+    console.warn("[finalizeUpload] optimize edilemedi, orijinal kullanılıyor", err);
+    return { ok: true, data: { url: publicUrl(path), path } };
   }
 }
