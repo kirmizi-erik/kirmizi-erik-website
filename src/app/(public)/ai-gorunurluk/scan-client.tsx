@@ -8,15 +8,26 @@ import {
   Check,
   ChevronDown,
   Copy,
+  DoorOpen,
+  FileText,
   Loader2,
   Mail,
+  Map,
+  Network,
+  Quote,
   ShieldAlert,
   Sparkles,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { LAYER_LABELS, type Finding, type ScanResult } from "@/lib/ai-scan/types";
+import {
+  LAYER_COLORS,
+  LAYER_LABELS,
+  type Finding,
+  type LayerKey,
+  type ScanResult,
+} from "@/lib/ai-scan/types";
 import { cn } from "@/lib/utils";
 
 import { scanSite, sendScanReport } from "./actions";
@@ -137,6 +148,7 @@ function ScanReport({ result }: { result: ScanResult }) {
           {result.katmanlar.map((k) => (
             <LayerRow
               key={k.key}
+              layerKey={k.key}
               baslik={LAYER_LABELS[k.key].baslik}
               soru={LAYER_LABELS[k.key].soru}
               puan={k.puan}
@@ -275,7 +287,16 @@ function ScoreRing({ skor, not: grade }: { skor: number; not: string }) {
   );
 }
 
+const LAYER_ICONS: Record<LayerKey, typeof DoorOpen> = {
+  erisim: DoorOpen,
+  cikarilabilirlik: FileText,
+  altyapi: Map,
+  anlam: Network,
+  alintilanabilirlik: Quote,
+};
+
 function LayerRow(props: {
+  layerKey: LayerKey;
   baslik: string;
   soru: string;
   puan: number;
@@ -286,8 +307,10 @@ function LayerRow(props: {
   const [open, setOpen] = useState(false);
   const renk =
     props.puan >= 80 ? "text-green-500" : props.puan >= 55 ? "text-amber-500" : "text-brand";
+  const stil = LAYER_COLORS[props.layerKey];
+  const Ikon = LAYER_ICONS[props.layerKey];
   return (
-    <div className="border-border/60 rounded-xl border">
+    <div className={cn("border-border/60 rounded-xl border border-l-4", stil.border)}>
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
@@ -296,6 +319,15 @@ function LayerRow(props: {
       >
         <span className={cn("font-heading w-12 shrink-0 text-2xl font-black", renk)}>
           {props.puan}
+        </span>
+        <span
+          className={cn(
+            "hidden size-9 shrink-0 items-center justify-center rounded-lg sm:flex",
+            stil.bg,
+            stil.text,
+          )}
+        >
+          <Ikon className="size-4" />
         </span>
         <span className="min-w-0 flex-1">
           <span className="flex flex-wrap items-center gap-2">
@@ -309,6 +341,7 @@ function LayerRow(props: {
               </span>
             ) : null}
           </span>
+          <span className={cn("mt-0.5 block text-sm font-medium", stil.text)}>{props.soru}</span>
           <span className="text-muted-foreground mt-0.5 block text-sm">{props.ozet}</span>
         </span>
         <ChevronDown
@@ -320,7 +353,6 @@ function LayerRow(props: {
       </button>
       {open ? (
         <div className="border-border/60 border-t p-4">
-          <p className="text-brand text-xs font-medium tracking-wide">{props.soru}</p>
           {props.bulgular.length ? (
             <ul className="mt-3 space-y-3">
               {props.bulgular.map((b, i) => (

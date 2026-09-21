@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowUpRight, Radar } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { LAYER_LABELS, LAYER_WEIGHTS } from "@/lib/ai-scan/types";
+import { LAYER_COLORS, LAYER_LABELS, LAYER_WEIGHTS } from "@/lib/ai-scan/types";
 
 import { ScanClient } from "./scan-client";
 
@@ -94,7 +94,9 @@ export default function AiGorunurlukPage() {
                 className="border-border/40 grid gap-3 border-t py-6 md:grid-cols-12 md:gap-6"
               >
                 <div className="flex items-center gap-4 md:col-span-4">
-                  <span className="border-brand/50 text-brand flex size-9 shrink-0 items-center justify-center rounded-full border text-sm font-bold">
+                  <span
+                    className={`${LAYER_COLORS[key].ring} ${LAYER_COLORS[key].text} flex size-9 shrink-0 items-center justify-center rounded-full border text-sm font-bold`}
+                  >
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <div>
@@ -104,7 +106,7 @@ export default function AiGorunurlukPage() {
                         %{LAYER_WEIGHTS[key]}
                       </span>
                     </h3>
-                    <p className="text-brand text-sm">{LAYER_LABELS[key].soru}</p>
+                    <p className={`${LAYER_COLORS[key].text} text-sm`}>{LAYER_LABELS[key].soru}</p>
                   </div>
                 </div>
                 <p className="text-muted-foreground text-sm leading-relaxed md:col-span-8">
