@@ -119,8 +119,12 @@ export function CaseForm({ mode, initial }: CaseFormProps) {
         if (!r.ok) toast.error(r.error);
       } else if (initial?.id) {
         const r = await updateCaseStudy(initial.id, formData);
-        if (r.ok) toast.success(r.message ?? "Kaydedildi");
-        else toast.error(r.error);
+        if (r.ok) {
+          toast.success(r.message ?? "Kaydedildi");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        } else {
+          toast.error(r.error);
+        }
       }
     });
   };
