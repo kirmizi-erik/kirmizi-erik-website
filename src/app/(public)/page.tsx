@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight, Sparkles } from "lucide-react";
+import { ArrowUpRight, Radar, Sparkles } from "lucide-react";
 
 import { BrandsStrip } from "@/components/site/brands-strip";
 import { FeaturedWorks } from "@/components/site/featured-works";
@@ -28,8 +28,7 @@ export default function HomePage() {
                   AI Asistan
                 </div>
                 <h2 className="font-heading mt-4 text-3xl leading-[1.1] font-black tracking-tight sm:text-4xl lg:text-5xl">
-                  Reklam ihtiyaçlarınızı{" "}
-                  <span className="text-brand">saniyeler içinde</span>{" "}
+                  Reklam ihtiyaçlarınızı <span className="text-brand">saniyeler içinde</span>{" "}
                   konuşabileceğiniz akıllı asistanımız hazır.
                 </h2>
                 <p className="text-muted-foreground mt-5 max-w-2xl text-base leading-relaxed sm:text-lg">
@@ -54,6 +53,35 @@ export default function HomePage() {
         <ServicesSection />
       </div>
 
+      {/* AI Görünürlük Testi bandı */}
+      <section className="border-border/40 border-t">
+        <div className="mx-auto max-w-screen-2xl px-4 py-14 sm:px-6 lg:px-10">
+          <div className="grid items-center gap-6 md:grid-cols-12">
+            <div className="md:col-span-8">
+              <div className="text-brand inline-flex items-center gap-2 text-xs tracking-widest">
+                <Radar className="size-3.5" />
+                ÜCRETSİZ ARAÇ
+              </div>
+              <h2 className="font-heading mt-3 text-2xl leading-tight font-black tracking-tight sm:text-3xl">
+                Siteniz yapay zekâya görünüyor mu?
+              </h2>
+              <p className="text-muted-foreground mt-3 max-w-2xl text-base leading-relaxed">
+                ChatGPT, Claude ve Perplexity&apos;nin cevaplarında yer alıp almadığınızı 20
+                saniyede ölçün — beş katmanlı puan, bulgular ve çözüm listesi ücretsiz.
+              </p>
+            </div>
+            <div className="md:col-span-4 md:flex md:justify-end">
+              <Button asChild size="lg" variant="outline" className="h-12 w-full px-7 sm:w-auto">
+                <Link href="/ai-gorunurluk">
+                  Sitemi test et
+                  <ArrowUpRight className="ml-1 size-4" />
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Öne çıkan işler — koyu (default) */}
       <FeaturedWorks />
 
@@ -65,7 +93,7 @@ export default function HomePage() {
       {/* Alt CTA bandı — koyu */}
       <section className="border-border/40 mx-auto max-w-screen-2xl border-t px-4 py-24 sm:px-6 lg:px-10 lg:py-28">
         <div className="grid items-end gap-8 md:grid-cols-12">
-          <h2 className="font-heading text-4xl leading-[0.95] font-black tracking-tight sm:text-5xl lg:text-6xl md:col-span-8">
+          <h2 className="font-heading text-4xl leading-[0.95] font-black tracking-tight sm:text-5xl md:col-span-8 lg:text-6xl">
             Sıradaki büyük fikir
             <br />
             <span className="text-brand-mor">senin mi?</span>
