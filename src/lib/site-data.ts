@@ -17,6 +17,7 @@ export const navItems = [
   { href: "/biz-kimiz", label: "Biz Kimiz" },
   { href: "/calismalar", label: "Çalışmalar" },
   { href: "/hizmetler", label: "Hizmetler" },
+  { href: "/ai-gorunurluk", label: "AI Testi" },
   { href: "/iletisim", label: "İletişim" },
 ] as const;
 
@@ -81,10 +82,7 @@ export const hizmetler = [
 
 export type HizmetGrup = "gorsel" | "dijital" | "yazilim";
 
-export const hizmetGrupBilgi: Record<
-  HizmetGrup,
-  { baslik: string; aciklama: string }
-> = {
+export const hizmetGrupBilgi: Record<HizmetGrup, { baslik: string; aciklama: string }> = {
   gorsel: {
     baslik: "Görsel İçerik & Tasarım",
     aciklama: "Video, fotoğraf, grafik tasarım ve 3D/2D animasyon.",
@@ -95,7 +93,6 @@ export const hizmetGrupBilgi: Record<
   },
   yazilim: {
     baslik: "Yazılım & AI",
-    aciklama:
-      "Web sitesi, mobil uygulama ve şirketlere özel AI kurulumları.",
+    aciklama: "Web sitesi, mobil uygulama ve şirketlere özel AI kurulumları.",
   },
 };
