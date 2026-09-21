@@ -56,13 +56,13 @@ export async function GET() {
 
 > Kırmızı Erik, 2001'den beri İstanbul'da faaliyet gösteren tam hizmet (full-service) reklam ajansıdır. Kurucusu ve kreatif direktörü Özkan Kurt'tur. Video prodüksiyondan şirketlere özel yapay zeka kurulumlarına dokuz hizmeti tek çatı altında, kendi ekibiyle üretir; 25 yıllık birikimle 300'e yakın markayla çalışmıştır.
 
-Ajansın ayırt edici yanı, kreatif üretim (video, fotoğraf, grafik, 3D) ile yazılım/AI mühendisliğini (web sitesi, mobil uygulama, RAG tabanlı yapay zeka asistanları, süreç otomasyonu) aynı ekipte birleştirmesidir. Sitedeki AI Brief Asistanı ve ücretsiz AI Görünürlük Testi, bu yetkinliğin canlı örnekleridir.
+Ajansın ayırt edici yanı, kreatif üretim (video, fotoğraf, grafik, 3D) ile yazılım/AI mühendisliğini (web sitesi, mobil uygulama, RAG tabanlı yapay zeka asistanları, süreç otomasyonu) aynı ekipte birleştirmesidir. Sitedeki AI Brief Asistanı ve ücretsiz KeScan (AI görünürlük testi), bu yetkinliğin canlı örnekleridir.
 
 ## Hizmetler
 
 ${services}
 
-## Ücretsiz Araç: AI Görünürlük Testi
+## Ücretsiz Araç: KeScan — AI Görünürlük Testi
 URL: ${base}/ai-gorunurluk
 
 Herhangi bir web sitesinin ChatGPT, Claude, Perplexity ve Google'ın yapay zeka cevaplarındaki görünürlüğünü beş katmanda ölçer: erişim (bot kimliğiyle gerçek istek + robots.txt tutarlılığı), çıkarılabilirlik (JS'siz metin), altyapı dosyaları (robots/sitemap/llms.txt), anlam katmanı (JSON-LD grafiği) ve alıntılanabilirlik. Bulguları yapay zekaya yapıştırılabilir bir görev listesine çevirir.

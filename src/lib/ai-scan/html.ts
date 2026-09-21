@@ -81,8 +81,9 @@ export function analyzeHtml(html: string, hostname: string): HtmlAnalysis {
 
   // Marka tespiti: hostname token'ı ("kirmizierik") metindeki yazımla
   // ("Kırmızı Erik") eşleşsin diye iki taraf da fold edilir (diakritik +
-  // boşluk düşürme).
-  const brandToken = trFold(bareHost.split(".")[0] ?? "");
+  // boşluk düşürme). Tireli domainlerde ("kirmizi-erik.com") tire de düşer,
+  // yoksa boşluksuz metinle asla eşleşmez.
+  const brandToken = trFold(bareHost.split(".")[0] ?? "").replace(/[^a-z0-9]/g, "");
   const foldedText = trFold(text).replace(/\s+/g, "");
   const brandMentions =
     brandToken.length >= 3 ? countMatches(foldedText, new RegExp(escapeRe(brandToken), "g")) : 0;

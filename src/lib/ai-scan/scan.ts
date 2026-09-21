@@ -475,7 +475,7 @@ function buildPrompt(url: string, framework: string | null, bulgular: Finding[])
     "",
     ...isler,
     "",
-    "Kaynak: Kırmızı Erik AI Görünürlük Taraması — kirmizierik.com.tr/ai-gorunurluk",
+    "Kaynak: KeScan — Kırmızı Erik AI görünürlük taraması — kirmizierik.com.tr/ai-gorunurluk",
   ].join("\n");
 }
 

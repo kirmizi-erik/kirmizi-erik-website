@@ -113,7 +113,7 @@ export async function sendScanReport(
   }));
 
   const briefText = [
-    `AI Görünürlük Taraması — ${result.hostname}`,
+    `KeScan Taraması — ${result.hostname}`,
     `Skor: ${skor}/100 (${String(result.not).slice(0, 3)})`,
     ...katmanOzet.map((k) => `${k.baslik}: ${k.puan}`),
     "",

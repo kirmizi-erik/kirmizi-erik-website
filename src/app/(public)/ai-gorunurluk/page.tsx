@@ -7,7 +7,7 @@ import { LAYER_LABELS, LAYER_WEIGHTS } from "@/lib/ai-scan/types";
 import { ScanClient } from "./scan-client";
 
 export const metadata = {
-  title: "AI Görünürlük Testi — Siteniz yapay zekâya görünüyor mu?",
+  title: "KeScan — Ücretsiz AI Görünürlük Testi",
   description:
     "Sitenizi ücretsiz tarayın: ChatGPT, Claude, Perplexity ve Google'ın AI cevaplarında yer almak için taranabilirlik, okunabilirlik ve alıntılanabilirlik puanınızı görün.",
 };
@@ -39,7 +39,7 @@ export default function AiGorunurlukPage() {
           <div className="mx-auto max-w-3xl text-center">
             <div className="text-brand inline-flex items-center gap-2 text-xs tracking-widest">
               <Radar className="size-3.5" />
-              ÜCRETSİZ AI GÖRÜNÜRLÜK TESTİ
+              KeScan · ÜCRETSİZ AI GÖRÜNÜRLÜK TESTİ
             </div>
             <h1 className="font-heading mt-4 text-4xl leading-[0.95] font-black tracking-tight sm:text-5xl lg:text-6xl">
               Siteniz yapay zekâya <span className="text-brand">görünüyor mu?</span>

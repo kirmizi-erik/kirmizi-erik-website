@@ -65,9 +65,7 @@ export async function HeroSection() {
         )}
 
         {/* Karartma overlay (video üzerinde okunabilirlik) */}
-        {video ? (
-          <div className="absolute inset-0 bg-black/55" />
-        ) : null}
+        {video ? <div className="absolute inset-0 bg-black/55" /> : null}
 
         {/* Grain (her zaman) */}
         <div className="bg-noise absolute inset-0 opacity-[0.06]" />
@@ -100,7 +98,8 @@ export async function HeroSection() {
         </h1>
 
         <p className="text-muted-foreground mt-8 max-w-2xl text-base leading-relaxed sm:text-lg">
-          {hero.subtitle}
+          Kırmızı Erik, video prodüksiyondan yazılım ve yapay zekâya dokuz hizmeti tek çatıda
+          birleştiren 360° kreatif reklam ajansıdır. {hero.subtitle}
         </p>
 
         <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">

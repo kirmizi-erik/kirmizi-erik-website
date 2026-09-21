@@ -162,7 +162,7 @@ export async function SiteFooter() {
                   href="/ai-gorunurluk"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  AI Görünürlük Testi
+                  KeScan — AI Görünürlük Testi
                 </Link>
               </li>
               <li className="border-border/40 mt-3 border-t pt-3">

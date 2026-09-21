@@ -162,7 +162,7 @@ export async function sendScanReportEmail(
   const html = `<!DOCTYPE html>
 <html><body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:640px;margin:0 auto;padding:20px;color:#111;">
   <div style="border-bottom:3px solid #DC0E18;padding-bottom:12px;margin-bottom:24px;">
-    <h1 style="margin:0;font-size:22px;font-weight:700;">AI Görünürlük Raporu</h1>
+    <h1 style="margin:0;font-size:22px;font-weight:700;">KeScan — AI Görünürlük Raporu</h1>
     <p style="margin:4px 0 0 0;color:#6b7280;font-size:13px;">${escapeHtml(input.hostname)} · Kırmızı Erik</p>
   </div>
 
@@ -199,7 +199,7 @@ export async function sendScanReportEmail(
     const { error } = await resend.emails.send({
       from: FROM_DEFAULT,
       to: [input.to],
-      subject: `${input.hostname} — AI Görünürlük Raporu (${input.skor}/100)`,
+      subject: `${input.hostname} — KeScan Raporu (${input.skor}/100)`,
       html,
     });
     if (error) {

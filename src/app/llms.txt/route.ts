@@ -47,7 +47,7 @@ ${servicePages.map((s) => `- [${s.label}](${base}/hizmetler/${s.slug}): ${s.hero
 - [Biz Kimiz](${base}/biz-kimiz): Ajansın hikayesi, ekip ve çalışma biçimi
 - [Çalışmalar](${base}/calismalar): Örnek işler ve vaka çalışmaları
 - [Hizmetler](${base}/hizmetler): Dokuz hizmetin tamamı
-- [AI Görünürlük Testi](${base}/ai-gorunurluk): Ücretsiz araç — siteniz yapay zeka cevaplarında görünüyor mu?
+- [KeScan — AI Görünürlük Testi](${base}/ai-gorunurluk): Ücretsiz araç — siteniz yapay zeka cevaplarında görünüyor mu?
 - [İletişim](${base}/iletisim): Brief paylaşma ve teklif isteme
 ${works}
 
