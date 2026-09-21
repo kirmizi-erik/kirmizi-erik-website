@@ -18,7 +18,7 @@ type WorkCardProps = {
 
 /**
  * Tek standart kart: 16:9 aspect, hover'da mp4 oynar (varsa) veya zoom efekti.
- * Tüm kartlar aynı boyut → desktop'ta yan yana 2 kart, mobilde 1 kart.
+ * Tüm kartlar aynı boyut → desktop'ta 4 sütun × 3 sıra, tablette 2, mobilde 1 kart.
  */
 function WorkCard({
   baslik,
@@ -88,7 +88,7 @@ function WorkCard({
                   {baslik}
                 </h3>
               </div>
-              <ArrowUpRight className="text-foreground size-5 shrink-0 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
+              <ArrowUpRight className="text-foreground size-5 shrink-0 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
             </div>
           </>
         )}
@@ -110,22 +110,22 @@ export async function FeaturedWorks() {
     .from("case_studies")
     .select("slug, baslik, musteri_adi, kategori, kapak_url, kapak_video_url")
     .eq("durum", "yayinda")
-    .eq("one_cikan", true)
+    .order("one_cikan", { ascending: false })
     .order("yayin_tarihi", { ascending: false, nullsFirst: false })
-    .limit(4);
+    .limit(12);
 
-  // 4 slot — boş olanlar placeholder
-  const placeholderSayisi = Math.max(0, 4 - (works?.length ?? 0));
-  const placeholders = Array.from({ length: placeholderSayisi });
+  // Son sırayı tamamlayacak kadar placeholder (4'lü grid)
   const hicYok = (works?.length ?? 0) === 0;
+  const placeholderSayisi = hicYok ? 4 : (4 - (works!.length % 4)) % 4;
+  const placeholders = Array.from({ length: placeholderSayisi });
 
   return (
     <section
       id="calismalar"
       className="border-border/40 mx-auto max-w-screen-2xl border-t px-4 py-24 sm:px-6 lg:px-10 lg:py-32"
     >
-      <div className="mb-14 grid gap-10 md:grid-cols-12">
-        <div className="md:col-span-7">
+      <div className="mb-14">
+        <div>
           <div className="text-muted-foreground inline-flex items-center gap-3 text-xs tracking-widest uppercase">
             <span className="bg-brand size-1.5 rounded-full" />
             Çalışmalarımız
@@ -136,18 +136,10 @@ export async function FeaturedWorks() {
             kendileri konuşur.
           </h2>
         </div>
-        <div className="flex md:col-span-5 md:items-end md:justify-end">
-          <Button asChild variant="ghost" size="lg">
-            <Link href="/calismalar">
-              Hepsini gör
-              <ArrowUpRight className="ml-1 size-4" />
-            </Link>
-          </Button>
-        </div>
       </div>
 
-      {/* Standart 2-sütun grid — desktop'ta yan yana 2 kart, mobil 1 */}
-      <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
+      {/* 12 iş: desktop 4 sütun × 3 sıra, tablet 2, mobil 1 */}
+      <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
         {works?.map((w) => (
           <WorkCard
             key={w.slug}
@@ -169,6 +161,15 @@ export async function FeaturedWorks() {
           Çalışmalar admin panelinden yayına alındıkça bu alanı doldurur.
         </p>
       ) : null}
+
+      <div className="mt-12 flex justify-center">
+        <Button asChild variant="outline" size="lg">
+          <Link href="/calismalar">
+            Tümünü gör
+            <ArrowUpRight className="ml-1 size-4" />
+          </Link>
+        </Button>
+      </div>
     </section>
   );
 }
