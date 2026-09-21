@@ -1,4 +1,4 @@
-import { Chatbot } from "@/components/chatbot/chatbot";
+import { ChatbotLazy } from "@/components/chatbot/chatbot-lazy";
 import { SiteFooter } from "@/components/site/footer";
 import { SiteHeader } from "@/components/site/header";
 import { WhatsAppFloat } from "@/components/site/whatsapp-float";
@@ -12,7 +12,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
       <main className="flex-1">{children}</main>
       <SiteFooter />
       <WhatsAppFloat />
-      {aiAvailable ? <Chatbot /> : null}
+      {aiAvailable ? <ChatbotLazy /> : null}
     </div>
   );
 }
