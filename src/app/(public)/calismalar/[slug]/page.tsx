@@ -7,7 +7,7 @@ import { Markdown } from "@/components/site/markdown";
 import { ShareButtons } from "@/components/site/share-buttons";
 import { parseVideoUrl } from "@/lib/embed";
 import { createClient } from "@/lib/supabase/server";
-import { kategoriOptions } from "@/lib/validations/case-study";
+import { calismaKategoriOptions, isCalismaKategori } from "@/lib/validations/case-study";
 
 type PageProps = { params: Promise<{ slug: string }> };
 
@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: PageProps) {
 }
 
 function kategoriLabel(slug: string): string {
-  return kategoriOptions.find((o) => o.value === slug)?.label ?? slug;
+  return calismaKategoriOptions.find((o) => o.value === slug)?.label ?? slug;
 }
 
 function formatTarih(iso: string | null): string {
@@ -116,14 +116,12 @@ export default async function CalismaDetayPage({ params }: PageProps) {
         <div className="border-border/40 mt-4 flex flex-col gap-4 border-b pb-4 sm:flex-row sm:items-center sm:justify-between">
           {/* Sol: müşteri + kategori chip'leri */}
           <div className="flex flex-wrap items-center gap-2 text-sm">
-            {w.musteri_adi ? (
-              <span className="font-medium">{w.musteri_adi}</span>
-            ) : null}
+            {w.musteri_adi ? <span className="font-medium">{w.musteri_adi}</span> : null}
             {w.musteri_adi && w.kategori && w.kategori.length > 0 ? (
               <span className="text-muted-foreground/40">·</span>
             ) : null}
             {w.kategori && w.kategori.length > 0
-              ? w.kategori.map((k: string) => (
+              ? w.kategori.filter(isCalismaKategori).map((k: string) => (
                   <span
                     key={k}
                     className="bg-muted text-foreground/80 rounded-full px-2.5 py-0.5 text-xs"
@@ -154,12 +152,9 @@ export default async function CalismaDetayPage({ params }: PageProps) {
         {/* Özet — YouTube açıklama paneli gibi */}
         {w.ozet ? (
           <div className="bg-muted/40 mt-4 rounded-2xl p-5">
-            <p className="text-foreground/90 text-sm leading-relaxed sm:text-base">
-              {w.ozet}
-            </p>
+            <p className="text-foreground/90 text-sm leading-relaxed sm:text-base">{w.ozet}</p>
           </div>
         ) : null}
-
       </div>
 
       {/* Açıklama */}

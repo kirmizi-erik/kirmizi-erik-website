@@ -10,7 +10,8 @@ import { Label } from "@/components/ui/label";
 import {
   durumLabel,
   durumSchema,
-  kategoriOptions,
+  calismaKategoriOptions,
+  isCalismaKategori,
   slugify,
   type CaseStudyDurum,
 } from "@/lib/validations/case-study";
@@ -56,7 +57,9 @@ export function CaseForm({ mode, initial }: CaseFormProps) {
   const [ozet, setOzet] = useState(initial?.ozet ?? "");
   const [musteri, setMusteri] = useState(initial?.musteri_adi ?? "");
   const [sektor, setSektor] = useState(initial?.sektor ?? "");
-  const [kategori, setKategori] = useState<string[]>(initial?.kategori ?? []);
+  const [kategori, setKategori] = useState<string[]>(
+    (initial?.kategori ?? []).filter(isCalismaKategori),
+  );
   const [kapakUrl, setKapakUrl] = useState(initial?.kapak_url ?? "");
   const [kapakVideoUrl, setKapakVideoUrl] = useState(initial?.kapak_video_url ?? "");
   const [aciklama, setAciklama] = useState(initial?.aciklama ?? "");
@@ -229,7 +232,7 @@ export function CaseForm({ mode, initial }: CaseFormProps) {
             <div className="space-y-2 md:col-span-2">
               <Label>Kategoriler</Label>
               <div className="flex flex-wrap gap-2">
-                {kategoriOptions.map((k) => {
+                {calismaKategoriOptions.map((k) => {
                   const sel = kategori.includes(k.value);
                   return (
                     <button

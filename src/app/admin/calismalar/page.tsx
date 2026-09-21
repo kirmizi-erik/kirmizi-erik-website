@@ -25,7 +25,11 @@ import {
 } from "@/components/ui/table";
 import { parseVideoUrl } from "@/lib/embed";
 import { createClient } from "@/lib/supabase/server";
-import { durumLabel, kategoriOptions, type CaseStudyDurum } from "@/lib/validations/case-study";
+import {
+  calismaKategoriOptions,
+  durumLabel,
+  type CaseStudyDurum,
+} from "@/lib/validations/case-study";
 import { cn } from "@/lib/utils";
 
 import { DeleteCaseButton } from "./delete-case-button";
@@ -211,7 +215,7 @@ export default async function AdminCalismalarPage({
           className="border-border bg-background h-9 cursor-pointer rounded-md border px-3 text-sm"
         >
           <option value="">Tüm kategoriler</option>
-          {kategoriOptions.map((k) => (
+          {calismaKategoriOptions.map((k) => (
             <option key={k.value} value={k.value}>
               {k.label}
             </option>
@@ -289,6 +293,7 @@ export default async function AdminCalismalarPage({
               <TableRow>
                 <TableHead className="w-[72px]">Görsel</TableHead>
                 <SortTh state={state} alan="baslik" label="Başlık" className="min-w-[240px]" />
+                <TableHead>Kategori</TableHead>
                 <SortTh state={state} alan="musteri" label="Müşteri" />
                 <SortTh state={state} alan="durum" label="Durum" />
                 <TableHead>Öne çıkan</TableHead>
@@ -332,16 +337,33 @@ export default async function AdminCalismalarPage({
                       >
                         {w.baslik}
                       </Link>
-                      <div className="text-muted-foreground text-xs">
-                        {w.kategori?.length
-                          ? w.kategori
-                              .map(
-                                (k: string) =>
-                                  kategoriOptions.find((o) => o.value === k)?.label ?? k,
-                              )
-                              .join(" · ")
-                          : w.slug}
-                      </div>
+                      <div className="text-muted-foreground text-xs">/{w.slug}</div>
+                    </TableCell>
+
+                    <TableCell>
+                      {(() => {
+                        const etiketler = (w.kategori ?? [])
+                          .map(
+                            (k: string) => calismaKategoriOptions.find((o) => o.value === k)?.label,
+                          )
+                          .filter(Boolean);
+                        return etiketler.length ? (
+                          <div className="flex flex-wrap gap-1">
+                            {etiketler.map((label) => (
+                              <Badge key={label} variant="secondary" className="font-normal">
+                                {label}
+                              </Badge>
+                            ))}
+                          </div>
+                        ) : (
+                          <span
+                            className="rounded-full border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-xs text-amber-500"
+                            title="Kategorisiz çalışmalar sitedeki kategori filtrelerinde görünmez"
+                          >
+                            Kategori yok
+                          </span>
+                        );
+                      })()}
                     </TableCell>
 
                     <TableCell className="text-sm">{w.musteri_adi ?? "—"}</TableCell>
