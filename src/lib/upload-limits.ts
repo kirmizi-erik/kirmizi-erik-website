@@ -1,7 +1,9 @@
 // Tip bazlı dosya boyutu limitleri (Supabase Free tier single-file limit ~50 MB).
 // Server action ve client component'lerde ortak kullanılır.
+// Dosyalar Vercel'den geçmeden doğrudan Supabase'e yüklenir; görseller ardından
+// webp'e çevrilip 2000 px'e sığdırılır — büyük kamera fotoğrafı yüklemek güvenli.
 
-export const MAX_IMAGE_SIZE_MB = 10;
+export const MAX_IMAGE_SIZE_MB = 25;
 export const MAX_VIDEO_SIZE_MB = 50;
 
 export const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;

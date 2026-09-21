@@ -43,6 +43,8 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  // sharp native binary; bundle'a katılırsa runtime'da çözülemez.
+  serverExternalPackages: ["sharp"],
   // standalone yalnız self-host (Docker) için; Vercel kendi tracing'ini yapar
   // ve Next 16.3 + standalone Vercel build'inde nft.json ENOENT hatası verir.
   output: process.env.VERCEL ? undefined : "standalone",

@@ -15,24 +15,37 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-import { deleteCaseStudy } from "../../actions";
+import { deleteCaseStudy } from "./actions";
 
 type Props = {
   id: string;
   baslik: string;
+  /** Liste satırında yalnızca ikon göster; edit ekranında etiketli buton. */
+  compact?: boolean;
 };
 
-export function DeleteCaseButton({ id, baslik }: Props) {
+export function DeleteCaseButton({ id, baslik, compact = false }: Props) {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="destructive" size="sm">
-          <Trash2 className="mr-2 size-4" />
-          Sil
-        </Button>
+        {compact ? (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-muted-foreground hover:text-destructive cursor-pointer"
+            aria-label={`${baslik} çalışmasını sil`}
+          >
+            <Trash2 className="size-4" />
+          </Button>
+        ) : (
+          <Button variant="destructive" size="sm" className="cursor-pointer">
+            <Trash2 className="mr-2 size-4" />
+            Sil
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
