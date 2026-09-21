@@ -19,7 +19,12 @@ export const organizationSchema = {
   },
   description:
     "Bir fikir, dokuz hizmet, sıfır sınır. Video, fotoğraf, dijital pazarlama, sosyal medya, web/uygulama, AI kurulumları, grafik ve 3D — 25 yıllık birikim, 300'e yakın marka.",
-  sameAs: [] as string[],
+  sameAs: [
+    "https://www.instagram.com/kirmizi_erik",
+    "https://twitter.com/kirmizierk",
+    "https://www.facebook.com/KirmiziErik",
+    "https://youtube.com/channel/UC-GLMrGQGiiozWFEQZpJtZw",
+  ] as string[],
   contactPoint: [
     {
       "@type": "ContactPoint",
@@ -89,7 +94,7 @@ export const homeFaq = [
   {
     soru: "Şirketlere özel AI kurulumu ne demek?",
     cevap:
-      "Kırmızı Erik'in AI kurulumları hizmeti, bir şirketin kendi bilgi bankasıyla eğitilmiş yapay zeka asistanı (RAG chatbot), içerik ve süreç otomasyonları ile yapay zeka görünürlük altyapısını kapsar. Bu sitedeki AI Brief Asistanı ve ücretsiz AI Görünürlük Testi, aynı teknolojinin ajansın kendi sitesinde çalışan canlı örnekleridir.",
+      "Kırmızı Erik'in AI kurulumları hizmeti, bir şirketin kendi bilgi bankasıyla eğitilmiş yapay zeka asistanı (RAG chatbot), içerik ve süreç otomasyonları ile yapay zeka görünürlük altyapısını kapsar. Bu sitedeki AI Brief Asistanı ve ücretsiz KeScan (AI görünürlük testi), aynı teknolojinin ajansın kendi sitesinde çalışan canlı örnekleridir.",
   },
   {
     soru: "Kırmızı Erik ile çalışmaya nasıl başlarım?",

@@ -50,7 +50,7 @@ export default function HomePage() {
               <div className="relative flex flex-1 flex-col">
                 <div className="text-brand-mor inline-flex items-center gap-2 text-xs tracking-widest">
                   <Radar className="size-3.5" />
-                  ÜCRETSİZ ARAÇ
+                  KeScan · ÜCRETSİZ ARAÇ
                 </div>
                 <h2 className="font-heading mt-4 text-2xl leading-[1.1] font-black tracking-tight sm:text-3xl">
                   Siteniz yapay zekâya <span className="text-brand-mor">görünüyor mu?</span>
