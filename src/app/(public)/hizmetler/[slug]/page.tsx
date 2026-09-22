@@ -6,11 +6,7 @@ import { ArrowUpRight, Sparkles, Zap } from "lucide-react";
 import { OpenChatButton } from "@/components/site/open-chat-button";
 import { RelatedWorks } from "@/components/site/related-works";
 import { Button } from "@/components/ui/button";
-import {
-  getServicePage,
-  servicePages,
-  type ServicePageData,
-} from "@/lib/services-data";
+import { getServicePage, servicePages, type ServicePageData } from "@/lib/services-data";
 
 type PageProps = { params: Promise<{ slug: string }> };
 
@@ -103,45 +99,43 @@ function ServicePageContent({ data }: { data: ServicePageData }) {
       {/* Ne yapıyoruz — açık BG */}
       <div className="bg-muted">
         <section className="border-border/40 mx-auto max-w-screen-2xl border-b px-4 py-20 sm:px-6 lg:px-10 lg:py-28">
-        <div className="grid gap-10 md:grid-cols-12 md:gap-12">
-          <div className="md:col-span-5">
-            <div className="text-muted-foreground inline-flex items-center gap-3 text-xs tracking-widest uppercase">
-              <span className="bg-brand size-1.5 rounded-full" />
-              Ne Yapıyoruz
-            </div>
-            <h2 className="font-heading mt-5 text-4xl leading-tight font-black sm:text-5xl">
-              {data.yapilanlarBaslik}
-              <br />
-              <span className="text-brand-mor">{data.yapilanlarAltBaslik}</span>
-            </h2>
-          </div>
-          <p className="text-muted-foreground md:col-span-7 md:self-end md:text-lg">
-            Hazır paket satmıyoruz. Her proje, markanın sektörü, bütçesi ve hedeflerine
-            göre yeniden tasarlanır. Aşağıdakiler genel kategoriler — gerçek brief&apos;inle
-            net çalışma planı çıkar.
-          </p>
-        </div>
-
-        <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {data.yapilanlar.map((y) => {
-            const Icon = y.icon;
-            return (
-              <div
-                key={y.baslik}
-                className="border-border/60 hover:border-foreground/30 bg-card/40 group rounded-2xl border p-6 transition-colors"
-              >
-                <div className="bg-brand/10 text-brand inline-flex size-10 items-center justify-center rounded-lg">
-                  <Icon className="size-5" />
-                </div>
-                <h3 className="mt-5 text-lg font-semibold tracking-tight">{y.baslik}</h3>
-                <p className="text-muted-foreground mt-2 text-sm leading-relaxed">
-                  {y.aciklama}
-                </p>
+          <div className="grid gap-10 md:grid-cols-12 md:gap-12">
+            <div className="md:col-span-5">
+              <div className="text-muted-foreground inline-flex items-center gap-3 text-xs tracking-widest uppercase">
+                <span className="bg-brand size-1.5 rounded-full" />
+                Ne Yapıyoruz
               </div>
-            );
-          })}
-        </div>
-      </section>
+              <h2 className="font-heading mt-5 text-4xl leading-tight font-black sm:text-5xl">
+                {data.yapilanlarBaslik}
+                <br />
+                <span className="text-brand-mor">{data.yapilanlarAltBaslik}</span>
+              </h2>
+            </div>
+            <p className="text-muted-foreground md:col-span-7 md:self-end md:text-lg">
+              Hazır paket satmıyoruz. Her proje, markanın sektörü, bütçesi ve hedeflerine göre
+              yeniden tasarlanır. Aşağıdakiler genel kategoriler — gerçek brief&apos;inle net
+              çalışma planı çıkar.
+            </p>
+          </div>
+
+          <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {data.yapilanlar.map((y) => {
+              const Icon = y.icon;
+              return (
+                <div
+                  key={y.baslik}
+                  className="border-border/60 hover:border-foreground/30 bg-card/40 group rounded-2xl border p-6 transition-colors"
+                >
+                  <div className="bg-brand/10 text-brand inline-flex size-10 items-center justify-center rounded-lg">
+                    <Icon className="size-5" />
+                  </div>
+                  <h3 className="mt-5 text-lg font-semibold tracking-tight">{y.baslik}</h3>
+                  <p className="text-muted-foreground mt-2 text-sm leading-relaxed">{y.aciklama}</p>
+                </div>
+              );
+            })}
+          </div>
+        </section>
       </div>
 
       {/* Süreç — koyu (default) */}
@@ -158,8 +152,8 @@ function ServicePageContent({ data }: { data: ServicePageData }) {
               <span className="text-brand">{data.surecAltBaslik}</span>
             </h2>
             <p className="text-muted-foreground mt-6 max-w-xl">
-              Süreler ve aşamalar projenin karmaşıklığına göre değişir. Aşağıdakiler
-              tipik bir orta ölçek iş için yol haritası.
+              Süreler ve aşamalar projenin karmaşıklığına göre değişir. Aşağıdakiler tipik bir orta
+              ölçek iş için yol haritası.
             </p>
           </div>
           <ol className="md:col-span-7 md:space-y-6">
@@ -172,12 +166,8 @@ function ServicePageContent({ data }: { data: ServicePageData }) {
                   {s.no}
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold tracking-tight sm:text-xl">
-                    {s.baslik}
-                  </h3>
-                  <p className="text-muted-foreground mt-1 text-sm leading-relaxed">
-                    {s.aciklama}
-                  </p>
+                  <h3 className="text-lg font-semibold tracking-tight sm:text-xl">{s.baslik}</h3>
+                  <p className="text-muted-foreground mt-1 text-sm leading-relaxed">{s.aciklama}</p>
                 </div>
               </li>
             ))}
@@ -188,44 +178,103 @@ function ServicePageContent({ data }: { data: ServicePageData }) {
       {/* Stack / yaklaşım — açık BG */}
       <div className="bg-muted">
         <section className="border-border/40 mx-auto max-w-screen-2xl border-b px-4 py-20 sm:px-6 lg:px-10 lg:py-28">
-        <div className="grid gap-10 md:grid-cols-12">
-          <div className="md:col-span-5">
-            <div className="text-muted-foreground inline-flex items-center gap-3 text-xs tracking-widest uppercase">
-              <Zap className="text-brand-yaprak size-3.5" />
-              Yaklaşım
+          <div className="grid gap-10 md:grid-cols-12">
+            <div className="md:col-span-5">
+              <div className="text-muted-foreground inline-flex items-center gap-3 text-xs tracking-widest uppercase">
+                <Zap className="text-brand-yaprak size-3.5" />
+                Yaklaşım
+              </div>
+              <h2 className="font-heading mt-5 text-4xl leading-tight font-black sm:text-5xl">
+                {data.stackBaslik}
+                <br />
+                <span className="text-brand-yaprak">{data.stackAltBaslik}</span>
+              </h2>
+              <p className="text-muted-foreground mt-6 max-w-xl">
+                Doğru araç doğru iş için. Her projede stack briefe göre seçilir — biz vendor lock-in
+                yapmayız, sen değiştirmek istersen yanındayız.
+              </p>
             </div>
-            <h2 className="font-heading mt-5 text-4xl leading-tight font-black sm:text-5xl">
-              {data.stackBaslik}
-              <br />
-              <span className="text-brand-yaprak">{data.stackAltBaslik}</span>
-            </h2>
-            <p className="text-muted-foreground mt-6 max-w-xl">
-              Doğru araç doğru iş için. Her projede stack briefe göre seçilir — biz
-              vendor lock-in yapmayız, sen değiştirmek istersen yanındayız.
+            <div className="grid gap-5 sm:grid-cols-2 md:col-span-7">
+              {data.stack.map((g) => (
+                <div key={g.label} className="border-border/60 bg-card/40 rounded-xl border p-5">
+                  <div className="text-muted-foreground text-xs tracking-wider uppercase">
+                    {g.label}
+                  </div>
+                  <ul className="mt-3 space-y-1.5 text-sm">
+                    {g.items.map((i) => (
+                      <li key={i} className="text-foreground/90">
+                        {i}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </div>
+
+      {data.panel ? (
+        <section className="border-border/40 mx-auto max-w-screen-2xl border-b px-4 py-20 sm:px-6 lg:px-10 lg:py-28">
+          <div className="grid gap-10 md:grid-cols-12">
+            <div className="md:col-span-5">
+              <div className="text-muted-foreground inline-flex items-center gap-3 text-xs tracking-widest uppercase">
+                <span className="bg-brand size-1.5 rounded-full" />
+                Admin Panel
+              </div>
+              <h2 className="font-heading mt-5 text-4xl leading-tight font-black sm:text-5xl">
+                {data.panel.baslik}
+                <br />
+                <span className="text-brand">{data.panel.altBaslik}</span>
+              </h2>
+            </div>
+            <p className="text-muted-foreground md:col-span-7 md:self-end md:text-lg">
+              {data.panel.aciklama}
             </p>
           </div>
-          <div className="md:col-span-7 grid gap-5 sm:grid-cols-2">
-            {data.stack.map((g) => (
-              <div
-                key={g.label}
-                className="border-border/60 bg-card/40 rounded-xl border p-5"
-              >
-                <div className="text-muted-foreground text-xs tracking-wider uppercase">
-                  {g.label}
+
+          {data.panel.gorseller.length > 0 ? (
+            <div className="mt-14 grid gap-5 lg:grid-cols-2">
+              {data.panel.gorseller.map((g) => (
+                <figure
+                  key={g.src}
+                  className="border-border/60 bg-card/40 overflow-hidden rounded-2xl border"
+                >
+                  <Image
+                    src={g.src}
+                    alt={g.alt}
+                    width={1600}
+                    height={1000}
+                    sizes="(min-width: 1024px) 50vw, 100vw"
+                    className="h-auto w-full"
+                  />
+                  <figcaption className="text-muted-foreground border-border/60 border-t px-5 py-3 text-sm">
+                    {g.alt}
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          ) : null}
+
+          <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {data.panel.ozellikler.map((o) => {
+              const Icon = o.icon;
+              return (
+                <div
+                  key={o.baslik}
+                  className="border-border/60 hover:border-foreground/30 bg-card/40 rounded-2xl border p-6 transition-colors"
+                >
+                  <div className="bg-brand/10 text-brand inline-flex size-10 items-center justify-center rounded-lg">
+                    <Icon className="size-5" />
+                  </div>
+                  <h3 className="mt-5 text-lg font-semibold tracking-tight">{o.baslik}</h3>
+                  <p className="text-muted-foreground mt-2 text-sm leading-relaxed">{o.aciklama}</p>
                 </div>
-                <ul className="mt-3 space-y-1.5 text-sm">
-                  {g.items.map((i) => (
-                    <li key={i} className="text-foreground/90">
-                      {i}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+              );
+            })}
           </div>
-        </div>
-      </section>
-      </div>
+        </section>
+      ) : null}
 
       {/* İlgili çalışmalar — koyu (default) */}
       <RelatedWorks serviceSlug={data.slug} serviceLabel={data.label} />
@@ -264,8 +313,7 @@ function ServicePageContent({ data }: { data: ServicePageData }) {
         <section className="bg-muted border-border/40 border-t">
           <div className="mx-auto flex max-w-screen-2xl flex-col items-start justify-between gap-6 px-4 py-16 sm:flex-row sm:items-center sm:px-6 lg:px-10">
             <h2 className="font-heading max-w-xl text-2xl leading-tight font-black tracking-tight sm:text-3xl">
-              {data.label} ihtiyacın mı var?{" "}
-              <span className="text-brand-mor">Konuşalım.</span>
+              {data.label} ihtiyacın mı var? <span className="text-brand-mor">Konuşalım.</span>
             </h2>
             <Button asChild size="lg">
               <Link href="/iletisim">
