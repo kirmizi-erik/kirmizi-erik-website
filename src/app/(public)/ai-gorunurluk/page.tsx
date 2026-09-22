@@ -9,7 +9,7 @@ import { ScanClient } from "./scan-client";
 export const metadata = {
   title: "KeScan — Ücretsiz AI Görünürlük Testi",
   description:
-    "Google için SEO ne ise, yapay zekâ için de KeScan onu ölçer. Sitenizi ücretsiz tarayın: ChatGPT, Claude, Perplexity ve Google'ın AI cevaplarında yer almak için taranabilirlik, okunabilirlik ve alıntılanabilirlik puanınızı görün.",
+    "Google için SEO ne ise, yapay zekâ için de GEO (Generative Engine Optimization) odur; KeScan onu ölçer. Sitenizi ücretsiz tarayın: ChatGPT, Claude, Perplexity ve Google'ın AI cevaplarında yer almak için taranabilirlik, okunabilirlik ve alıntılanabilirlik puanınızı görün.",
 };
 
 // Tarama 5 bot kimliği + altyapı dosyalarını gerçek isteklerle çeker
@@ -46,8 +46,14 @@ export default function AiGorunurlukPage() {
             </h1>
             <p className="text-muted-foreground mx-auto mt-5 max-w-2xl text-base leading-relaxed sm:text-lg">
               <strong className="text-foreground font-medium">
-                Google&apos;da SEO ne işe yarıyorsa, yapay zekâda da bu.
+                Google&apos;da SEO ne işe yarıyorsa, yapay zekâda da{" "}
+                <abbr title="Generative Engine Optimization" className="no-underline">
+                  GEO
+                </abbr>{" "}
+                o işi yapar.
               </strong>{" "}
+              GEO, <em>Generative Engine Optimization</em> — yani üretken yapay zekâ motorları için
+              optimizasyon — markanızın yapay zekâ cevaplarında önerilmesini sağlayan çalışmadır.
               Artık müşteriniz ürününüzü Google&apos;da aramadan önce ChatGPT&apos;ye soruyor. Orada
               önerilebilmek için siteniz önce taranabilir, sonra okunabilir, en sonunda
               alıntılanabilir olmalı. KeScan bu beş katmanı ölçüp puanlar.
