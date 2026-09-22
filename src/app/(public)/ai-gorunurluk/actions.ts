@@ -172,3 +172,90 @@ export async function sendScanReport(
   }
   return { ok: true };
 }
+
+const newSiteInputSchema = reportInputSchema.extend({
+  telefon: z
+    .string()
+    .transform((v) => v.replace(/[^\d+]/g, ""))
+    .refine((v) => /^\+?\d{10,15}$/.test(v), "Geçerli bir telefon numarası girin"),
+});
+
+/**
+ * Taramadan sonra "yeni web sitesi" talebi — kısa form (ad, telefon, e-posta).
+ * Taranan site ve puan lead'e otomatik eklenir; ziyaretçi tekrar yazmaz.
+ */
+export async function requestNewSite(
+  formData: FormData,
+  scan: { hostname: string; skor: number; not: string },
+): Promise<ReportActionResult> {
+  const rl = await checkRateLimit("lead");
+  if (!rl.ok) {
+    return {
+      ok: false,
+      error: `Çok fazla deneme, ${Math.ceil(rl.retryAfterSeconds / 60)} dk sonra tekrar dene`,
+    };
+  }
+
+  const parsed = newSiteInputSchema.safeParse({
+    ad_soyad: formData.get("ad_soyad"),
+    eposta: formData.get("eposta"),
+    telefon: String(formData.get("telefon") ?? ""),
+    kvkk_onay: formData.get("kvkk_onay") ?? false,
+  });
+  if (!parsed.success) {
+    return { ok: false, error: parsed.error.errors[0]?.message ?? "Geçersiz form" };
+  }
+  if (!parsed.data.kvkk_onay) {
+    return { ok: false, error: "Devam etmek için KVKK metnini onaylaman gerek" };
+  }
+
+  // Tarama özeti client'tan geliyor — sınırla/doğrula
+  const hostname = typeof scan?.hostname === "string" ? scan.hostname.slice(0, 200) : "";
+  const skor = Math.max(0, Math.min(100, Math.round(Number(scan?.skor) || 0)));
+  const not = String(scan?.not ?? "").slice(0, 3);
+
+  const brief = [
+    "KeScan sonrası — YENİ WEB SİTESİ talebi",
+    `Taranan site: ${hostname || "—"}`,
+    `KeScan skoru: ${skor}/100${not ? ` (${not})` : ""}`,
+  ].join("\n");
+  const ozet = `${hostname || "Site"} — KeScan ${skor}/100, yeni web sitesi istiyor`;
+
+  const reqHeaders = await headers();
+  const supabase = createAdminClient();
+  const { data, error } = await supabase
+    .from("leads")
+    .insert({
+      ad_soyad: parsed.data.ad_soyad,
+      eposta: parsed.data.eposta,
+      telefon: parsed.data.telefon,
+      sirket: hostname || null,
+      hizmet_kategori: ["web", "ai"],
+      brief,
+      ai_skor: skor,
+      ai_ozet: ozet,
+      kaynak: "kescan · yeni-site",
+      user_agent: reqHeaders.get("user-agent") ?? null,
+    })
+    .select("id")
+    .single();
+
+  if (error) {
+    console.error("[requestNewSite] lead insert", error);
+    return { ok: false, error: "Talebiniz gönderilemedi, lütfen tekrar deneyin" };
+  }
+
+  await sendLeadNotification({
+    ad_soyad: parsed.data.ad_soyad,
+    eposta: parsed.data.eposta,
+    telefon: parsed.data.telefon,
+    sirket: hostname || null,
+    hizmet_kategori: ["web", "ai"],
+    brief,
+    ai_ozet: ozet,
+    kaynak: `KeScan → yeni web sitesi (${hostname})`,
+    leadId: data.id,
+  }).catch((e) => console.warn("[requestNewSite] team email skip:", e));
+
+  return { ok: true };
+}

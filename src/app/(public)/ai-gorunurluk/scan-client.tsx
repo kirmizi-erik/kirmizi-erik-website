@@ -13,12 +13,14 @@ import {
   Loader2,
   Mail,
   Map,
+  MonitorSmartphone,
   Network,
   Quote,
   ShieldAlert,
   Sparkles,
 } from "lucide-react";
 
+import { PhoneInput } from "@/components/shared/phone-input";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -28,9 +30,10 @@ import {
   type LayerKey,
   type ScanResult,
 } from "@/lib/ai-scan/types";
+import { trackLead } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 
-import { scanSite, sendScanReport } from "./actions";
+import { requestNewSite, scanSite, sendScanReport } from "./actions";
 
 export function ScanClient() {
   const [isPending, startTransition] = useTransition();
@@ -137,6 +140,9 @@ function ScanReport({ result }: { result: ScanResult }) {
           </div>
         </div>
       </div>
+
+      {/* Yeni web sitesi talebi — puanı görür görmez */}
+      <NewSiteLeadCard result={result} />
 
       {/* Katmanlar */}
       <div className="border-border/60 rounded-3xl border p-6 sm:p-8">
@@ -410,9 +416,103 @@ function PromptCard({ prompt }: { prompt: string }) {
           {copied ? "Kopyalandı" : "Prompt'u kopyala"}
         </Button>
         <Button asChild variant="outline">
-          <Link href="/iletisim">Bize yaptırın</Link>
+          <a href="#yeni-site">Bize yaptırın</a>
         </Button>
       </div>
+    </div>
+  );
+}
+
+function NewSiteLeadCard({ result }: { result: ScanResult }) {
+  const [isPending, startTransition] = useTransition();
+  const [done, setDone] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [kvkk, setKvkk] = useState(false);
+
+  if (done) {
+    return (
+      <div
+        id="yeni-site"
+        className="scroll-mt-24 rounded-3xl border border-green-600/40 bg-green-500/5 p-6 text-center sm:p-8"
+      >
+        <Check className="mx-auto size-8 text-green-500" />
+        <h3 className="font-heading mt-3 text-xl font-bold">Talebiniz bize ulaştı</h3>
+        <p className="text-muted-foreground mt-1 text-sm">
+          {result.hostname} için ekibimiz en kısa sürede sizi arayacak.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      id="yeni-site"
+      className="border-brand/40 from-brand/[0.08] scroll-mt-24 rounded-3xl border bg-gradient-to-br to-transparent p-6 sm:p-8"
+    >
+      <div className="flex items-start gap-3">
+        <MonitorSmartphone className="text-brand mt-1 size-5 shrink-0" />
+        <div>
+          <h3 className="font-heading text-xl font-bold">
+            Yapay zekâya hazır yeni bir site kuralım
+          </h3>
+          <p className="text-muted-foreground mt-1 text-sm">
+            Bilgilerinizi bırakın, {result.hostname} için sizi arayalım. Tarama sonucunuz bize
+            otomatik iletilir.
+          </p>
+        </div>
+      </div>
+      <form
+        className="mt-5 grid gap-3 sm:grid-cols-3"
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (isPending || !kvkk) return;
+          setError(null);
+          const fd = new FormData(e.currentTarget);
+          fd.set("kvkk_onay", "on");
+          startTransition(async () => {
+            const res = await requestNewSite(fd, {
+              hostname: result.hostname,
+              skor: result.skor,
+              not: result.not,
+            });
+            if (res.ok) {
+              trackLead("KeScan Yeni Site");
+              setDone(true);
+            } else {
+              setError(res.error);
+            }
+          });
+        }}
+      >
+        <Input name="ad_soyad" placeholder="Ad Soyad" required minLength={3} maxLength={120} />
+        <PhoneInput name="telefon" placeholder="Telefon" required minLength={10} maxLength={20} />
+        <Input name="eposta" type="email" placeholder="E-posta" required maxLength={200} />
+        <label className="text-muted-foreground flex items-start gap-2 text-xs sm:col-span-3">
+          <input
+            type="checkbox"
+            checked={kvkk}
+            onChange={(e) => setKvkk(e.target.checked)}
+            className="mt-0.5 cursor-pointer"
+          />
+          <span>
+            <Link href="/kvkk" className="underline" target="_blank">
+              KVKK Aydınlatma Metni
+            </Link>
+            &apos;ni okudum; benimle iletişime geçilmesini onaylıyorum.
+          </span>
+        </label>
+        {error ? <p className="text-brand text-sm sm:col-span-3">{error}</p> : null}
+        <Button type="submit" disabled={isPending || !kvkk} className="sm:col-span-3">
+          {isPending ? (
+            <>
+              <Loader2 className="mr-2 size-4 animate-spin" />
+              Gönderiliyor…
+            </>
+          ) : (
+            "Beni arayın"
+          )}
+        </Button>
+      </form>
     </div>
   );
 }
