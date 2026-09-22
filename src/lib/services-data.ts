@@ -52,6 +52,14 @@ export type ServiceStackGroup = {
   items: string[];
 };
 
+export type ServicePanelShowcase = {
+  baslik: string;
+  altBaslik: string;
+  aciklama: string;
+  ozellikler: ServiceCard[];
+  gorseller: { src: string; alt: string }[];
+};
+
 export type ServicePageData = {
   slug: string;
   label: string;
@@ -70,6 +78,7 @@ export type ServicePageData = {
   stackBaslik: string;
   stackAltBaslik: string;
   stack: ServiceStackGroup[];
+  panel?: ServicePanelShowcase;
   // Özel CTA (AI Kurulumları için canlı demo)
   customCta?: {
     rozet: string;
@@ -199,7 +208,13 @@ export const servicePages: ServicePageData[] = [
       },
       {
         label: "Ekip",
-        items: ["Yönetmen", "DOP & 1. Asistan", "Sanat yönetmeni", "Ses + Işık", "Editör + Renk uzmanı"],
+        items: [
+          "Yönetmen",
+          "DOP & 1. Asistan",
+          "Sanat yönetmeni",
+          "Ses + Işık",
+          "Editör + Renk uzmanı",
+        ],
       },
     ],
   },
@@ -389,8 +404,7 @@ export const servicePages: ServicePageData[] = [
       {
         no: "02",
         baslik: "Strateji",
-        aciklama:
-          "Hedef kitle, KPI, kanal mix, bütçe dağılımı ve 90 günlük yol haritası.",
+        aciklama: "Hedef kitle, KPI, kanal mix, bütçe dağılımı ve 90 günlük yol haritası.",
       },
       {
         no: "03",
@@ -416,11 +430,22 @@ export const servicePages: ServicePageData[] = [
     stack: [
       {
         label: "Reklam Platformları",
-        items: ["Google Ads", "Meta Ads (Facebook + Instagram)", "TikTok Ads", "LinkedIn Ads", "X Ads"],
+        items: [
+          "Google Ads",
+          "Meta Ads (Facebook + Instagram)",
+          "TikTok Ads",
+          "LinkedIn Ads",
+          "X Ads",
+        ],
       },
       {
         label: "Analitik & Tracking",
-        items: ["Google Analytics 4", "Google Tag Manager", "Meta Conversion API", "Hotjar / Microsoft Clarity"],
+        items: [
+          "Google Analytics 4",
+          "Google Tag Manager",
+          "Meta Conversion API",
+          "Hotjar / Microsoft Clarity",
+        ],
       },
       {
         label: "SEO",
@@ -474,8 +499,7 @@ export const servicePages: ServicePageData[] = [
       {
         icon: Target,
         baslik: "Sosyal Medya Reklamları",
-        aciklama:
-          "Boost'tan kompleks kampanyaya — hedef kitle, yaratıcı varyasyonlar, A/B test.",
+        aciklama: "Boost'tan kompleks kampanyaya — hedef kitle, yaratıcı varyasyonlar, A/B test.",
       },
       {
         icon: LineChart,
@@ -508,8 +532,7 @@ export const servicePages: ServicePageData[] = [
       {
         no: "04",
         baslik: "Yayın & Etkileşim",
-        aciklama:
-          "Optimal saatlerde yayın. DM, yorum, mention takibi ve marka tonunda yanıtlama.",
+        aciklama: "Optimal saatlerde yayın. DM, yorum, mention takibi ve marka tonunda yanıtlama.",
       },
       {
         no: "05",
@@ -527,11 +550,21 @@ export const servicePages: ServicePageData[] = [
       },
       {
         label: "Üretim",
-        items: ["Adobe Premiere Pro + After Effects", "Photoshop + Illustrator", "Figma (post template'ler)", "CapCut Pro"],
+        items: [
+          "Adobe Premiere Pro + After Effects",
+          "Photoshop + Illustrator",
+          "Figma (post template'ler)",
+          "CapCut Pro",
+        ],
       },
       {
         label: "Analitik",
-        items: ["Native insights (IG, TT, LI, X)", "Hootsuite Analytics", "Sprout Social", "Google Looker Studio"],
+        items: [
+          "Native insights (IG, TT, LI, X)",
+          "Hootsuite Analytics",
+          "Sprout Social",
+          "Google Looker Studio",
+        ],
       },
     ],
   },
@@ -599,8 +632,7 @@ export const servicePages: ServicePageData[] = [
       {
         no: "02",
         baslik: "UX/UI Tasarım",
-        aciklama:
-          "Wireframe, kullanıcı akışı, prototipleme, Figma'da yüksek çözünürlüklü tasarım.",
+        aciklama: "Wireframe, kullanıcı akışı, prototipleme, Figma'da yüksek çözünürlüklü tasarım.",
       },
       {
         no: "03",
@@ -617,8 +649,7 @@ export const servicePages: ServicePageData[] = [
       {
         no: "05",
         baslik: "Yayınlama",
-        aciklama:
-          "App Store ve Play Store'a yükleme, review onayı, lansman koordinasyonu.",
+        aciklama: "App Store ve Play Store'a yükleme, review onayı, lansman koordinasyonu.",
       },
       {
         no: "06",
@@ -678,8 +709,7 @@ export const servicePages: ServicePageData[] = [
       {
         icon: MonitorSmartphone,
         baslik: "Web Uygulaması / SaaS",
-        aciklama:
-          "Auth, billing, multi-tenant — web tabanlı yazılım ürününü sıfırdan kurarız.",
+        aciklama: "Auth, billing, multi-tenant — web tabanlı yazılım ürününü sıfırdan kurarız.",
       },
       {
         icon: LayoutDashboard,
@@ -699,6 +729,12 @@ export const servicePages: ServicePageData[] = [
         aciklama:
           "Lighthouse 90+, Core Web Vitals yeşil, schema.org markup, sitemap, OG image — hepsi standart.",
       },
+      {
+        icon: Bot,
+        baslik: "Yapay Zeka Entegrasyonu",
+        aciklama:
+          "Sitenin içeriğiyle eğitilmiş AI asistan, panelde tek tıkla TR→EN çeviri, gelen talepleri özetleyen AI. ChatGPT ve Google AI Overview'da görünürlük için llms.txt ve yapılandırılmış veri.",
+      },
     ],
     surecBaslik: "Beş aşama,",
     surecAltBaslik: "her sprint canlı build.",
@@ -706,14 +742,12 @@ export const servicePages: ServicePageData[] = [
       {
         no: "01",
         baslik: "Brief & Sitemap",
-        aciklama:
-          "Hedef, içerik mimarisi, kullanıcı yolları. Site açılmadan haritası net olur.",
+        aciklama: "Hedef, içerik mimarisi, kullanıcı yolları. Site açılmadan haritası net olur.",
       },
       {
         no: "02",
         baslik: "Wireframe & Tasarım",
-        aciklama:
-          "Düşük çözünürlüklü kullanıcı akışı, sonra Figma'da mood board ve final tasarım.",
+        aciklama: "Düşük çözünürlüklü kullanıcı akışı, sonra Figma'da mood board ve final tasarım.",
       },
       {
         no: "03",
@@ -724,36 +758,115 @@ export const servicePages: ServicePageData[] = [
       {
         no: "04",
         baslik: "İçerik & QA",
-        aciklama:
-          "Migration veya ilk içerik girişi. Cross-browser, mobile, performans testi.",
+        aciklama: "Migration veya ilk içerik girişi. Cross-browser, mobile, performans testi.",
       },
       {
         no: "05",
         baslik: "Lansman + Bakım",
-        aciklama:
-          "Domain bağlantı, DNS, SSL, monitoring. Aylık güncelleme paketi opsiyonel.",
+        aciklama: "Domain bağlantı, DNS, SSL, monitoring. Aylık güncelleme paketi opsiyonel.",
       },
     ],
     stackBaslik: "Modern stack,",
     stackAltBaslik: "uzun ömürlü kod.",
     stack: [
       {
+        label: "Yazılım Dilleri",
+        items: ["TypeScript", "JavaScript", "Python", "SQL", "HTML5 & CSS3"],
+      },
+      {
         label: "Frontend",
-        items: ["Next.js 16 (App Router)", "React 19", "TypeScript", "Tailwind CSS"],
+        items: ["Next.js 16 (App Router)", "React 19", "Tailwind CSS", "shadcn/ui"],
       },
       {
         label: "Backend & DB",
-        items: ["Supabase (Postgres + Auth + Storage)", "Vercel Edge Functions", "Custom Node API"],
+        items: [
+          "Node.js",
+          "PostgreSQL + pgvector",
+          "Supabase (Auth + Storage)",
+          "Drizzle ORM",
+          "Docker + Vercel / Hetzner",
+        ],
+      },
+      {
+        label: "Yapay Zeka",
+        items: [
+          "Claude (Anthropic)",
+          "OpenAI Embeddings",
+          "RAG — hibrit semantik + anahtar kelime arama",
+          "llms.txt + JSON-LD (AI arama görünürlüğü)",
+        ],
       },
       {
         label: "CMS",
-        items: ["Sanity", "Strapi", "Custom admin panel"],
+        items: ["Özel admin panel", "Sanity", "Strapi"],
       },
       {
         label: "E-Ticaret",
         items: ["Shopify", "WooCommerce", "Custom + Stripe/iyzico/PayTR"],
       },
     ],
+    panel: {
+      baslik: "Hazır tema değil,",
+      altBaslik: "size özel yönetim paneli.",
+      aciklama:
+        "Siteyi teslim edip bırakmıyoruz. İçeriğin tamamını kod bilmeden yönetebileceğiniz, sitenizin yapısına göre sıfırdan yazılmış bir panel kuruyoruz. Aşağıdaki görseller ihracatçı bir ahşap üreticisi için geliştirdiğimiz panelden ve bu panelle yönetilen siteden.",
+      ozellikler: [
+        {
+          icon: Layers,
+          baslik: "Modüler İçerik Yönetimi",
+          aciklama:
+            "Ürün, kategori, blog, referans, döküman — her modülde arama, sıralama, filtre, küçük resim önizleme ve onaylı silme.",
+        },
+        {
+          icon: Zap,
+          baslik: "Yayınla, Anında Canlıda",
+          aciklama:
+            "Taslak/yayın akışı. Yayınlanan içerik sayfasıyla birlikte menüye, kategori kartına ve dil eşleşmesine otomatik yansır; silince hepsinden kalkar.",
+        },
+        {
+          icon: Globe,
+          baslik: "Çok Dilli + AI Çeviri",
+          aciklama:
+            "TR ve EN alanlar yan yana. Tek tıkla yapay zeka çevirisi, dil değiştirici için sayfa eşleşmeleri otomatik.",
+        },
+        {
+          icon: ImageIcon,
+          baslik: "Akıllı Görsel Kütüphanesi",
+          aciklama:
+            "Çoklu yükleme, otomatik WebP sıkıştırma ve boyutlandırma, galeriden tıkla-seç hero görseli.",
+        },
+        {
+          icon: LineChart,
+          baslik: "Analytics & SEO Paneli",
+          aciklama:
+            "Google Analytics 4 ve Search Console verileri panelin içinde — ziyaret, arama sorgusu, sayfa performansı.",
+        },
+        {
+          icon: Database,
+          baslik: "Talep Kutusu & Güvenlik",
+          aciklama:
+            "Formlardan ve AI asistandan gelen talepler tek listede. Şifreli giriş, HTTPS, her kayıtta görsel geri bildirim.",
+        },
+      ],
+      gorseller: [
+        {
+          src: "/hizmetler/web-panel/admin-genel-bakis.webp",
+          alt: "Panel genel bakış: içerik sayıları, gelen talepler ve son aktivite",
+        },
+        {
+          src: "/hizmetler/web-panel/admin-analytics.webp",
+          alt: "Panel içinde Google Analytics 4: anlık ziyaretçi, trafik kaynakları, en çok ziyaret edilen sayfalar",
+        },
+        {
+          src: "/hizmetler/web-panel/site-anasayfa.webp",
+          alt: "Panelden yönetilen sitenin anasayfası: hero görseli ve başlık panelden değişir",
+        },
+        {
+          src: "/hizmetler/web-panel/site-referanslar.webp",
+          alt: "Panelden eklenen referanslar: kategori ve ağaç türü filtreli proje listesi",
+        },
+      ],
+    },
   },
 
   // ──────────────────────────────────────────────────────────────────
@@ -804,8 +917,7 @@ export const servicePages: ServicePageData[] = [
       {
         icon: Layers,
         baslik: "Mevcut Ürüne AI Entegrasyonu",
-        aciklama:
-          "Web sitende veya uygulamanda akıllı arama, öneri sistemi, otomatik etiketleme.",
+        aciklama: "Web sitende veya uygulamanda akıllı arama, öneri sistemi, otomatik etiketleme.",
       },
     ],
     surecBaslik: "Beş aşama,",
@@ -859,7 +971,12 @@ export const servicePages: ServicePageData[] = [
       },
       {
         label: "Entegrasyon",
-        items: ["WhatsApp Business API", "Slack, Microsoft Teams", "n8n, Make, Zapier", "Custom REST/GraphQL"],
+        items: [
+          "WhatsApp Business API",
+          "Slack, Microsoft Teams",
+          "n8n, Make, Zapier",
+          "Custom REST/GraphQL",
+        ],
       },
     ],
     customCta: {
@@ -899,8 +1016,7 @@ export const servicePages: ServicePageData[] = [
       {
         icon: Package,
         baslik: "Ambalaj Tasarımı",
-        aciklama:
-          "Ürün ambalajı tasarımı, mockup hazırlığı, dieline ve baskı dosyası teslimi.",
+        aciklama: "Ürün ambalajı tasarımı, mockup hazırlığı, dieline ve baskı dosyası teslimi.",
       },
       {
         icon: FileText,
@@ -917,8 +1033,7 @@ export const servicePages: ServicePageData[] = [
       {
         icon: MonitorSmartphone,
         baslik: "UI/UX Tasarım",
-        aciklama:
-          "Web ve mobil uygulamalar için ekran tasarımı, prototip, kullanıcı akışı.",
+        aciklama: "Web ve mobil uygulamalar için ekran tasarımı, prototip, kullanıcı akışı.",
       },
     ],
     surecBaslik: "Beş aşama,",
@@ -927,8 +1042,7 @@ export const servicePages: ServicePageData[] = [
       {
         no: "01",
         baslik: "Marka Analizi",
-        aciklama:
-          "Mevcut marka, hedef kitle, sektör, rakipler. Konsept yönleri için temel oluşur.",
+        aciklama: "Mevcut marka, hedef kitle, sektör, rakipler. Konsept yönleri için temel oluşur.",
       },
       {
         no: "02",
@@ -939,8 +1053,7 @@ export const servicePages: ServicePageData[] = [
       {
         no: "03",
         baslik: "Tasarım & İterasyon",
-        aciklama:
-          "Seçilen yönde 2-3 tur iterasyon. Her tur müşteri onayıyla ilerler.",
+        aciklama: "Seçilen yönde 2-3 tur iterasyon. Her tur müşteri onayıyla ilerler.",
       },
       {
         no: "04",
@@ -951,8 +1064,7 @@ export const servicePages: ServicePageData[] = [
       {
         no: "05",
         baslik: "Final Dosyalar",
-        aciklama:
-          "Tüm formatlarda (vector, raster, web, print) organize klasör yapısında teslim.",
+        aciklama: "Tüm formatlarda (vector, raster, web, print) organize klasör yapısında teslim.",
       },
     ],
     stackBaslik: "Adobe, Figma,",
@@ -1008,8 +1120,7 @@ export const servicePages: ServicePageData[] = [
       {
         icon: Box,
         baslik: "Mimari Görselleştirme",
-        aciklama:
-          "İç ve dış mekan, ürün showroom render — gerçeküstü kalitede, fotorealistik.",
+        aciklama: "İç ve dış mekan, ürün showroom render — gerçeküstü kalitede, fotorealistik.",
       },
       {
         icon: Smartphone,
@@ -1030,32 +1141,27 @@ export const servicePages: ServicePageData[] = [
       {
         no: "01",
         baslik: "Brief & Storyboard",
-        aciklama:
-          "Anlatım hedefi, süre, dağıtım yeri (TV, sosyal, web) ve mood board.",
+        aciklama: "Anlatım hedefi, süre, dağıtım yeri (TV, sosyal, web) ve mood board.",
       },
       {
         no: "02",
         baslik: "Modelleme / Vektör",
-        aciklama:
-          "3D model veya 2D vektör kütüphane oluşumu. Asset'ler reusable.",
+        aciklama: "3D model veya 2D vektör kütüphane oluşumu. Asset'ler reusable.",
       },
       {
         no: "03",
         baslik: "Texture & Lighting",
-        aciklama:
-          "Materyaller, ışıklandırma, sahne kompozisyonu. Look-dev onayı.",
+        aciklama: "Materyaller, ışıklandırma, sahne kompozisyonu. Look-dev onayı.",
       },
       {
         no: "04",
         baslik: "Animasyon",
-        aciklama:
-          "Keyframe animasyonu, simülasyon (cloth, particle), hareket tasarımı.",
+        aciklama: "Keyframe animasyonu, simülasyon (cloth, particle), hareket tasarımı.",
       },
       {
         no: "05",
         baslik: "Render & Compositing",
-        aciklama:
-          "GPU render, compositing, renk düzenleme, ses entegrasyonu, final export.",
+        aciklama: "GPU render, compositing, renk düzenleme, ses entegrasyonu, final export.",
       },
     ],
     stackBaslik: "3D + 2D",
@@ -1095,9 +1201,7 @@ export function getServicePage(slug: string): ServicePageData | null {
  */
 export const SERVICES_CONTEXT_FOR_AI = servicePages
   .map((s) => {
-    const yapilanlarOzeti = s.yapilanlar
-      .map((y) => y.baslik)
-      .join(" · ");
+    const yapilanlarOzeti = s.yapilanlar.map((y) => y.baslik).join(" · ");
     const surecOzeti = s.surec.map((step) => step.baslik).join(" → ");
     const stackOzeti = s.stack
       .map((g) => `${g.label}: ${g.items.slice(0, 3).join(", ")}`)
@@ -1110,4 +1214,3 @@ export const SERVICES_CONTEXT_FOR_AI = servicePages
 **Açıklama:** ${s.heroSubtitle}`;
   })
   .join("\n\n");
-
