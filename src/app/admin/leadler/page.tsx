@@ -1,99 +1,103 @@
 import Link from "next/link";
 
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
+
+import { DURUMLAR, KANALLAR, leadKanal, type LeadKanal } from "./lead-meta";
+import { LeadTable, type LeadRow } from "./lead-table";
 
 export const metadata = {
   title: "Lead'ler",
 };
 
-type SearchParams = Promise<{ durum?: string }>;
+type SearchParams = Promise<{ durum?: string; kanal?: string }>;
 
-const durumlar = [
-  { value: "yeni", label: "Yeni" },
-  { value: "iletisim", label: "İletişimde" },
-  { value: "teklif", label: "Teklif" },
-  { value: "kazandi", label: "Kazandı" },
-  { value: "kaybetti", label: "Kaybetti" },
-] as const;
-
-const filtreler = [{ value: "all", label: "Hepsi" }, ...durumlar];
-
-const variants: Record<string, "default" | "secondary" | "outline" | "destructive"> = {
-  yeni: "default",
-  iletisim: "secondary",
-  teklif: "secondary",
-  kazandi: "outline",
-  kaybetti: "destructive",
-};
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("tr-TR", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+function filterHref(kanal: string | undefined, durum: string | undefined) {
+  const params = new URLSearchParams();
+  if (kanal) params.set("kanal", kanal);
+  if (durum) params.set("durum", durum);
+  const qs = params.toString();
+  return qs ? `/admin/leadler?${qs}` : "/admin/leadler";
 }
 
-export default async function AdminLeadlerPage({
-  searchParams,
+function Pill({
+  href,
+  active,
+  children,
 }: {
-  searchParams: SearchParams;
+  href: string;
+  active: boolean;
+  children: React.ReactNode;
 }) {
+  return (
+    <Link
+      href={href}
+      className={cn(
+        "border-border rounded-full border px-4 py-1.5 text-xs transition-colors",
+        active
+          ? "bg-foreground text-background border-foreground"
+          : "text-muted-foreground hover:text-foreground hover:border-foreground/40",
+      )}
+    >
+      {children}
+    </Link>
+  );
+}
+
+export default async function AdminLeadlerPage({ searchParams }: { searchParams: SearchParams }) {
   const params = await searchParams;
-  const durum = params.durum;
+  const kanal = KANALLAR.some((k) => k.value === params.kanal)
+    ? (params.kanal as LeadKanal)
+    : undefined;
+  const durum = DURUMLAR.some((d) => d.value === params.durum) ? params.durum : undefined;
 
   const supabase = await createClient();
-  let query = supabase
+  const { data, error } = await supabase
     .from("leads")
-    .select("id, ad_soyad, eposta, telefon, sirket, hizmet_kategori, butce, durum, kaynak, created_at")
+    .select(
+      "id, ad_soyad, eposta, telefon, sirket, hizmet_kategori, butce, durum, kaynak, created_at",
+    )
     .order("created_at", { ascending: false });
 
-  if (durum && durumlar.some((d) => d.value === durum)) {
-    query = query.eq("durum", durum);
-  }
-
-  const { data: leads, error } = await query;
+  const all: LeadRow[] = (data ?? []).map(({ kaynak, ...l }) => ({
+    ...l,
+    kanal: leadKanal(kaynak),
+  }));
+  const kanalCount = (k: LeadKanal) => all.filter((l) => l.kanal === k).length;
+  const inKanal = kanal ? all.filter((l) => l.kanal === kanal) : all;
+  const leads = durum ? inKanal.filter((l) => l.durum === durum) : inKanal;
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Lead&apos;ler</h1>
         <p className="text-muted-foreground mt-1 text-sm">
-          Toplam {leads?.length ?? 0} kayıt
+          {leads.length} kayıt gösteriliyor · toplam {all.length}
         </p>
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        {filtreler.map((f) => {
-          const active = (f.value === "all" && !durum) || f.value === durum;
-          return (
-            <Link
-              key={f.value}
-              href={f.value === "all" ? "/admin/leadler" : `/admin/leadler?durum=${f.value}`}
-              className={cn(
-                "border-border rounded-full border px-4 py-1.5 text-xs transition-colors",
-                active
-                  ? "bg-foreground text-background border-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:border-foreground/40",
-              )}
-            >
-              {f.label}
-            </Link>
-          );
-        })}
+      <div className="space-y-3">
+        <div className="flex flex-wrap gap-2">
+          <Pill href={filterHref(undefined, durum)} active={!kanal}>
+            Tümü ({all.length})
+          </Pill>
+          {KANALLAR.map((k) => (
+            <Pill key={k.value} href={filterHref(k.value, durum)} active={kanal === k.value}>
+              {k.label} ({kanalCount(k.value)})
+            </Pill>
+          ))}
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Pill href={filterHref(kanal, undefined)} active={!durum}>
+            Tüm durumlar
+          </Pill>
+          {DURUMLAR.map((d) => (
+            <Pill key={d.value} href={filterHref(kanal, d.value)} active={durum === d.value}>
+              {d.label}
+            </Pill>
+          ))}
+        </div>
       </div>
 
       {error ? (
@@ -103,66 +107,19 @@ export default async function AdminLeadlerPage({
           </CardHeader>
           <CardContent className="text-destructive text-sm">{error.message}</CardContent>
         </Card>
-      ) : !leads || leads.length === 0 ? (
+      ) : leads.length === 0 ? (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Henüz lead yok</CardTitle>
+            <CardTitle className="text-base">
+              {all.length === 0 ? "Henüz lead yok" : "Bu filtrede kayıt yok"}
+            </CardTitle>
           </CardHeader>
           <CardContent className="text-muted-foreground text-sm">
-            İletişim formundan gelen brief&apos;ler burada listelenecek. AI Brief Asistanı Faz 4&apos;te
-            iletişim sayfasına geliyor.
+            İletişim formlarından ve chatbot&apos;tan gelen lead&apos;ler burada listelenir.
           </CardContent>
         </Card>
       ) : (
-        <Card className="overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Kişi / Şirket</TableHead>
-                <TableHead>İletişim</TableHead>
-                <TableHead>İlgilendiği</TableHead>
-                <TableHead>Bütçe</TableHead>
-                <TableHead>Durum</TableHead>
-                <TableHead className="text-right">Tarih</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {leads.map((l) => (
-                <TableRow key={l.id} className="hover:bg-muted/30">
-                  <TableCell>
-                    <Link
-                      href={`/admin/leadler/${l.id}`}
-                      className="block font-medium hover:underline"
-                    >
-                      {l.ad_soyad}
-                    </Link>
-                    {l.sirket ? (
-                      <div className="text-muted-foreground text-xs">{l.sirket}</div>
-                    ) : null}
-                  </TableCell>
-                  <TableCell className="text-sm">
-                    <div>{l.eposta}</div>
-                    {l.telefon ? (
-                      <div className="text-muted-foreground text-xs">{l.telefon}</div>
-                    ) : null}
-                  </TableCell>
-                  <TableCell className="text-sm">
-                    {l.hizmet_kategori?.length ? l.hizmet_kategori.join(", ") : "—"}
-                  </TableCell>
-                  <TableCell className="text-sm">{l.butce ?? "—"}</TableCell>
-                  <TableCell>
-                    <Badge variant={variants[l.durum] ?? "default"}>
-                      {durumlar.find((d) => d.value === l.durum)?.label ?? l.durum}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground text-right text-xs">
-                    {formatDate(l.created_at)}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </Card>
+        <LeadTable leads={leads} />
       )}
     </div>
   );

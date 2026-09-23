@@ -9,18 +9,12 @@ const leadDurumSchema = z.enum(["yeni", "iletisim", "teklif", "kazandi", "kaybet
 
 export type ActionResult = { ok: true; message?: string } | { ok: false; error: string };
 
-export async function updateLeadStatus(
-  id: string,
-  durum: string,
-): Promise<ActionResult> {
+export async function updateLeadStatus(id: string, durum: string): Promise<ActionResult> {
   const parsed = leadDurumSchema.safeParse(durum);
   if (!parsed.success) return { ok: false, error: "Geçersiz durum" };
 
   const supabase = await createClient();
-  const { error } = await supabase
-    .from("leads")
-    .update({ durum: parsed.data })
-    .eq("id", id);
+  const { error } = await supabase.from("leads").update({ durum: parsed.data }).eq("id", id);
 
   if (error) return { ok: false, error: error.message };
 
@@ -30,10 +24,7 @@ export async function updateLeadStatus(
   return { ok: true, message: "Durum güncellendi" };
 }
 
-export async function updateLeadNotes(
-  id: string,
-  notlar: string,
-): Promise<ActionResult> {
+export async function updateLeadNotes(id: string, notlar: string): Promise<ActionResult> {
   const supabase = await createClient();
   const { error } = await supabase
     .from("leads")
@@ -43,6 +34,46 @@ export async function updateLeadNotes(
   if (error) return { ok: false, error: error.message };
   revalidatePath(`/admin/leadler/${id}`);
   return { ok: true, message: "Not kaydedildi" };
+}
+
+const leadIdsSchema = z.array(z.string().uuid()).min(1, "Önce kayıt seçin").max(500);
+
+export async function bulkUpdateLeadStatus(ids: string[], durum: string): Promise<ActionResult> {
+  const parsedIds = leadIdsSchema.safeParse(ids);
+  if (!parsedIds.success)
+    return { ok: false, error: parsedIds.error.errors[0]?.message ?? "Geçersiz seçim" };
+  const parsedDurum = leadDurumSchema.safeParse(durum);
+  if (!parsedDurum.success) return { ok: false, error: "Geçersiz durum" };
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("leads")
+    .update({ durum: parsedDurum.data })
+    .in("id", parsedIds.data)
+    .select("id");
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath("/admin/leadler");
+  revalidatePath("/admin");
+  return { ok: true, message: `${data.length} lead güncellendi` };
+}
+
+export async function bulkDeleteLeads(ids: string[]): Promise<ActionResult> {
+  const parsedIds = leadIdsSchema.safeParse(ids);
+  if (!parsedIds.success)
+    return { ok: false, error: parsedIds.error.errors[0]?.message ?? "Geçersiz seçim" };
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("leads")
+    .delete()
+    .in("id", parsedIds.data)
+    .select("id");
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath("/admin/leadler");
+  revalidatePath("/admin");
+  return { ok: true, message: `${data.length} lead silindi` };
 }
 
 export async function deleteLead(id: string): Promise<ActionResult> {
