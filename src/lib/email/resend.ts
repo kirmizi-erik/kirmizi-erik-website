@@ -22,10 +22,8 @@ export type LeadNotificationInput = {
   leadId: string;
 };
 
-const FROM_DEFAULT = process.env.RESEND_FROM_EMAIL ?? "Kırmızı Erik <onboarding@resend.dev>";
-const TO_DEFAULT: string[] = (
-  process.env.LEAD_NOTIFICATION_TO ?? "info@kirmizierik.com.tr,kirmizierikmm@gmail.com"
-)
+const FROM_DEFAULT = process.env.RESEND_FROM_EMAIL ?? "Kırmızı Erik <bildirim@kirmizierik.com.tr>";
+const TO_DEFAULT: string[] = (process.env.LEAD_NOTIFICATION_TO ?? "ozkan@kirmizierik.com.tr")
   .split(",")
   .map((s) => s.trim())
   .filter(Boolean);

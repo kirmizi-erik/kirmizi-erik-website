@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 
 import { getContext } from "@/lib/chatbot/retriever";
 import { isUnanswered, recordTurn } from "@/lib/chatbot/transcript";
-import { sendLeadNotification } from "@/lib/email/resend";
+import { notifyNewLead } from "@/lib/notify/lead";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { chatLeadInputSchema, chatMessageSchema, type ChatMessage } from "@/lib/validations/chat";
@@ -284,7 +284,7 @@ export async function submitChatLead(formData: FormData): Promise<ChatLeadResult
   revalidatePath("/admin");
 
   // E-posta bildirimi
-  await sendLeadNotification({
+  await notifyNewLead({
     ad_soyad: parsed.data.ad_soyad,
     eposta: parsed.data.eposta,
     telefon: parsed.data.telefon,

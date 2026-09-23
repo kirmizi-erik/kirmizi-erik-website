@@ -6,7 +6,8 @@ import { z } from "zod";
 import { runScan } from "@/lib/ai-scan/scan";
 import { ScanUrlError } from "@/lib/ai-scan/net";
 import { LAYER_LABELS, type ScanResult } from "@/lib/ai-scan/types";
-import { sendLeadNotification, sendScanReportEmail } from "@/lib/email/resend";
+import { sendScanReportEmail } from "@/lib/email/resend";
+import { notifyNewLead } from "@/lib/notify/lead";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -153,7 +154,7 @@ export async function sendScanReport(
   });
 
   // Ekibe lead bildirimi (fail-soft)
-  await sendLeadNotification({
+  await notifyNewLead({
     ad_soyad: parsed.data.ad_soyad,
     eposta: parsed.data.eposta,
     hizmet_kategori: ["ai-kurulumlari"],
@@ -245,7 +246,7 @@ export async function requestNewSite(
     return { ok: false, error: "Talebiniz gönderilemedi, lütfen tekrar deneyin" };
   }
 
-  await sendLeadNotification({
+  await notifyNewLead({
     ad_soyad: parsed.data.ad_soyad,
     eposta: parsed.data.eposta,
     telefon: parsed.data.telefon,
