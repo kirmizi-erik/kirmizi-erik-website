@@ -6,6 +6,7 @@ import { ArrowUpRight, Sparkles, Zap } from "lucide-react";
 import { OpenChatButton } from "@/components/site/open-chat-button";
 import { RelatedWorks } from "@/components/site/related-works";
 import { Button } from "@/components/ui/button";
+import { breadcrumbSchema, jsonLdScript, serviceSchema } from "@/lib/schema";
 import { getServicePage, servicePages, type ServicePageData } from "@/lib/services-data";
 
 type PageProps = { params: Promise<{ slug: string }> };
@@ -19,8 +20,9 @@ export async function generateMetadata({ params }: PageProps) {
   const data = getServicePage(slug);
   if (!data) return { title: "Hizmet bulunamadı" };
   return {
-    title: data.label,
+    title: data.seoTitle,
     description: data.metaDescription,
+    alternates: { canonical: `/hizmetler/${data.slug}` },
   };
 }
 
@@ -29,7 +31,22 @@ export default async function HizmetDetayPage({ params }: PageProps) {
   const data = getServicePage(slug);
   if (!data) notFound();
 
-  return <ServicePageContent data={data} />;
+  const breadcrumb = breadcrumbSchema([
+    { name: "Ana Sayfa", path: "/" },
+    { name: "Hizmetler", path: "/hizmetler" },
+    { name: data.label, path: `/hizmetler/${data.slug}` },
+  ]);
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={jsonLdScript(serviceSchema(data))}
+      />
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(breadcrumb)} />
+      <ServicePageContent data={data} />
+    </>
+  );
 }
 
 function ServicePageContent({ data }: { data: ServicePageData }) {

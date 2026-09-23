@@ -1,5 +1,7 @@
 import type { NextConfig } from "next";
 
+import { legacyRedirects } from "./src/lib/legacy-redirects";
+
 const isDev = process.env.NODE_ENV === "development";
 
 // Pragmatik CSP v1: Next inline script'leri için 'unsafe-inline' gerekli
@@ -62,6 +64,9 @@ const nextConfig: NextConfig = {
       // Hero video / kapak video upload (max 50MB) için 60MB headroom.
       bodySizeLimit: "60mb",
     },
+  },
+  async redirects() {
+    return legacyRedirects;
   },
   async headers() {
     return [

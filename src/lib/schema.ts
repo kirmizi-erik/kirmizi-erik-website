@@ -116,8 +116,39 @@ export const faqPageSchema = {
   })),
 };
 
+export function breadcrumbSchema(items: { name: string; path: string }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: item.name,
+      item: `${SITE_URL}${item.path}`,
+    })),
+  };
+}
+
+export function serviceSchema(service: {
+  slug: string;
+  seoTitle: string;
+  metaDescription: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "@id": `${SITE_URL}/hizmetler/${service.slug}#service`,
+    name: service.seoTitle,
+    description: service.metaDescription,
+    url: `${SITE_URL}/hizmetler/${service.slug}`,
+    provider: { "@id": `${SITE_URL}#organization` },
+    areaServed: { "@type": "Country", name: "Türkiye" },
+  };
+}
+
 export function jsonLdScript(schema: object) {
   return {
-    __html: JSON.stringify(schema),
+    // DB'den gelen metin "</script>" içerirse script bloğunu kıramasın
+    __html: JSON.stringify(schema).replace(/</g, "\\u003c"),
   };
 }

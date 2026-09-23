@@ -63,6 +63,8 @@ export type ServicePanelShowcase = {
 export type ServicePageData = {
   slug: string;
   label: string;
+  // <title> için arama niyetli başlık (label sayfa içi kısa ad olarak kalır)
+  seoTitle: string;
   grup: HizmetGrup;
   oneCikan?: boolean; // anasayfa Yazılım & AI sütununda yıldız (sadece AI)
   // Hero
@@ -94,6 +96,7 @@ export const servicePages: ServicePageData[] = [
   {
     slug: "video-produksiyon",
     label: "Video Prodüksiyon",
+    seoTitle: "Video Prodüksiyon — Reklam ve Tanıtım Filmi",
     grup: "gorsel",
     heroSubtitle:
       "Reklam filminden ürün videosuna, sosyal medya içeriğinden müzik klibine — fikirden teslime tüm prodüksiyonu kendi ekibimizle yönetiriz.",
@@ -225,6 +228,7 @@ export const servicePages: ServicePageData[] = [
   {
     slug: "fotograf-cekimleri",
     label: "Fotoğraf Çekimleri",
+    seoTitle: "Ürün ve Kurumsal Fotoğraf Çekimi",
     grup: "gorsel",
     heroSubtitle:
       "Ürün katalogundan kurumsal portreye, mekan çekiminden lookbook'a — çekim öncesinde hazırlık, sırasında yönlendirme, sonrasında retouch.",
@@ -347,6 +351,7 @@ export const servicePages: ServicePageData[] = [
   {
     slug: "dijital-pazarlama",
     label: "Dijital Pazarlama",
+    seoTitle: "Dijital Pazarlama — Google Ads, Meta ve SEO",
     grup: "dijital",
     heroSubtitle:
       "Reklam bütçenle aldığın gerçek sonuç. Performans pazarlaması, SEO, içerik stratejisi ve raporlama — KPI odaklı, şeffaf.",
@@ -464,6 +469,7 @@ export const servicePages: ServicePageData[] = [
   {
     slug: "sosyal-medya-yonetimi",
     label: "Sosyal Medya Yönetimi",
+    seoTitle: "Sosyal Medya Yönetimi ve İçerik Üretimi",
     grup: "dijital",
     heroSubtitle:
       "Sadece post atmak değil — markanın sesi, hikayesi, etkileşim stratejisi. Aylık takvimden raporlamaya, hayranlardan etkileşim yönetimine.",
@@ -575,6 +581,7 @@ export const servicePages: ServicePageData[] = [
   {
     slug: "uygulama-gelistirme",
     label: "Uygulama Geliştirme",
+    seoTitle: "Mobil Uygulama ve Yazılım Geliştirme",
     grup: "yazilim",
     heroSubtitle:
       "iOS/Android native, cross-platform veya hibrit — markaya en uygun yaklaşımı seçer, ürün stratejisinden App Store yayınına kadar yönetiriz.",
@@ -686,6 +693,7 @@ export const servicePages: ServicePageData[] = [
   {
     slug: "web-tasarim-yazilim",
     label: "Web Sitesi Tasarım ve Yazılımı",
+    seoTitle: "Kurumsal Web Sitesi Tasarımı ve Yazılım",
     grup: "yazilim",
     heroSubtitle:
       "Kurumsal siteden e-ticarete, web app'ten admin paneline — modern stack, hızlı yükleme, SEO dostu, mobil-öncelikli.",
@@ -875,6 +883,7 @@ export const servicePages: ServicePageData[] = [
   {
     slug: "ai-kurulumlari",
     label: "AI Kurulumları",
+    seoTitle: "Şirketlere Özel AI Chatbot ve Otomasyon",
     grup: "yazilim",
     oneCikan: true,
     heroSubtitle:
@@ -993,6 +1002,7 @@ export const servicePages: ServicePageData[] = [
   {
     slug: "grafik-tasarim",
     label: "Grafik Tasarım",
+    seoTitle: "Grafik Tasarım ve Kurumsal Kimlik",
     grup: "gorsel",
     heroSubtitle:
       "Logo'dan kurumsal kimliğe, ambalajdan basılı materyale — markanın görsel dilini sıfırdan kurarız ya da mevcut sistemini güçlendiririz.",
@@ -1091,6 +1101,7 @@ export const servicePages: ServicePageData[] = [
   {
     slug: "3d-2d-calismalar",
     label: "3D/2D Çalışmalar",
+    seoTitle: "3D Animasyon ve Motion Graphics",
     grup: "gorsel",
     heroSubtitle:
       "Ürün render'dan motion graphics'e, mimari görselleştirmeden karakter animasyona — fikir cep telefonunda parıldayana kadar.",

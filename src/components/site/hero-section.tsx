@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { preload } from "react-dom";
 import { ArrowDown, ArrowUpRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -28,6 +29,13 @@ export async function HeroSection() {
   const lines = hero.title.split("\n").filter((l) => l.trim().length > 0);
   const lastIdx = lines.length - 1;
   const video = parseVideoUrl(hero.videoUrl);
+  // Sitenin kendi videoları için yanında "<ad>.poster.webp" üretilir: mobilde LCP
+  // videonun ilk karesini beklemeden bu görselle boyanır.
+  const poster =
+    video?.kind === "direct" && video.url.startsWith("/")
+      ? video.url.replace(/\.mp4$/i, ".poster.webp")
+      : undefined;
+  if (poster) preload(poster, { as: "image", fetchPriority: "high" });
 
   return (
     <section className="relative isolate overflow-hidden">
@@ -41,6 +49,7 @@ export async function HeroSection() {
             loop
             playsInline
             preload="metadata"
+            poster={poster}
             className="absolute inset-0 size-full object-cover opacity-50"
           />
         ) : video?.kind === "youtube" ? (

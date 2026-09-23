@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Markdown } from "@/components/site/markdown";
 import { ShareButtons } from "@/components/site/share-buttons";
 import { parseVideoUrl } from "@/lib/embed";
+import { breadcrumbSchema, jsonLdScript } from "@/lib/schema";
 import { createClient } from "@/lib/supabase/server";
 import { calismaKategoriOptions, isCalismaKategori } from "@/lib/validations/case-study";
 
@@ -23,7 +24,8 @@ export async function generateMetadata({ params }: PageProps) {
   if (!data) return { title: "Çalışma bulunamadı" };
   return {
     title: data.baslik,
-    description: data.ozet ?? undefined,
+    description: data.ozet ?? `${data.baslik} — Kırmızı Erik Reklam Ajansı çalışması.`,
+    alternates: { canonical: `/calismalar/${slug}` },
     openGraph: data.kapak_url ? { images: [data.kapak_url] } : undefined,
   };
 }
@@ -56,8 +58,15 @@ export default async function CalismaDetayPage({ params }: PageProps) {
   const video = parseVideoUrl(w.kapak_video_url);
   const yayinTarihi = formatTarih(w.yayin_tarihi);
 
+  const breadcrumb = breadcrumbSchema([
+    { name: "Ana Sayfa", path: "/" },
+    { name: "Çalışmalar", path: "/calismalar" },
+    { name: w.baslik, path: `/calismalar/${w.slug}` },
+  ]);
+
   return (
     <article className="mx-auto max-w-screen-xl px-4 py-12 sm:px-6 lg:px-10 lg:py-16">
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(breadcrumb)} />
       {/* Geri linki */}
       <Button asChild variant="ghost" size="sm" className="mb-6">
         <Link href="/calismalar">

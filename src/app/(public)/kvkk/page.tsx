@@ -4,6 +4,7 @@ export const metadata = {
   title: "KVKK Aydınlatma Metni",
   description:
     "Kırmızı Erik Reklam Ajansı KVKK kapsamında kişisel verilerin işlenmesine ilişkin aydınlatma metni.",
+  alternates: { canonical: "/kvkk" },
 };
 
 export default function KvkkPage() {
@@ -16,11 +17,9 @@ export default function KvkkPage() {
       <h1 className="font-heading mt-5 text-4xl leading-tight font-black tracking-tight sm:text-5xl">
         KVKK Aydınlatma Metni
       </h1>
-      <p className="text-muted-foreground mt-4 text-sm">
-        Yürürlük: 9 Mayıs 2026
-      </p>
+      <p className="text-muted-foreground mt-4 text-sm">Yürürlük: 9 Mayıs 2026</p>
 
-      <div className="prose prose-invert mt-12 max-w-none space-y-6 text-foreground/90 text-base leading-relaxed">
+      <div className="prose prose-invert text-foreground/90 mt-12 max-w-none space-y-6 text-base leading-relaxed">
         <section>
           <h2 className="text-foreground text-2xl font-bold">1. Veri Sorumlusu</h2>
           <p className="mt-3">
@@ -65,9 +64,8 @@ export default function KvkkPage() {
           <h2 className="text-foreground text-2xl font-bold">5. Aktarım</h2>
           <p className="mt-3">
             Kişisel verileriniz; iş ortaklarımıza, hizmet aldığımız altyapı sağlayıcılarına
-            (Supabase, Vercel, Resend gibi yurt içi/dışı servis sağlayıcıları) yalnızca işbu
-            metinde belirtilen amaçlarla ve KVKK m.8 ve m.9 düzenlemelerine uygun olarak
-            aktarılabilir.
+            (Supabase, Vercel, Resend gibi yurt içi/dışı servis sağlayıcıları) yalnızca işbu metinde
+            belirtilen amaçlarla ve KVKK m.8 ve m.9 düzenlemelerine uygun olarak aktarılabilir.
           </p>
         </section>
 
@@ -82,10 +80,7 @@ export default function KvkkPage() {
           </ul>
           <p className="mt-3">
             haklarına sahipsiniz. Taleplerinizi{" "}
-            <a
-              href="mailto:info@kirmizierik.com.tr"
-              className="text-brand hover:underline"
-            >
+            <a href="mailto:info@kirmizierik.com.tr" className="text-brand hover:underline">
               info@kirmizierik.com.tr
             </a>{" "}
             adresine iletebilirsiniz.
@@ -100,10 +95,7 @@ export default function KvkkPage() {
             Begonya Sk. Nida Kule, Ataşehir / İstanbul
             <br />
             E-posta:{" "}
-            <a
-              href="mailto:info@kirmizierik.com.tr"
-              className="text-brand hover:underline"
-            >
+            <a href="mailto:info@kirmizierik.com.tr" className="text-brand hover:underline">
               info@kirmizierik.com.tr
             </a>
             <br />
@@ -113,10 +105,7 @@ export default function KvkkPage() {
       </div>
 
       <div className="border-border/40 mt-16 border-t pt-8">
-        <Link
-          href="/iletisim"
-          className="text-brand hover:underline text-sm"
-        >
+        <Link href="/iletisim" className="text-brand text-sm hover:underline">
           ← İletişim formuna geri dön
         </Link>
       </div>
