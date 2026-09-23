@@ -3,14 +3,12 @@
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 
-import { sendLeadNotification } from "@/lib/email/resend";
+import { notifyNewLead } from "@/lib/notify/lead";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { leadInputSchema } from "@/lib/validations/lead";
 
-export type SubmitResult =
-  | { ok: true; id: string }
-  | { ok: false; error: string };
+export type SubmitResult = { ok: true; id: string } | { ok: false; error: string };
 
 const emptyToNull = (s: unknown) => {
   if (typeof s !== "string") return null;
@@ -52,8 +50,7 @@ export async function submitLead(formData: FormData): Promise<SubmitResult> {
   // AI puanı opsiyonel (form gönderilmeden önce kullanıcı çalıştırırsa formData'da gelir)
   const aiSkorRaw = formData.get("ai_skor");
   const aiOzet = formData.get("ai_ozet");
-  const aiSkor =
-    typeof aiSkorRaw === "string" && aiSkorRaw ? Number(aiSkorRaw) : null;
+  const aiSkor = typeof aiSkorRaw === "string" && aiSkorRaw ? Number(aiSkorRaw) : null;
 
   const reqHeaders = await headers();
   const userAgent = reqHeaders.get("user-agent") ?? "";
@@ -86,7 +83,7 @@ export async function submitLead(formData: FormData): Promise<SubmitResult> {
   revalidatePath("/admin");
 
   // E-posta bildirimi (background, fail olsa form yine submit kalsın)
-  await sendLeadNotification({
+  await notifyNewLead({
     ad_soyad: parsed.data.ad_soyad,
     eposta: parsed.data.eposta,
     telefon: emptyToNull(parsed.data.telefon),
