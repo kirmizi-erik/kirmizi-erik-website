@@ -93,9 +93,7 @@ export default async function AnalyticsPage({
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Analytics</h1>
-          <p className="text-muted-foreground mt-1 text-sm">
-            Google Analytics 4 — son {days} gün
-          </p>
+          <p className="text-muted-foreground mt-1 text-sm">Google Analytics 4 — son {days} gün</p>
         </div>
         <RangeSelector current={days} />
       </div>
@@ -265,9 +263,7 @@ function DeviceCard({ devices }: { devices: Loaded["data"]["devices"] }) {
             {devices.map((d) => (
               <li key={d.device}>
                 <div className="mb-1 flex items-baseline justify-between gap-3">
-                  <span className="text-sm font-medium">
-                    {labelMap[d.device] ?? d.device}
-                  </span>
+                  <span className="text-sm font-medium">{labelMap[d.device] ?? d.device}</span>
                   <span className="text-muted-foreground text-xs">
                     {formatNumber(d.users)} ({formatPercent(d.users / total)})
                   </span>
@@ -289,14 +285,13 @@ function DeviceCard({ devices }: { devices: Loaded["data"]["devices"] }) {
 
 function TrendCard({ data }: { data: Loaded["data"]["daily"] }) {
   const total = data.reduce((s, d) => s + d.users, 0);
-  const peak = data.reduce(
-    (m, d) => (d.users > m.users ? d : m),
-    { date: "", users: 0, sessions: 0 },
-  );
+  const peak = data.reduce((m, d) => (d.users > m.users ? d : m), {
+    date: "",
+    users: 0,
+    sessions: 0,
+  });
   const fmtDate = (d: string) =>
-    d.length === 8
-      ? `${d.slice(6, 8)}.${d.slice(4, 6)}.${d.slice(0, 4)}`
-      : d;
+    d.length === 8 ? `${d.slice(6, 8)}.${d.slice(4, 6)}.${d.slice(0, 4)}` : d;
   return (
     <Card>
       <CardHeader>
@@ -308,7 +303,8 @@ function TrendCard({ data }: { data: Loaded["data"]["daily"] }) {
             </span>
             {peak.users > 0 && (
               <span>
-                Pik: <span className="text-foreground font-medium">{peak.users}</span> ({fmtDate(peak.date)})
+                Pik: <span className="text-foreground font-medium">{peak.users}</span> (
+                {fmtDate(peak.date)})
               </span>
             )}
           </div>
@@ -381,9 +377,7 @@ function GeoCard({ geo }: { geo: Loaded["data"]["geo"] }) {
               <li key={`${g.country}-${g.city}-${i}`} className="px-2 py-2">
                 <div className="flex items-baseline justify-between gap-3">
                   <div>
-                    <div className="text-sm font-medium">
-                      {g.city || "(şehir yok)"}
-                    </div>
+                    <div className="text-sm font-medium">{g.city || "(şehir yok)"}</div>
                     <div className="text-muted-foreground text-xs">{g.country}</div>
                   </div>
                   <div className="text-sm font-medium">{formatNumber(g.users)}</div>
@@ -412,9 +406,12 @@ function ErrorPanel({ error }: { error: string }) {
         </p>
         <ul className="text-muted-foreground mt-3 list-disc space-y-1 pl-5 text-sm">
           <li>
-            <code>GOOGLE_OAUTH_CLIENT_ID</code>,{" "}
-            <code>GOOGLE_OAUTH_CLIENT_SECRET</code>,{" "}
-            <code>GOOGLE_OAUTH_REFRESH_TOKEN</code> env eksik
+            <code>GOOGLE_SERVICE_ACCOUNT_B64</code> env eksik (önerilen) ya da service
+            account&apos;a bu mülkte erişim verilmemiş
+          </li>
+          <li>
+            OAuth kullanılıyorsa: <code>GOOGLE_OAUTH_REFRESH_TOKEN</code> süresi dolmuş (
+            <code>invalid_grant</code>)
           </li>
           <li>
             <code>GA4_PROPERTY_ID</code> env değişkeni eksik / yanlış

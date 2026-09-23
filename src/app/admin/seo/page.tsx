@@ -231,9 +231,12 @@ function ErrorPanel({ error }: { error: string }) {
         </p>
         <ul className="text-muted-foreground mt-3 list-disc space-y-1 pl-5 text-sm">
           <li>
-            <code>GOOGLE_OAUTH_CLIENT_ID</code>,{" "}
-            <code>GOOGLE_OAUTH_CLIENT_SECRET</code>,{" "}
-            <code>GOOGLE_OAUTH_REFRESH_TOKEN</code> env eksik
+            <code>GOOGLE_SERVICE_ACCOUNT_B64</code> env eksik (önerilen) ya da service
+            account&apos;a bu mülkte erişim verilmemiş
+          </li>
+          <li>
+            OAuth kullanılıyorsa: <code>GOOGLE_OAUTH_REFRESH_TOKEN</code> süresi dolmuş (
+            <code>invalid_grant</code>)
           </li>
           <li>
             <code>GSC_SITE_URL</code> env değişkeni eksik / yanlış
