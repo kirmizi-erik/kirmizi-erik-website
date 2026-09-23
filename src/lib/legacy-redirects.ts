@@ -44,6 +44,8 @@ const exact: [string, string][] = [
   ["/portfolio-item/sozer-a-s-tanitim-filmi", "/calismalar/sozer-kuyumculuk-san-tic-a-s"],
   ["/portfolio-item/sozer-a-s-tanitim-filmi-copy", "/calismalar/sozer-kuyumculuk-san-tic-a-s"],
   ["/novawood-tanitim-filmi", "/calismalar/novawood-showreel-eng"],
+  ["/portfolio-item/kemal-ozcan-video-muzik-klibi", "/calismalar/muzik-klip"],
+  ["/jquery", "/"],
   ["/neden-tanitim-filmi", HIZMET.video],
   ["/digiturk-kampanya", "/calismalar"],
   ["/kim-west", "/calismalar"],
