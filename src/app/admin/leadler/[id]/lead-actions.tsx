@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -34,6 +35,7 @@ type Props = {
 };
 
 export function LeadActions({ id, ad_soyad, durum, notlar }: Props) {
+  const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
   const [deleting, startDelete] = useTransition();
@@ -100,9 +102,7 @@ export function LeadActions({ id, ad_soyad, durum, notlar }: Props) {
       {/* Sil */}
       <div className="border-destructive/30 rounded-md border p-4">
         <p className="text-sm font-medium">Tehlikeli alan</p>
-        <p className="text-muted-foreground mt-1 text-xs">
-          Lead silindikten sonra geri alınamaz.
-        </p>
+        <p className="text-muted-foreground mt-1 text-xs">Lead silindikten sonra geri alınamaz.</p>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button variant="destructive" size="sm" className="mt-3">
@@ -129,7 +129,7 @@ export function LeadActions({ id, ad_soyad, durum, notlar }: Props) {
                     const r = await deleteLead(id);
                     if (r.ok) {
                       toast.success(r.message ?? "Silindi");
-                      window.location.href = "/admin/leadler";
+                      router.push("/admin/leadler");
                     } else {
                       toast.error(r.error);
                       setOpen(false);
