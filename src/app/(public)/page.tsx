@@ -9,6 +9,10 @@ import { ServicesSection } from "@/components/site/services-section";
 import { Button } from "@/components/ui/button";
 import { faqPageSchema, homeFaq, jsonLdScript } from "@/lib/schema";
 
+export const metadata = {
+  alternates: { canonical: "/" },
+};
+
 export default function HomePage() {
   return (
     <>

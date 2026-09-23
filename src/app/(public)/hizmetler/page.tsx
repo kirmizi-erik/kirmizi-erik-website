@@ -8,9 +8,10 @@ import { hizmetGrupBilgi, hizmetler, type HizmetGrup } from "@/lib/site-data";
 import { cn } from "@/lib/utils";
 
 export const metadata = {
-  title: "Hizmetler",
+  title: "Hizmetler — Video, Web, Sosyal Medya ve AI",
   description:
     "Dokuz hizmet, tek çatı. Video, fotoğraf, dijital pazarlama, sosyal medya, web/uygulama, AI kurulumları, grafik ve 3D/2D — her disiplin aynı ekiple.",
+  alternates: { canonical: "/hizmetler" },
 };
 
 const gruplar: HizmetGrup[] = ["gorsel", "dijital", "yazilim"];
@@ -40,8 +41,7 @@ export default function HizmetlerHubPage() {
                 Hizmetler
               </div>
               <h1 className="font-heading mt-3 max-w-4xl text-4xl leading-[0.95] font-black tracking-tight sm:text-5xl lg:text-6xl">
-                Dokuz hizmet.{" "}
-                <span className="text-brand-mor">Tek çatı.</span>
+                Dokuz hizmet. <span className="text-brand-mor">Tek çatı.</span>
               </h1>
             </div>
           </div>
@@ -50,10 +50,9 @@ export default function HizmetlerHubPage() {
         {/* Banner altı — subtitle paragraf */}
         <div className="border-border/40 mx-auto max-w-screen-2xl border-b px-4 py-8 sm:px-6 lg:px-10 lg:py-10">
           <p className="text-muted-foreground max-w-2xl text-base leading-relaxed sm:text-lg">
-            Reklam ajansları çoğu zaman ya kreatife ya performansa odaklanır. Biz
-            ikisini de aynı çatı altında, aynı ekiple yapıyoruz. Aşağıdan
-            ilgilendiğin hizmeti seç — her birinin kendi sayfası, kendi süreci
-            ve örnek işleri var.
+            Reklam ajansları çoğu zaman ya kreatife ya performansa odaklanır. Biz ikisini de aynı
+            çatı altında, aynı ekiple yapıyoruz. Aşağıdan ilgilendiğin hizmeti seç — her birinin
+            kendi sayfası, kendi süreci ve örnek işleri var.
           </p>
         </div>
       </header>
@@ -85,11 +84,11 @@ export default function HizmetlerHubPage() {
                     {bilgi.baslik}
                   </div>
                 </div>
-                <p className="text-foreground font-heading md:col-span-1 text-lg font-bold tracking-tight md:text-center md:text-xl lg:text-2xl">
+                <p className="text-foreground font-heading text-lg font-bold tracking-tight md:col-span-1 md:text-center md:text-xl lg:text-2xl">
                   {bilgi.aciklama}
                 </p>
                 {/* Sağ kolon — boş, hizalama için */}
-                <div className="hidden md:block md:col-span-1" />
+                <div className="hidden md:col-span-1 md:block" />
               </div>
 
               {/* Hizmet kartları */}
@@ -97,8 +96,7 @@ export default function HizmetlerHubPage() {
                 {grupHizmetleri.map((h) => {
                   const detail = servicePages.find((s) => s.slug === h.slug);
                   const isStar = "oneCikan" in h && h.oneCikan;
-                  const subtitle =
-                    detail?.heroSubtitle ?? "Detay yakında eklenecek.";
+                  const subtitle = detail?.heroSubtitle ?? "Detay yakında eklenecek.";
 
                   return (
                     <Link
@@ -107,7 +105,7 @@ export default function HizmetlerHubPage() {
                       className={cn(
                         "group relative flex flex-col rounded-2xl border p-6 transition-all",
                         isStar
-                          ? "border-brand/40 bg-gradient-to-br from-brand/[0.08] to-transparent hover:border-brand/60"
+                          ? "border-brand/40 from-brand/[0.08] hover:border-brand/60 bg-gradient-to-br to-transparent"
                           : acik
                             ? "border-border/60 bg-background/50 hover:border-foreground/30 hover:bg-background/70"
                             : "border-border/60 bg-muted hover:border-foreground/30 hover:bg-muted/80",

@@ -7,9 +7,10 @@ import { createClient } from "@/lib/supabase/server";
 import { IletisimForm } from "./iletisim-form";
 
 export const metadata = {
-  title: "İletişim",
+  title: "İletişim — Ataşehir, İstanbul",
   description:
-    "Brief paylaş, fikrini anlat, birlikte yapalım. Sağ alttaki sohbet asistanımız ile hizmetlerimiz hakkında soru sorabilirsin.",
+    "Kırmızı Erik Reklam Ajansı ile iletişime geç: Ataşehir, İstanbul ofisimiz, telefon, WhatsApp ve brief formu. Video, web, sosyal medya ve AI projen için aynı gün dönüş yapıyoruz.",
+  alternates: { canonical: "/iletisim" },
 };
 
 export default async function IletisimPage() {

@@ -5,9 +5,10 @@ import { ArrowUpRight, Award, Globe, Sparkles, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const metadata = {
-  title: "Biz Kimiz",
+  title: "Biz Kimiz — 25 Yıllık İstanbul Reklam Ajansı",
   description:
     "2001'de YouTube yokken kurulduk. 25 yıl, 300'e yakın marka, 6 ülke. Reklam tarlasının kırmızı eriği — Özkan Kurt'un yönetiminde, her brief'e özel uzman ekiple devam ediyoruz.",
+  alternates: { canonical: "/biz-kimiz" },
 };
 
 const ozkanManifesto = [
@@ -160,10 +161,9 @@ export default function BizKimizPage() {
         {/* Banner altı — subtitle paragraf */}
         <div className="border-border/40 mx-auto max-w-screen-2xl border-b px-4 py-10 sm:px-6 lg:px-10 lg:py-14">
           <p className="text-muted-foreground max-w-3xl text-base leading-relaxed sm:text-lg">
-            2001'de YouTube yokken kurulduk. Reklam tarlasının kırmızı eriği olduk
-            — taze, dinamik, gözden kaçmayan. Bugün 25 yıllık birikim, 300'e
-            yakın marka, 6 ülke ve hâlâ aynı masada bizimle yürüyen müşterilerle
-            devam ediyoruz.
+            2001'de YouTube yokken kurulduk. Reklam tarlasının kırmızı eriği olduk — taze, dinamik,
+            gözden kaçmayan. Bugün 25 yıllık birikim, 300'e yakın marka, 6 ülke ve hâlâ aynı masada
+            bizimle yürüyen müşterilerle devam ediyoruz.
           </p>
         </div>
       </header>
@@ -198,11 +198,10 @@ export default function BizKimizPage() {
                 <span className="text-brand">Özkan Kurt</span> var.
               </h2>
               <p className="text-muted-foreground mt-6 max-w-2xl text-base leading-relaxed sm:text-lg">
-                Kırmızı Erik'i kuran dört arkadaştan biriydi. 25 yıl boyunca her
-                dalgayı erken yakalamaya çalıştı; YouTube'dan AI'ya, kreatiften
-                yazılıma geçişlerde markanın yanında durdu. Bugün ajansı tek
-                başına yönetiyor — her brief'e o işe özel uzman ekip kuruyor.
-                Yapay sosyallik değil, gerçek kontrol.
+                Kırmızı Erik'i kuran dört arkadaştan biriydi. 25 yıl boyunca her dalgayı erken
+                yakalamaya çalıştı; YouTube'dan AI'ya, kreatiften yazılıma geçişlerde markanın
+                yanında durdu. Bugün ajansı tek başına yönetiyor — her brief'e o işe özel uzman ekip
+                kuruyor. Yapay sosyallik değil, gerçek kontrol.
               </p>
 
               <div className="mt-12">
@@ -221,7 +220,7 @@ export default function BizKimizPage() {
                         {m.no}
                       </div>
                       <div>
-                        <h3 className="font-heading text-lg font-bold leading-tight tracking-tight sm:text-xl">
+                        <h3 className="font-heading text-lg leading-tight font-bold tracking-tight sm:text-xl">
                           {m.baslik}
                         </h3>
                         <p className="text-muted-foreground mt-2 text-sm leading-relaxed">
@@ -251,27 +250,23 @@ export default function BizKimizPage() {
               <span className="text-brand-mor">dört kurucu, bir isim.</span>
             </h2>
           </div>
-          <div className="md:col-span-7 space-y-6 md:text-lg">
+          <div className="space-y-6 md:col-span-7 md:text-lg">
             <p className="text-muted-foreground leading-relaxed">
-              Kırmızı Erik, 2001'de İstanbul'da dört arkadaşın kurduğu bir
-              kreatif ajans olarak başladı. Reklam sektörü o yıllarda dijitale
-              geçiş aşamasındaydı — YouTube bile henüz yoktu, dijital pazarlama
-              &ldquo;yeni&rdquo; diye fısıldanan bir kavramdı.
+              Kırmızı Erik, 2001'de İstanbul'da dört arkadaşın kurduğu bir kreatif ajans olarak
+              başladı. Reklam sektörü o yıllarda dijitale geçiş aşamasındaydı — YouTube bile henüz
+              yoktu, dijital pazarlama &ldquo;yeni&rdquo; diye fısıldanan bir kavramdı.
             </p>
             <p className="text-muted-foreground leading-relaxed">
-              İsim de o günlerin ruhundan doğdu: Reklam tarlasında, dijitalin
-              filiz verdiği ilk yıllarda yetişen taze, kırmızı bir erik.{" "}
+              İsim de o günlerin ruhundan doğdu: Reklam tarlasında, dijitalin filiz verdiği ilk
+              yıllarda yetişen taze, kırmızı bir erik.{" "}
               <span className="text-foreground">
-                Erik = tazelik, hızlı büyüme, doğallık. Kırmızı = enerji, cesaret,
-                dikkat çekme.
+                Erik = tazelik, hızlı büyüme, doğallık. Kırmızı = enerji, cesaret, dikkat çekme.
               </span>
             </p>
             <p className="text-muted-foreground leading-relaxed">
-              Aradan 25 yıl geçti. Sektör değişti, teknolojiler birkaç kez
-              yeniden doğdu, ajanslar geldi geçti. Biz hâlâ buradayız —{" "}
-              <span className="text-foreground">
-                aynı isim, aynı tarla, daha keskin meyveler.
-              </span>
+              Aradan 25 yıl geçti. Sektör değişti, teknolojiler birkaç kez yeniden doğdu, ajanslar
+              geldi geçti. Biz hâlâ buradayız —{" "}
+              <span className="text-foreground">aynı isim, aynı tarla, daha keskin meyveler.</span>
             </p>
           </div>
         </div>
@@ -295,7 +290,7 @@ export default function BizKimizPage() {
                 25 yıllık iş tarzımızın özeti. Beş madde, eğip bükmeden.
               </p>
             </div>
-            <ol className="md:col-span-7 space-y-5">
+            <ol className="space-y-5 md:col-span-7">
               {ajansManifesto.map((m) => (
                 <li
                   key={m.no}
@@ -333,12 +328,12 @@ export default function BizKimizPage() {
               <span className="text-brand-yaprak">biz.</span>
             </h2>
             <p className="text-muted-foreground mt-6 max-w-xl">
-              Pazarlama dilinde değil, gerçek rakamlarla. Her sayı bir hikâye,
-              her hikâyenin sonunda devam eden bir marka var.
+              Pazarlama dilinde değil, gerçek rakamlarla. Her sayı bir hikâye, her hikâyenin sonunda
+              devam eden bir marka var.
             </p>
           </div>
 
-          <div className="md:col-span-7 grid grid-cols-2 gap-4 sm:gap-5">
+          <div className="grid grid-cols-2 gap-4 sm:gap-5 md:col-span-7">
             {rakamlar.map((r) => (
               <div
                 key={r.birim}
@@ -364,18 +359,15 @@ export default function BizKimizPage() {
               Google Dijital Pazarlama Ödülleri
             </h3>
             <p className="text-muted-foreground mt-2 text-sm">
-              Kampanya etkinliği ve performans metriklerinde Google tarafından
-              tanınan iş.
+              Kampanya etkinliği ve performans metriklerinde Google tarafından tanınan iş.
             </p>
           </div>
           <div className="border-border/60 bg-card/30 rounded-2xl border p-6">
             <Users className="text-brand-mor size-6" />
-            <h3 className="mt-4 text-lg font-semibold tracking-tight">
-              Üniversite Ödülleri
-            </h3>
+            <h3 className="mt-4 text-lg font-semibold tracking-tight">Üniversite Ödülleri</h3>
             <p className="text-muted-foreground mt-2 text-sm">
-              Akademik camiada referans gösterilen ve yarışmalarda
-              ödüllendirilen kreatif çalışmalar.
+              Akademik camiada referans gösterilen ve yarışmalarda ödüllendirilen kreatif
+              çalışmalar.
             </p>
           </div>
         </div>
@@ -396,12 +388,11 @@ export default function BizKimizPage() {
                 <span className="text-brand-mor">beş duraklı yolculuk.</span>
               </h2>
               <p className="text-muted-foreground mt-6 max-w-xl">
-                Her hizmetin kendi tekniği var ama yaklaşımımız aynı. Hangi işi
-                yaptığımızdan bağımsız, masaya oturduğumuzda izlediğimiz beş
-                aşama.
+                Her hizmetin kendi tekniği var ama yaklaşımımız aynı. Hangi işi yaptığımızdan
+                bağımsız, masaya oturduğumuzda izlediğimiz beş aşama.
               </p>
             </div>
-            <ol className="md:col-span-7 space-y-5">
+            <ol className="space-y-5 md:col-span-7">
               {surec.map((s) => (
                 <li
                   key={s.no}
@@ -417,9 +408,7 @@ export default function BizKimizPage() {
                     <p className="text-brand mt-1 font-mono text-xs tracking-wide">
                       &ldquo;{s.quote}&rdquo;
                     </p>
-                    <p className="text-muted-foreground mt-3 text-sm leading-relaxed">
-                      {s.metin}
-                    </p>
+                    <p className="text-muted-foreground mt-3 text-sm leading-relaxed">{s.metin}</p>
                   </div>
                 </li>
               ))}
@@ -436,11 +425,10 @@ export default function BizKimizPage() {
               Kalıcı koltuk yok. Doğru iş, doğru ekip.
             </h3>
             <p className="text-muted-foreground mt-4 max-w-3xl text-base leading-relaxed sm:text-lg">
-              Her brief için Özkan Kurt'un yönetiminde o işe özel uzman ekip
-              kuruyoruz — kreatif yönetmen, prodüksiyon, dijital, yazılım. Sabit
-              kadronun maliyeti yerine, her projeye en doğru profesyoneli dahil
-              ediyoruz. Senin gördüğün arayüz Özkan; arkasındaki ekip her brief'le
-              değişiyor.
+              Her brief için Özkan Kurt'un yönetiminde o işe özel uzman ekip kuruyoruz — kreatif
+              yönetmen, prodüksiyon, dijital, yazılım. Sabit kadronun maliyeti yerine, her projeye
+              en doğru profesyoneli dahil ediyoruz. Senin gördüğün arayüz Özkan; arkasındaki ekip
+              her brief'le değişiyor.
             </p>
           </div>
         </section>
@@ -450,8 +438,7 @@ export default function BizKimizPage() {
       <section className="border-border/40 border-t">
         <div className="mx-auto flex max-w-screen-2xl flex-col items-start justify-between gap-6 px-4 py-16 sm:flex-row sm:items-center sm:px-6 lg:px-10">
           <h2 className="font-heading max-w-xl text-2xl leading-tight font-black tracking-tight sm:text-3xl">
-            25 yıllık masaya{" "}
-            <span className="text-brand-mor">bir brief ekle.</span>
+            25 yıllık masaya <span className="text-brand-mor">bir brief ekle.</span>
           </h2>
           <Button asChild size="lg">
             <Link href="/iletisim">

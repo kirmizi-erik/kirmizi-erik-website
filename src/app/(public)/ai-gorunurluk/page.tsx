@@ -10,6 +10,7 @@ export const metadata = {
   title: "KeScan — Ücretsiz AI Görünürlük Testi",
   description:
     "Google için SEO ne ise, yapay zekâ için de GEO (Generative Engine Optimization) odur; KeScan onu ölçer. Sitenizi ücretsiz tarayın: ChatGPT, Claude, Perplexity ve Google'ın AI cevaplarında yer almak için taranabilirlik, okunabilirlik ve alıntılanabilirlik puanınızı görün.",
+  alternates: { canonical: "/ai-gorunurluk" },
 };
 
 // Tarama 5 bot kimliği + altyapı dosyalarını gerçek isteklerle çeker

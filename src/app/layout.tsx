@@ -27,7 +27,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
   title: {
-    default: "Kırmızı Erik — 360° Kreatif Reklam Ajansı",
+    default: "Kırmızı Erik — İstanbul Reklam Ajansı | Video, Web, AI",
     template: "%s · Kırmızı Erik",
   },
   description:
@@ -69,9 +69,6 @@ export const metadata: Metadata = {
       "max-image-preview": "large",
       "max-snippet": -1,
     },
-  },
-  alternates: {
-    canonical: "/",
   },
 };
 

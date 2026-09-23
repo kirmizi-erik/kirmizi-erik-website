@@ -8,8 +8,10 @@ import { calismaKategoriOptions } from "@/lib/validations/case-study";
 import { cn } from "@/lib/utils";
 
 export const metadata = {
-  title: "Çalışmalar",
-  description: "Kırmızı Erik portföyü — yayınlanan tüm çalışmalar.",
+  title: "Çalışmalar ve Referanslar",
+  description:
+    "Kırmızı Erik referansları: reklam ve tanıtım filmleri, kurumsal web siteleri, sosyal medya kampanyaları, ürün çekimleri ve AI projeleri. 300'e yakın markayla yaptığımız işlerden seçkiler.",
+  alternates: { canonical: "/calismalar" },
 };
 
 type SearchParams = Promise<{ kategori?: string }>;

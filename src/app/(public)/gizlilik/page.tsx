@@ -3,6 +3,7 @@ import Link from "next/link";
 export const metadata = {
   title: "Gizlilik Politikası",
   description: "Kırmızı Erik Reklam Ajansı gizlilik politikası ve çerez kullanımı.",
+  alternates: { canonical: "/gizlilik" },
 };
 
 export default function GizlilikPage() {
