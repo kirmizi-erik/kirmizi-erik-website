@@ -67,6 +67,12 @@ export default function GizlilikPage() {
             zaman geri alabilir, tarayıcınızdan çerezleri her zaman silebilir veya
             engelleyebilirsiniz.
           </p>
+          <p className="mt-3">
+            Genel ziyaret sayılarını ölçmek için ayrıca <strong>Vercel Web Analytics</strong>{" "}
+            kullanılır. Bu araç çerez kullanmaz, cihazınıza bilgi kaydetmez ve sizi tanımlayan
+            kişisel veri toplamaz; yalnızca sayfa görüntüleme gibi anonim, toplu istatistikler
+            üretir.
+          </p>
         </section>
 
         <section>
