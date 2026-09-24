@@ -64,8 +64,9 @@ export default function KvkkPage() {
           <h2 className="text-foreground text-2xl font-bold">5. Aktarım</h2>
           <p className="mt-3">
             Kişisel verileriniz; iş ortaklarımıza, hizmet aldığımız altyapı sağlayıcılarına
-            (Supabase, Vercel, Resend gibi yurt içi/dışı servis sağlayıcıları) yalnızca işbu metinde
-            belirtilen amaçlarla ve KVKK m.8 ve m.9 düzenlemelerine uygun olarak aktarılabilir.
+            (Supabase, Vercel, Resend, Anthropic, OpenAI, Telegram gibi yurt içi/dışı servis
+            sağlayıcıları) yalnızca işbu metinde belirtilen amaçlarla ve KVKK m.8 ve m.9
+            düzenlemelerine uygun olarak aktarılabilir.
           </p>
         </section>
 
