@@ -8,6 +8,7 @@ import {
   LayoutDashboard,
   Mail,
   MessagesSquare,
+  Newspaper,
   Search,
   Settings,
 } from "lucide-react";
@@ -20,6 +21,7 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { href: "/admin", label: "Genel bakış", icon: LayoutDashboard, exact: true },
   { href: "/admin/calismalar", label: "Çalışmalar", icon: FolderKanban },
+  { href: "/admin/blog", label: "Blog", icon: Newspaper },
   { href: "/admin/leadler", label: "Lead'ler", icon: Mail },
   { href: "/admin/yazismalar", label: "Yazışmalar", icon: MessagesSquare },
   { href: "/admin/bilgi-bankasi", label: "Bilgi Bankası", icon: BookOpen },

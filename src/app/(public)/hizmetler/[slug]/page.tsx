@@ -5,25 +5,17 @@ import { ArrowUpRight, Sparkles, Zap } from "lucide-react";
 
 import { OpenChatButton } from "@/components/site/open-chat-button";
 import { RelatedWorks } from "@/components/site/related-works";
-import { ServiceLeadForm } from "@/components/site/service-lead-form";
+import { QuickLeadForm } from "@/components/site/quick-lead-form";
 import { Button } from "@/components/ui/button";
 import { breadcrumbSchema, jsonLdScript, serviceSchema } from "@/lib/schema";
-import { getServicePage, servicePages, type ServicePageData } from "@/lib/services-data";
+import {
+  getServicePage,
+  kategoriByServiceSlug,
+  servicePages,
+  type ServicePageData,
+} from "@/lib/services-data";
 
 type PageProps = { params: Promise<{ slug: string }> };
-
-// Hizmet sayfası → lead hizmet_kategori (iletişim formu seçenekleriyle aynı anahtarlar)
-const LEAD_KATEGORI: Record<string, string> = {
-  "video-produksiyon": "video",
-  "fotograf-cekimleri": "fotograf",
-  "dijital-pazarlama": "dijital",
-  "sosyal-medya-yonetimi": "sosyal",
-  "uygulama-gelistirme": "uygulama",
-  "web-tasarim-yazilim": "web",
-  "ai-kurulumlari": "ai",
-  "grafik-tasarim": "grafik",
-  "3d-2d-calismalar": "3d-2d",
-};
 
 export async function generateStaticParams() {
   return servicePages.map((s) => ({ slug: s.slug }));
@@ -347,10 +339,10 @@ function ServicePageContent({ data }: { data: ServicePageData }) {
             )}
           </div>
           <div className="md:col-span-7">
-            <ServiceLeadForm
-              serviceSlug={data.slug}
-              serviceLabel={data.label}
-              kategori={LEAD_KATEGORI[data.slug] ?? ""}
+            <QuickLeadForm
+              kaynak={`/hizmetler/${data.slug}`}
+              konu={data.label}
+              kategori={kategoriByServiceSlug[data.slug] ?? ""}
             />
           </div>
         </div>

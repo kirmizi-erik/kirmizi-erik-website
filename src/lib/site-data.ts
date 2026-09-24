@@ -18,6 +18,7 @@ export const navItems = [
   { href: "/calismalar", label: "Çalışmalar" },
   { href: "/hizmetler", label: "Hizmetler" },
   { href: "/ai-gorunurluk", label: "AI Test" },
+  { href: "/blog", label: "Blog" },
   { href: "/iletisim", label: "İletişim" },
 ] as const;
 
