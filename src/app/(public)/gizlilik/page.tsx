@@ -100,6 +100,14 @@ export default function GizlilikPage() {
             <li>
               <strong>Anthropic</strong> — sohbet asistanı (Claude API, ABD)
             </li>
+            <li>
+              <strong>OpenAI</strong> — sohbet asistanında sorunun bilgi bankasında aranması için
+              metnin işlenmesi (ABD)
+            </li>
+            <li>
+              <strong>Telegram</strong> — form ve sohbetten gelen taleplerin (ad, e-posta, telefon,
+              talep özeti) ekibimize anlık bildirilmesi
+            </li>
           </ul>
           <p className="mt-3">
             Bu servisler kendi gizlilik politikalarına tabidir; aktarılan veri yalnızca hizmet
