@@ -5,10 +5,21 @@ import { revalidatePath } from "next/cache";
 
 import { notifyNewLead } from "@/lib/notify/lead";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { getServicePage } from "@/lib/services-data";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { leadInputSchema } from "@/lib/validations/lead";
 
 export type SubmitResult = { ok: true; id: string } | { ok: false; error: string };
+
+// kaynak tarayıcıdan gelir: yalnız bilinen form sayfaları kabul edilir
+function resolveKaynak(raw: FormDataEntryValue | null): { kaynak: string; etiket: string } {
+  const value = typeof raw === "string" ? raw : "";
+  const service = value.startsWith("/hizmetler/")
+    ? getServicePage(value.slice("/hizmetler/".length))
+    : undefined;
+  if (service) return { kaynak: value, etiket: `hizmet sayfası formu · ${service.label}` };
+  return { kaynak: "/iletisim", etiket: "iletişim formu" };
+}
 
 const emptyToNull = (s: unknown) => {
   if (typeof s !== "string") return null;
@@ -28,14 +39,15 @@ export async function submitLead(formData: FormData): Promise<SubmitResult> {
   const raw = {
     ad_soyad: formData.get("ad_soyad"),
     eposta: formData.get("eposta"),
-    telefon: formData.get("telefon"),
-    sirket: formData.get("sirket"),
+    // Opsiyonel alanlar her formda yok (ör. hizmet sayfası formu); null şemayı kırmasın
+    telefon: formData.get("telefon") ?? "",
+    sirket: formData.get("sirket") ?? "",
     hizmet_kategori: formData.getAll("hizmet_kategori").map(String).filter(Boolean),
-    butce: formData.get("butce"),
+    butce: formData.get("butce") ?? "",
     brief: formData.get("brief"),
     kvkk_onay: formData.get("kvkk_onay") ?? false,
-    kaynak: formData.get("kaynak") ?? "/iletisim",
   };
+  const { kaynak, etiket } = resolveKaynak(formData.get("kaynak"));
 
   const parsed = leadInputSchema.safeParse(raw);
   if (!parsed.success) {
@@ -68,7 +80,7 @@ export async function submitLead(formData: FormData): Promise<SubmitResult> {
       brief: parsed.data.brief,
       ai_skor: aiSkor && Number.isFinite(aiSkor) ? aiSkor : null,
       ai_ozet: emptyToNull(aiOzet),
-      kaynak: parsed.data.kaynak ?? "/iletisim",
+      kaynak,
       user_agent: userAgent || null,
     })
     .select("id")
@@ -92,7 +104,7 @@ export async function submitLead(formData: FormData): Promise<SubmitResult> {
     butce: emptyToNull(parsed.data.butce),
     brief: parsed.data.brief,
     ai_ozet: emptyToNull(aiOzet),
-    kaynak: "iletişim formu",
+    kaynak: etiket,
     leadId: data.id,
   }).catch((e) => console.warn("[submitLead] email skip:", e));
 
