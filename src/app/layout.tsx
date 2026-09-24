@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import { Geist, Geist_Mono } from "next/font/google";
 
 import { ClarityWithConsent } from "@/components/site/clarity-with-consent";
@@ -94,6 +95,8 @@ export default function RootLayout({
         {children}
         <Toaster richColors closeButton position="top-right" />
         <CookieConsent />
+        {/* Çerezsiz, kişisel veri toplamaz — onay gerektirmeden tüm ziyaretleri sayar */}
+        <Analytics />
         {GA_ID ? <GoogleAnalyticsWithConsent gaId={GA_ID} /> : null}
         {CLARITY_ID ? <ClarityWithConsent projectId={CLARITY_ID} /> : null}
         {META_PIXEL_ID ? <MetaPixelWithConsent pixelId={META_PIXEL_ID} /> : null}
