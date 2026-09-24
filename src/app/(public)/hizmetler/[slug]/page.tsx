@@ -5,11 +5,25 @@ import { ArrowUpRight, Sparkles, Zap } from "lucide-react";
 
 import { OpenChatButton } from "@/components/site/open-chat-button";
 import { RelatedWorks } from "@/components/site/related-works";
+import { ServiceLeadForm } from "@/components/site/service-lead-form";
 import { Button } from "@/components/ui/button";
 import { breadcrumbSchema, jsonLdScript, serviceSchema } from "@/lib/schema";
 import { getServicePage, servicePages, type ServicePageData } from "@/lib/services-data";
 
 type PageProps = { params: Promise<{ slug: string }> };
+
+// Hizmet sayfası → lead hizmet_kategori (iletişim formu seçenekleriyle aynı anahtarlar)
+const LEAD_KATEGORI: Record<string, string> = {
+  "video-produksiyon": "video",
+  "fotograf-cekimleri": "fotograf",
+  "dijital-pazarlama": "dijital",
+  "sosyal-medya-yonetimi": "sosyal",
+  "uygulama-gelistirme": "uygulama",
+  "web-tasarim-yazilim": "web",
+  "ai-kurulumlari": "ai",
+  "grafik-tasarim": "grafik",
+  "3d-2d-calismalar": "3d-2d",
+};
 
 export async function generateStaticParams() {
   return servicePages.map((s) => ({ slug: s.slug }));
@@ -98,8 +112,8 @@ function ServicePageContent({ data }: { data: ServicePageData }) {
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Button asChild size="lg" className="h-12 px-7">
-              <Link href="/iletisim">
-                Bir brief paylaş
+              <Link href="#teklif-al">
+                Teklif iste
                 <ArrowUpRight className="ml-1 size-4" />
               </Link>
             </Button>
@@ -296,51 +310,51 @@ function ServicePageContent({ data }: { data: ServicePageData }) {
       {/* İlgili çalışmalar — koyu (default) */}
       <RelatedWorks serviceSlug={data.slug} serviceLabel={data.label} />
 
-      {/* AI Kurulumları için özel canlı demo CTA */}
-      {data.customCta ? (
-        <section className="bg-noise relative overflow-hidden">
-          <div className="from-brand/[0.04] absolute inset-0 -z-10 bg-gradient-to-br to-transparent" />
-          <div className="mx-auto max-w-screen-2xl px-4 py-24 sm:px-6 lg:px-10 lg:py-32">
-            <div className="grid items-end gap-10 md:grid-cols-12">
-              <div className="md:col-span-7">
+      {/* Teklif formu — sayfadan ayrılmadan lead */}
+      <section id="teklif-al" className="bg-muted border-border/40 scroll-mt-20 border-t">
+        <div className="mx-auto grid max-w-screen-2xl gap-10 px-4 py-20 sm:px-6 md:grid-cols-12 lg:px-10 lg:py-24">
+          <div className="md:col-span-5">
+            {data.customCta ? (
+              <>
                 <div className="text-brand inline-flex items-center gap-2 text-xs tracking-widest uppercase">
                   <Sparkles className="size-3.5" />
                   {data.customCta.rozet}
                 </div>
-                <h2 className="font-heading mt-5 text-4xl leading-[0.95] font-black tracking-tight sm:text-5xl lg:text-6xl">
+                <h2 className="font-heading mt-5 text-3xl leading-tight font-black tracking-tight sm:text-4xl">
                   {data.customCta.baslik}
                 </h2>
-                <p className="text-muted-foreground mt-6 max-w-xl text-base leading-relaxed sm:text-lg">
+                <p className="text-muted-foreground mt-5 max-w-md text-base leading-relaxed">
                   {data.customCta.aciklama}
                 </p>
-              </div>
-              <div className="md:col-span-5 md:justify-self-end">
-                <Button asChild size="lg" className="h-12 px-7">
-                  <Link href="/iletisim">
-                    Brief paylaş + AI&apos;ı dene
-                    <ArrowUpRight className="ml-1 size-4" />
-                  </Link>
-                </Button>
-              </div>
-            </div>
+                <OpenChatButton size="lg" variant="ghost" className="mt-6">
+                  <Sparkles className="mr-1 size-4" />
+                  Canlı AI demo dene
+                </OpenChatButton>
+              </>
+            ) : (
+              <>
+                <h2 className="font-heading text-3xl leading-tight font-black tracking-tight sm:text-4xl">
+                  {data.label} ihtiyacın mı var? <span className="text-brand-mor">Konuşalım.</span>
+                </h2>
+                <p className="text-muted-foreground mt-5 max-w-md text-base leading-relaxed">
+                  Formu bırak, aynı gün dönüş yapalım. Detaylı brief&apos;in varsa{" "}
+                  <Link href="/iletisim" className="text-foreground underline underline-offset-2">
+                    iletişim sayfasından
+                  </Link>{" "}
+                  de gönderebilirsin.
+                </p>
+              </>
+            )}
           </div>
-        </section>
-      ) : (
-        // Normal hizmetler için standart CTA bandı — açık BG
-        <section className="bg-muted border-border/40 border-t">
-          <div className="mx-auto flex max-w-screen-2xl flex-col items-start justify-between gap-6 px-4 py-16 sm:flex-row sm:items-center sm:px-6 lg:px-10">
-            <h2 className="font-heading max-w-xl text-2xl leading-tight font-black tracking-tight sm:text-3xl">
-              {data.label} ihtiyacın mı var? <span className="text-brand-mor">Konuşalım.</span>
-            </h2>
-            <Button asChild size="lg">
-              <Link href="/iletisim">
-                Brief paylaş
-                <ArrowUpRight className="ml-1 size-4" />
-              </Link>
-            </Button>
+          <div className="md:col-span-7">
+            <ServiceLeadForm
+              serviceSlug={data.slug}
+              serviceLabel={data.label}
+              kategori={LEAD_KATEGORI[data.slug] ?? ""}
+            />
           </div>
-        </section>
-      )}
+        </div>
+      </section>
     </article>
   );
 }
