@@ -18,6 +18,9 @@ function resolveKaynak(raw: FormDataEntryValue | null): { kaynak: string; etiket
     ? getServicePage(value.slice("/hizmetler/".length))
     : undefined;
   if (service) return { kaynak: value, etiket: `hizmet sayfası formu · ${service.label}` };
+  if (/^\/blog\/[a-z0-9]+(-[a-z0-9]+)*$/.test(value)) {
+    return { kaynak: value, etiket: `blog yazısı formu · ${value.slice("/blog/".length)}` };
+  }
   return { kaynak: "/iletisim", etiket: "iletişim formu" };
 }
 

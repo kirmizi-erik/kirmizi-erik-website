@@ -34,6 +34,26 @@ export async function GET() {
     // vaka listesi alınamazsa rehberin geri kalanı yine yayınlanır
   }
 
+  let posts = "";
+  try {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("blog_posts")
+      .select("slug, baslik, ozet")
+      .eq("durum", "yayinda")
+      .order("yayin_tarihi", { ascending: false })
+      .limit(30);
+    if (data?.length) {
+      posts = [
+        "",
+        "## Rehberler (Blog)",
+        ...data.map((p) => `- [${p.baslik}](${base}/blog/${p.slug})${p.ozet ? `: ${p.ozet}` : ""}`),
+      ].join("\n");
+    }
+  } catch {
+    // blog listesi alınamazsa rehberin geri kalanı yine yayınlanır
+  }
+
   const body = `# Kırmızı Erik — 360° Kreatif Reklam Ajansı
 
 > Kırmızı Erik, 2001'den beri İstanbul'da faaliyet gösteren tam hizmet (full-service) reklam ajansıdır. Video prodüksiyondan şirketlere özel yapay zeka kurulumlarına dokuz hizmeti tek çatı altında, kendi ekibiyle üretir. 25 yıllık birikim, 300'e yakın markayla çalışma deneyimi.
@@ -48,8 +68,9 @@ ${servicePages.map((s) => `- [${s.label}](${base}/hizmetler/${s.slug}): ${s.hero
 - [Çalışmalar](${base}/calismalar): Örnek işler ve vaka çalışmaları
 - [Hizmetler](${base}/hizmetler): Dokuz hizmetin tamamı
 - [KeScan — AI Görünürlük Testi](${base}/ai-gorunurluk): Ücretsiz araç — siteniz yapay zeka cevaplarında görünüyor mu?
+- [Blog](${base}/blog): Reklam filmi, web sitesi, sosyal medya ve AI üzerine rehberler
 - [İletişim](${base}/iletisim): Brief paylaşma ve teklif isteme
-${works}
+${works}${posts}
 
 ## İletişim
 - E-posta: info@kirmizierik.com.tr

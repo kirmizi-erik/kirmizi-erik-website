@@ -14,13 +14,15 @@ import { trackLead } from "@/lib/analytics";
 
 const BRIEF_MIN = 20;
 
-export function ServiceLeadForm({
-  serviceSlug,
-  serviceLabel,
+export function QuickLeadForm({
+  kaynak,
+  konu,
   kategori,
 }: {
-  serviceSlug: string;
-  serviceLabel: string;
+  /** Lead'in geldiği sayfa yolu — sunucuda whitelist'le doğrulanır */
+  kaynak: string;
+  /** Takip etiketi ve placeholder için kısa konu adı (ör. hizmet adı) */
+  konu: string;
   kategori: string;
 }) {
   const [pending, startTransition] = useTransition();
@@ -47,13 +49,13 @@ export function ServiceLeadForm({
   return (
     <form
       action={(formData) => {
-        formData.set("kaynak", `/hizmetler/${serviceSlug}`);
-        formData.set("hizmet_kategori", kategori);
+        formData.set("kaynak", kaynak);
+        if (kategori) formData.set("hizmet_kategori", kategori);
         formData.set("kvkk_onay", kvkk ? "on" : "");
         startTransition(async () => {
           const r = await submitLead(formData);
           if (r.ok) {
-            trackLead(`Hizmet Formu · ${serviceLabel}`);
+            trackLead(`Hızlı Form · ${konu}`);
             setSubmitted(true);
           } else {
             toast.error(r.error);
@@ -86,7 +88,7 @@ export function ServiceLeadForm({
           maxLength={5000}
           rows={3}
           onChange={(e) => setBriefLength(e.target.value.trim().length)}
-          placeholder={`Örn. ${serviceLabel.toLocaleLowerCase("tr-TR")} için hedefin, takvimin, varsa bütçen…`}
+          placeholder={`Örn. ${konu.toLocaleLowerCase("tr-TR")} için hedefin, takvimin, varsa bütçen…`}
           className="border-input bg-background focus-visible:ring-ring w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:outline-none"
         />
         {briefLength > 0 && briefLength < BRIEF_MIN ? (

@@ -1210,6 +1210,26 @@ export function getServicePage(slug: string): ServicePageData | null {
  * Her hizmet için 4-5 satır özet — kapsam + süreç + temel araçlar.
  * Modül seviyesinde hesaplanır → her chat isteğinde yeniden çalışmaz, cache key sabit.
  */
+// Hizmet sayfası ↔ kategori anahtarı (lead hizmet_kategori, blog kategori, iletişim formu seçenekleri)
+export const kategoriByServiceSlug: Record<string, string> = {
+  "video-produksiyon": "video",
+  "fotograf-cekimleri": "fotograf",
+  "dijital-pazarlama": "dijital",
+  "sosyal-medya-yonetimi": "sosyal",
+  "uygulama-gelistirme": "uygulama",
+  "web-tasarim-yazilim": "web",
+  "ai-kurulumlari": "ai",
+  "grafik-tasarim": "grafik",
+  "3d-2d-calismalar": "3d-2d",
+};
+
+export function serviceByKategori(kategori: string): ServicePageData | null {
+  const slug = Object.keys(kategoriByServiceSlug).find(
+    (s) => kategoriByServiceSlug[s] === kategori,
+  );
+  return slug ? getServicePage(slug) : null;
+}
+
 export const SERVICES_CONTEXT_FOR_AI = servicePages
   .map((s) => {
     const yapilanlarOzeti = s.yapilanlar.map((y) => y.baslik).join(" · ");

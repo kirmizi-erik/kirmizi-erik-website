@@ -144,5 +144,30 @@ export async function buildSiteDocs(): Promise<KbDoc[]> {
     console.warn("[kb] çalışmalar okunamadı, statik korpusla devam:", e);
   }
 
+  // Yayındaki blog yazıları — ## bölümleri ayrı parça, her biri yazının linkiyle
+  try {
+    const db = chatbotDb();
+    const { data: posts, error } = await db
+      .from("blog_posts")
+      .select("baslik, slug, ozet, icerik")
+      .eq("durum", "yayinda");
+
+    if (!error && posts) {
+      for (const p of posts) {
+        const sections = splitSections(`## Giriş\n${p.ozet ?? ""}\n${p.icerik}`);
+        for (const section of sections) {
+          docs.push({
+            title: `Blog: ${p.baslik} — ${section.title}`,
+            content: section.content.slice(0, 2500),
+            sourceUrl: `/blog/${p.slug}`,
+            authority: 2,
+          });
+        }
+      }
+    }
+  } catch (e) {
+    console.warn("[kb] blog okunamadı, statik korpusla devam:", e);
+  }
+
   return docs;
 }

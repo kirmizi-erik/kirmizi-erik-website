@@ -21,6 +21,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.8,
     },
+    { url: `${baseUrl}/blog`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
     { url: `${baseUrl}/iletisim`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${baseUrl}/gizlilik`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
     { url: `${baseUrl}/kvkk`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
@@ -54,5 +55,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("[sitemap]", error);
   }
 
-  return [...staticRoutes, ...hizmetRoutes, ...caseRoutes];
+  let blogRoutes: MetadataRoute.Sitemap = [];
+  try {
+    const supabase = await createClient();
+    const { data: posts } = await supabase
+      .from("blog_posts")
+      .select("slug, updated_at")
+      .eq("durum", "yayinda");
+    blogRoutes = (posts ?? []).map((p) => ({
+      url: `${baseUrl}/blog/${p.slug}`,
+      lastModified: new Date(p.updated_at),
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    }));
+  } catch (error) {
+    console.error("[sitemap] blog", error);
+  }
+
+  return [...staticRoutes, ...hizmetRoutes, ...caseRoutes, ...blogRoutes];
 }

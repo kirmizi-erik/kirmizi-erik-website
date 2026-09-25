@@ -146,6 +146,33 @@ export function serviceSchema(service: {
   };
 }
 
+export function blogPostingSchema(post: {
+  slug: string;
+  baslik: string;
+  ozet: string | null;
+  kapak_url: string | null;
+  yazar: string;
+  yayin_tarihi: string | null;
+  updated_at: string;
+}) {
+  const url = `${SITE_URL}/blog/${post.slug}`;
+  return {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "@id": `${url}#article`,
+    headline: post.baslik,
+    description: post.ozet ?? undefined,
+    image: post.kapak_url ?? undefined,
+    url,
+    mainEntityOfPage: url,
+    inLanguage: "tr-TR",
+    datePublished: post.yayin_tarihi ?? undefined,
+    dateModified: post.updated_at,
+    author: { "@type": "Organization", name: post.yazar, url: SITE_URL },
+    publisher: { "@id": `${SITE_URL}#organization` },
+  };
+}
+
 export function jsonLdScript(schema: object) {
   return {
     // DB'den gelen metin "</script>" içerirse script bloğunu kıramasın
