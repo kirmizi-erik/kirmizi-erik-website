@@ -32,6 +32,10 @@ const EXPANSIONS: Array<[RegExp, string]> = [
   [/kimsiniz|hakkınızda|tarihçe|ne zaman kuruldu/, "kuruluş tarihçe hikâye Özkan Kurt"],
   [/referans|müşteri|çalıştığınız markalar/, "referans marka müşteri"],
   [/süre|ne kadar sürer|teslim/, "süre hafta takvim teslim"],
+  [
+    /sitem|siteme|sitemi|site ?analiz|seo|görünürlük|chatgpt|yapay ?zeka.*(gör|çık|bul)|ai.*(gör|çık)|tarama|test et/,
+    "AI görünürlük testi KeScan ücretsiz site tarama analiz GEO SEO puan",
+  ],
 ];
 
 /**

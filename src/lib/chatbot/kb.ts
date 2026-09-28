@@ -96,6 +96,17 @@ export async function buildSiteDocs(): Promise<KbDoc[]> {
     });
   }
 
+  // Ücretsiz AI görünürlük testi — ziyaretçi kendi sitesini sorunca yönlendirilecek sayfa
+  docs.push({
+    title: "KeScan — Ücretsiz AI Görünürlük Testi",
+    content:
+      "Sitenizin yapay zekâya ne kadar görünür olduğunu ölçen ücretsiz araç: /ai-gorunurluk. Ziyaretçi site adresini yazıyor, KeScan siteyi ChatGPT, Claude, Perplexity ve Gemini botlarının kimliğiyle gerçekten tarayıp beş katmanda puanlıyor: erişim (robots.txt izinleri ve botların gerçekten içeri alınıp alınmadığı), çıkarılabilirlik (JavaScript çalışmadan ham HTML'de ne kadar gerçek metin kalıyor), altyapı (robots.txt, sitemap.xml, llms.txt), anlam katmanı (JSON-LD şema, @id bağları, sameAs çapaları) ve alıntılanabilirlik (yapay zekânın pasaj olarak alıntılayabileceği net cevaplar, marka adının metinde geçmesi). Sonuç 100 üzerinden puan ve harf notu; rapor e-posta ile de gönderilebiliyor. Google için SEO ne ise yapay zekâ için GEO (Generative Engine Optimization) odur, KeScan onu ölçer. Ücretsiz ve kayıt gerektirmez; test sonucunu birlikte yorumlayıp yapılacakları konuşuyoruz.",
+    sourceUrl: "/ai-gorunurluk",
+    authority: 2,
+    embedText:
+      "sitem nasıl sitemi incele site analizi SEO testi ücretsiz tarama AI görünürlük yapay zeka ChatGPT beni görüyor mu bulur mu GEO KeScan site puanı skor",
+  });
+
   // Yayındaki çalışmalar (referanslar) — DB'den, her biri kendi linkiyle
   try {
     const db = chatbotDb();
