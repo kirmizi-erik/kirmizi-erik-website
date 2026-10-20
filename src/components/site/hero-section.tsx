@@ -97,7 +97,7 @@ export async function HeroSection() {
           360° Kreatif Reklam Ajansı
         </div>
 
-        <h1 className="font-heading display max-w-[18ch] text-5xl leading-[0.95] font-black sm:text-7xl lg:text-[clamp(4rem,9vw,9rem)]">
+        <h1 className="font-heading display max-w-[18ch] text-4xl leading-[0.95] font-black sm:text-6xl lg:text-7xl">
           {lines.map((line, i) => (
             <span key={i} className={i === lastIdx ? "text-brand" : ""}>
               {line}
