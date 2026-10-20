@@ -494,7 +494,7 @@ function ContactFormCard({
           startTransition(async () => {
             const r = await submitChatLead(fd);
             if (r.ok) {
-              trackLead("AI Brief Asistanı");
+              trackLead("AI Brief Asistanı", { email: eposta, phone: telefon });
               toast.success("Teşekkürler, dönüş yapacağız.");
               onSubmitted();
             } else {

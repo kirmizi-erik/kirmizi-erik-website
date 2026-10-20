@@ -55,7 +55,10 @@ export function QuickLeadForm({
         startTransition(async () => {
           const r = await submitLead(formData);
           if (r.ok) {
-            trackLead(`Hızlı Form · ${konu}`);
+            trackLead(`Hızlı Form · ${konu}`, {
+              email: formData.get("eposta"),
+              phone: formData.get("telefon"),
+            });
             setSubmitted(true);
           } else {
             toast.error(r.error);

@@ -1,11 +1,12 @@
 "use client";
 
-import { GoogleAnalytics } from "@next/third-parties/google";
+import Script from "next/script";
 import { useEffect, useState } from "react";
 
 const STORAGE_KEY = "kirmizierik:cookie-consent";
 
-export function GoogleAnalyticsWithConsent({ gaId }: { gaId: string }) {
+// Tek gtag.js: GA4 + (varsa) Google Ads aynı etiketten beslenir.
+export function GoogleAnalyticsWithConsent({ gaId, adsId }: { gaId: string; adsId?: string }) {
   const [accepted, setAccepted] = useState(false);
 
   useEffect(() => {
@@ -19,5 +20,22 @@ export function GoogleAnalyticsWithConsent({ gaId }: { gaId: string }) {
   }, []);
 
   if (!accepted) return null;
-  return <GoogleAnalytics gaId={gaId} />;
+  return (
+    <>
+      <Script
+        src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
+        strategy="afterInteractive"
+      />
+      <Script id="gtag-init" strategy="afterInteractive">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          window.gtag = gtag;
+          gtag('js', new Date());
+          gtag('config', '${gaId}');
+          ${adsId ? `gtag('config', '${adsId}', { allow_enhanced_conversions: true });` : ""}
+        `}
+      </Script>
+    </>
+  );
 }

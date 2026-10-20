@@ -72,7 +72,10 @@ export function IletisimForm() {
         startTransition(async () => {
           const r = await submitLead(formData);
           if (r.ok) {
-            trackLead("İletişim Formu");
+            trackLead("İletişim Formu", {
+              email: formData.get("eposta"),
+              phone: formData.get("telefon"),
+            });
             setSubmitted(true);
           } else {
             toast.error(r.error);
