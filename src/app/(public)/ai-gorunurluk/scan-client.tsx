@@ -476,7 +476,7 @@ function NewSiteLeadCard({ result }: { result: ScanResult }) {
               not: result.not,
             });
             if (res.ok) {
-              trackLead("KeScan Yeni Site");
+              trackLead("KeScan Yeni Site", { email: fd.get("eposta"), phone: fd.get("telefon") });
               setDone(true);
             } else {
               setError(res.error);

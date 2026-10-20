@@ -11,9 +11,11 @@ import { jsonLdScript, localBusinessSchema, organizationSchema, websiteSchema } 
 
 import "./globals.css";
 
-const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? "G-B3QHXZ1XL5";
-const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID ?? "woxlc19y4v";
-const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID ?? "1064671476543880";
+// `||`: Vercel'de boş bırakılan env de varsayılana düşsün (`??` boş string'i geçirir)
+const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-B3QHXZ1XL5";
+const GOOGLE_ADS_ID = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID || "AW-956573955";
+const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID || "woxlc19y4v";
+const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || "1064671476543880";
 
 const geistSans = Geist({
   variable: "--font-sans",
@@ -97,7 +99,7 @@ export default function RootLayout({
         <CookieConsent />
         {/* Çerezsiz, kişisel veri toplamaz — onay gerektirmeden tüm ziyaretleri sayar */}
         <Analytics />
-        {GA_ID ? <GoogleAnalyticsWithConsent gaId={GA_ID} /> : null}
+        {GA_ID ? <GoogleAnalyticsWithConsent gaId={GA_ID} adsId={GOOGLE_ADS_ID} /> : null}
         {CLARITY_ID ? <ClarityWithConsent projectId={CLARITY_ID} /> : null}
         {META_PIXEL_ID ? <MetaPixelWithConsent pixelId={META_PIXEL_ID} /> : null}
       </body>
