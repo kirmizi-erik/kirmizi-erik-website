@@ -14,11 +14,11 @@ export const leadInputSchema = z.object({
     .min(3, "Ad soyad en az 3 karakter")
     .max(120)
     .regex(/^[a-zA-ZçğıöşüÇĞİÖŞÜ\s'.-]+$/, "Sadece harf, boşluk ve - . ' kullanılabilir"),
-  eposta: z.string().email("Geçerli bir e-posta girin").max(200),
+  eposta: z.string().email("Geçerli bir e-posta yaz (ör. ad@firma.com)").max(200),
   telefon: z
     .string()
     .max(40)
-    .regex(/^[\d\s\+\(\)\-]{7,}$|^$/, "Geçerli bir telefon girin")
+    .regex(/^[\d\s\+\(\)\-]{7,}$|^$/, "Geçerli bir telefon numarası yaz")
     .optional()
     .or(z.literal("")),
   sirket: z.string().max(120).optional().or(z.literal("")),
