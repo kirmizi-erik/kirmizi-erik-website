@@ -232,66 +232,35 @@ export function Chatbot() {
   // (parent'ta backdrop-filter / transform / will-change varsa fixed bozulur)
   return createPortal(
     <>
-      {/* Floating buton */}
-      <button
-        type="button"
-        aria-label={open ? "Sohbeti kapat" : "Sohbeti aç"}
-        onClick={() => (open ? setOpen(false) : openChat())}
-        className={cn(
-          "fixed right-4 bottom-4 z-50 inline-flex items-center justify-center rounded-full transition-all sm:right-6 sm:bottom-6",
-          open
-            ? "bg-foreground text-background size-14 scale-95 shadow-lg shadow-black/40"
-            : "size-20 hover:scale-105",
-        )}
-      >
-        {open ? (
-          <X className="size-6" />
-        ) : (
-          <>
-            {/* Çevresinde dönen ring text */}
-            <svg
-              className="absolute inset-0 size-full"
-              viewBox="0 0 100 100"
-              style={{ animation: "spin 40s linear infinite" }}
-              aria-hidden="true"
-            >
-              <defs>
-                <path
-                  id="chatbot-ring-path"
-                  d="M 50,50 m -42,0 a 42,42 0 1,1 84,0 a 42,42 0 1,1 -84,0"
-                  fill="none"
-                />
-              </defs>
-              <text
-                className="fill-brand-yaprak"
-                style={{
-                  fontSize: "8.5px",
-                  fontWeight: 600,
-                  letterSpacing: "0.10em",
-                }}
-              >
-                <textPath href="#chatbot-ring-path" startOffset="0">
-                  ASİSTAN · ASİSTAN · ASİSTAN · ASİSTAN ·
-                </textPath>
-              </text>
-            </svg>
-            {/* İç avatar */}
-            <span className="ring-brand/30 relative size-14 overflow-hidden rounded-full shadow-lg ring-2 shadow-black/40">
-              <AssistantAvatar />
-              <span className="bg-brand-yaprak ring-card absolute right-0 bottom-0 size-3 rounded-full ring-2" />
-            </span>
-          </>
-        )}
-      </button>
+      {/* Sağ kenar sekmesi — çerez bandı gibi alt köşe öğeleriyle çakışmaz */}
+      {open ? null : (
+        <button
+          type="button"
+          aria-label="Sohbeti aç"
+          onClick={openChat}
+          className="border-brand/40 bg-card text-foreground hover:bg-brand/10 fixed top-1/2 right-0 z-50 flex -translate-y-1/2 cursor-pointer flex-col items-center gap-2 rounded-l-xl border border-r-0 px-1.5 py-3 shadow-lg shadow-black/40 transition-colors"
+        >
+          <span className="ring-brand/30 relative size-8 overflow-hidden rounded-full ring-2">
+            <AssistantAvatar />
+            <span className="bg-brand-yaprak ring-card absolute right-0 bottom-0 size-2 rounded-full ring-2" />
+          </span>
+          <span
+            className="text-xs font-semibold tracking-wide"
+            style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
+          >
+            AI Asistan
+          </span>
+        </button>
+      )}
 
       {/* Panel */}
       {open ? (
         <div
           role="dialog"
           aria-label="Kırmızı Erik sohbet asistanı"
-          className="fixed inset-x-2 bottom-22 z-40 sm:inset-x-auto sm:right-6 sm:bottom-24 sm:w-[420px]"
+          className="fixed inset-x-2 bottom-2 z-50 sm:inset-x-auto sm:right-6 sm:bottom-6 sm:w-[420px]"
         >
-          <div className="border-border bg-card text-card-foreground flex h-[min(620px,calc(100svh-7rem))] flex-col overflow-hidden rounded-2xl border shadow-2xl shadow-black/40">
+          <div className="border-border bg-card text-card-foreground flex h-[min(620px,calc(100svh-1rem))] flex-col overflow-hidden rounded-2xl border shadow-2xl shadow-black/40">
             {/* Header */}
             <div className="border-border/60 from-brand/[0.08] flex items-center justify-between border-b bg-gradient-to-br to-transparent p-4">
               <div className="flex items-center gap-3">
@@ -306,15 +275,25 @@ export function Chatbot() {
                   </div>
                 </div>
               </div>
-              {messages.length > 1 ? (
+              <div className="flex items-center gap-3">
+                {messages.length > 1 ? (
+                  <button
+                    type="button"
+                    onClick={resetConversation}
+                    className="text-muted-foreground hover:text-foreground cursor-pointer text-xs underline-offset-2 hover:underline"
+                  >
+                    Yeniden başlat
+                  </button>
+                ) : null}
                 <button
                   type="button"
-                  onClick={resetConversation}
-                  className="text-muted-foreground hover:text-foreground text-xs underline-offset-2 hover:underline"
+                  aria-label="Sohbeti kapat"
+                  onClick={() => setOpen(false)}
+                  className="text-muted-foreground hover:text-foreground hover:bg-foreground/10 inline-flex size-8 cursor-pointer items-center justify-center rounded-full transition-colors"
                 >
-                  Yeniden başlat
+                  <X className="size-4" />
                 </button>
-              ) : null}
+              </div>
             </div>
 
             {/* Mesajlar */}
