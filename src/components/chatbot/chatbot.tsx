@@ -468,6 +468,7 @@ function ContactFormCard({
   const [eposta, setEposta] = useState("");
   const [telefon, setTelefon] = useState("");
   const [tercih, setTercih] = useState<"telefon" | "eposta" | "ikisi">("ikisi");
+  const telefonGerekli = tercih !== "eposta";
 
   return (
     <div className="border-brand/30 from-brand/[0.05] mt-4 rounded-2xl border bg-gradient-to-br to-transparent p-4">
@@ -476,13 +477,14 @@ function ContactFormCard({
         İLETİŞİM BİLGİLERİN
       </div>
       <p className="text-foreground/90 mt-2 text-sm">
-        Birkaç kısa bilgi al, ekibimiz en kısa sürede dönsün. Bu konuşma da ekibimize iletilecek.
+        Birkaç kısa bilgi bırak, ekibimiz 1 iş günü içinde sana dönsün. Bu konuşma da ekibimize
+        iletilecek.
       </p>
 
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          if (!adSoyad.trim() || !eposta.trim() || !telefon.trim()) return;
+          if (!adSoyad.trim() || !eposta.trim() || (telefonGerekli && !telefon.trim())) return;
 
           const fd = new FormData();
           fd.set("ad_soyad", adSoyad.trim());
@@ -495,7 +497,7 @@ function ContactFormCard({
             const r = await submitChatLead(fd);
             if (r.ok) {
               trackLead("AI Brief Asistanı", { email: eposta, phone: telefon });
-              toast.success("Teşekkürler, dönüş yapacağız.");
+              toast.success("Teşekkürler, 1 iş günü içinde sana dönüyoruz.");
               onSubmitted();
             } else {
               toast.error(r.error);
@@ -531,22 +533,6 @@ function ContactFormCard({
           />
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="chat-telefon" className="text-xs">
-            Telefon
-          </Label>
-          <Input
-            id="chat-telefon"
-            type="tel"
-            inputMode="tel"
-            value={telefon}
-            onChange={(e) => setTelefon(e.target.value.replace(/[^\d+\s()-]/g, ""))}
-            placeholder="+90 555 ..."
-            pattern="[\d\s\+\(\)\-]{7,}"
-            required
-          />
-        </div>
-
-        <div className="space-y-1.5">
           <Label className="text-xs">Sana nasıl ulaşalım?</Label>
           <div className="flex gap-2">
             {(["telefon", "eposta", "ikisi"] as const).map((t) => (
@@ -567,16 +553,32 @@ function ContactFormCard({
           </div>
         </div>
 
+        <div className="space-y-1.5">
+          <Label htmlFor="chat-telefon" className="text-xs">
+            Telefon{telefonGerekli ? "" : " (opsiyonel)"}
+          </Label>
+          <Input
+            id="chat-telefon"
+            type="tel"
+            inputMode="tel"
+            value={telefon}
+            onChange={(e) => setTelefon(e.target.value.replace(/[^\d+\s()-]/g, ""))}
+            placeholder="+90 555 ..."
+            pattern="[\d\s\+\(\)\-]{7,}"
+            required={telefonGerekli}
+          />
+        </div>
+
         <div className="flex gap-2 pt-1">
           <Button type="submit" size="sm" disabled={isPending} className="flex-1">
-            {isPending ? "Gönderiliyor…" : "Gönder"}
+            {isPending ? "Gönderiliyor…" : "Ekibe ilet"}
           </Button>
           <Button type="button" size="sm" variant="ghost" onClick={onCancel} disabled={isPending}>
             Vazgeç
           </Button>
         </div>
 
-        <p className="text-muted-foreground/70 text-[10px] leading-relaxed">
+        <p className="text-muted-foreground text-xs leading-relaxed">
           Verilerin{" "}
           <a
             href="/kvkk"

@@ -210,7 +210,7 @@ export async function submitChatLead(formData: FormData): Promise<ChatLeadResult
   const raw = {
     ad_soyad: formData.get("ad_soyad"),
     eposta: formData.get("eposta"),
-    telefon: formData.get("telefon"),
+    telefon: formData.get("telefon") ?? "",
     iletisim_tercihi: formData.get("iletisim_tercihi") ?? "ikisi",
     conversation,
   };
@@ -267,7 +267,7 @@ export async function submitChatLead(formData: FormData): Promise<ChatLeadResult
     .insert({
       ad_soyad: parsed.data.ad_soyad,
       eposta: parsed.data.eposta,
-      telefon: parsed.data.telefon,
+      telefon: parsed.data.telefon.trim() || null,
       hizmet_kategori: hizmetKategori,
       brief: transcript,
       ai_ozet: aiOzet,
@@ -289,7 +289,7 @@ export async function submitChatLead(formData: FormData): Promise<ChatLeadResult
   await notifyNewLead({
     ad_soyad: parsed.data.ad_soyad,
     eposta: parsed.data.eposta,
-    telefon: parsed.data.telefon,
+    telefon: parsed.data.telefon.trim() || null,
     sirket: null,
     hizmet_kategori: hizmetKategori,
     butce: null,

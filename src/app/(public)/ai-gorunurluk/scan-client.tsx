@@ -427,7 +427,6 @@ function NewSiteLeadCard({ result }: { result: ScanResult }) {
   const [isPending, startTransition] = useTransition();
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [kvkk, setKvkk] = useState(false);
 
   if (done) {
     return (
@@ -438,7 +437,7 @@ function NewSiteLeadCard({ result }: { result: ScanResult }) {
         <Check className="mx-auto size-8 text-green-500" />
         <h3 className="font-heading mt-3 text-xl font-bold">Talebiniz bize ulaştı</h3>
         <p className="text-muted-foreground mt-1 text-sm">
-          {result.hostname} için ekibimiz en kısa sürede sizi arayacak.
+          {result.hostname} için ekibimiz 1 iş günü içinde sizi arayacak.
         </p>
       </div>
     );
@@ -465,7 +464,7 @@ function NewSiteLeadCard({ result }: { result: ScanResult }) {
         className="mt-5 grid gap-3 sm:grid-cols-3"
         onSubmit={(e) => {
           e.preventDefault();
-          if (isPending || !kvkk) return;
+          if (isPending) return;
           setError(null);
           const fd = new FormData(e.currentTarget);
           fd.set("kvkk_onay", "on");
@@ -487,22 +486,15 @@ function NewSiteLeadCard({ result }: { result: ScanResult }) {
         <Input name="ad_soyad" placeholder="Ad Soyad" required minLength={3} maxLength={120} />
         <PhoneInput name="telefon" placeholder="Telefon" required minLength={10} maxLength={20} />
         <Input name="eposta" type="email" placeholder="E-posta" required maxLength={200} />
-        <label className="text-muted-foreground flex items-start gap-2 text-xs sm:col-span-3">
-          <input
-            type="checkbox"
-            checked={kvkk}
-            onChange={(e) => setKvkk(e.target.checked)}
-            className="mt-0.5 cursor-pointer"
-          />
-          <span>
-            <Link href="/kvkk" className="underline" target="_blank">
-              KVKK Aydınlatma Metni
-            </Link>
-            &apos;ni okudum; benimle iletişime geçilmesini onaylıyorum.
-          </span>
-        </label>
+        <p className="text-muted-foreground text-xs sm:col-span-3">
+          Göndererek{" "}
+          <Link href="/kvkk" className="underline" target="_blank">
+            KVKK Aydınlatma Metni
+          </Link>
+          &apos;ni okuduğunuzu kabul edersiniz.
+        </p>
         {error ? <p className="text-brand text-sm sm:col-span-3">{error}</p> : null}
-        <Button type="submit" disabled={isPending || !kvkk} className="sm:col-span-3">
+        <Button type="submit" disabled={isPending} className="sm:col-span-3">
           {isPending ? (
             <>
               <Loader2 className="mr-2 size-4 animate-spin" />
@@ -521,7 +513,6 @@ function ReportEmailCard({ result }: { result: ScanResult }) {
   const [isPending, startTransition] = useTransition();
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [kvkk, setKvkk] = useState(false);
 
   if (done) {
     return (
@@ -551,36 +542,32 @@ function ReportEmailCard({ result }: { result: ScanResult }) {
         className="mt-5 grid gap-3 sm:grid-cols-2"
         onSubmit={(e) => {
           e.preventDefault();
-          if (isPending || !kvkk) return;
+          if (isPending) return;
           setError(null);
           const fd = new FormData(e.currentTarget);
-          fd.set("kvkk_onay", kvkk ? "on" : "");
+          fd.set("kvkk_onay", "on");
           startTransition(async () => {
             const res = await sendScanReport(fd, result);
-            if (res.ok) setDone(true);
-            else setError(res.error);
+            if (res.ok) {
+              trackLead("KeScan Rapor", { email: fd.get("eposta") });
+              setDone(true);
+            } else {
+              setError(res.error);
+            }
           });
         }}
       >
         <Input name="ad_soyad" placeholder="Ad Soyad" required minLength={3} maxLength={120} />
         <Input name="eposta" type="email" placeholder="is@eposta.com" required maxLength={200} />
-        <label className="text-muted-foreground flex items-start gap-2 text-xs sm:col-span-2">
-          <input
-            type="checkbox"
-            checked={kvkk}
-            onChange={(e) => setKvkk(e.target.checked)}
-            className="mt-0.5 cursor-pointer"
-          />
-          <span>
-            <Link href="/kvkk" className="underline" target="_blank">
-              KVKK Aydınlatma Metni
-            </Link>
-            &apos;ni okudum; raporun e-postama gönderilmesini ve benimle iletişime geçilmesini
-            onaylıyorum.
-          </span>
-        </label>
+        <p className="text-muted-foreground text-xs sm:col-span-2">
+          Göndererek{" "}
+          <Link href="/kvkk" className="underline" target="_blank">
+            KVKK Aydınlatma Metni
+          </Link>
+          &apos;ni okuduğunuzu kabul edersiniz.
+        </p>
         {error ? <p className="text-brand text-sm sm:col-span-2">{error}</p> : null}
-        <Button type="submit" disabled={isPending || !kvkk} className="sm:col-span-2">
+        <Button type="submit" disabled={isPending} className="sm:col-span-2">
           {isPending ? (
             <>
               <Loader2 className="mr-2 size-4 animate-spin" />

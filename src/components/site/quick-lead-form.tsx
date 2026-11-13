@@ -27,7 +27,6 @@ export function QuickLeadForm({
 }) {
   const [pending, startTransition] = useTransition();
   const [submitted, setSubmitted] = useState(false);
-  const [kvkk, setKvkk] = useState(false);
   const [briefLength, setBriefLength] = useState(0);
 
   if (submitted) {
@@ -36,7 +35,7 @@ export function QuickLeadForm({
         <CheckCircle2 className="text-brand mx-auto size-10" />
         <h3 className="font-heading mt-4 text-xl font-bold">Talebin bize ulaştı.</h3>
         <p className="text-muted-foreground mt-2 text-sm">
-          Aynı gün içinde dönüş yapıyoruz. Acil ise{" "}
+          1 iş günü içinde sana dönüyoruz. Acil ise{" "}
           <a href="tel:+905322618222" className="text-brand hover:underline">
             +90 532 261 82 22
           </a>
@@ -51,7 +50,7 @@ export function QuickLeadForm({
       action={(formData) => {
         formData.set("kaynak", kaynak);
         if (kategori) formData.set("hizmet_kategori", kategori);
-        formData.set("kvkk_onay", kvkk ? "on" : "");
+        formData.set("kvkk_onay", "on");
         startTransition(async () => {
           const r = await submitLead(formData);
           if (r.ok) {
@@ -102,26 +101,18 @@ export function QuickLeadForm({
       </div>
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <label className="flex cursor-pointer items-start gap-2 text-xs">
-          <input
-            type="checkbox"
-            checked={kvkk}
-            onChange={(e) => setKvkk(e.target.checked)}
-            required
-            className="mt-0.5 size-4 cursor-pointer accent-current"
-          />
-          <span className="text-muted-foreground">
-            <Link
-              href="/kvkk"
-              target="_blank"
-              className="hover:text-foreground underline underline-offset-2"
-            >
-              KVKK aydınlatma metnini
-            </Link>{" "}
-            okudum, onaylıyorum.
-          </span>
-        </label>
-        <Button type="submit" size="lg" disabled={pending || !kvkk} className="cursor-pointer">
+        <p className="text-muted-foreground text-xs">
+          1 iş günü içinde dönüyoruz. Göndererek{" "}
+          <Link
+            href="/kvkk"
+            target="_blank"
+            className="hover:text-foreground underline underline-offset-2"
+          >
+            KVKK aydınlatma metnini
+          </Link>{" "}
+          okuduğunu kabul edersin.
+        </p>
+        <Button type="submit" size="lg" disabled={pending} className="cursor-pointer">
           {pending ? "Gönderiliyor…" : "Teklif iste"}
           {!pending ? <ArrowUpRight className="ml-1 size-4" /> : null}
         </Button>

@@ -27,7 +27,6 @@ export function IletisimForm() {
   const [butce, setButce] = useState("");
   const [brief, setBrief] = useState("");
   const [hizmetler, setHizmetler] = useState<string[]>([]);
-  const [kvkk, setKvkk] = useState(false);
 
   const toggleHizmet = (val: string) =>
     setHizmetler((prev) => (prev.includes(val) ? prev.filter((v) => v !== val) : [...prev, val]));
@@ -38,13 +37,13 @@ export function IletisimForm() {
         <div className="bg-brand/10 text-brand mx-auto inline-flex size-16 items-center justify-center rounded-full">
           <CheckCircle2 className="size-8" />
         </div>
-        <h2 className="font-heading mt-6 text-2xl font-bold">Mesajınız bize ulaştı.</h2>
+        <h2 className="font-heading mt-6 text-2xl font-bold">Mesajın bize ulaştı.</h2>
         <p className="text-muted-foreground mt-3 text-sm">
-          Çok acil ise{" "}
+          1 iş günü içinde sana dönüyoruz. Çok acilse{" "}
           <a href="tel:+905322618222" className="text-brand hover:underline">
             +90 532 261 82 22
           </a>{" "}
-          'den bize hemen ulaşabilirsiniz.
+          numarasından hemen ulaşabilirsin.
         </p>
         <div className="mt-6 flex justify-center gap-2">
           <Button asChild variant="ghost" size="sm">
@@ -67,7 +66,7 @@ export function IletisimForm() {
         formData.delete("hizmet_kategori");
         hizmetler.forEach((h) => formData.append("hizmet_kategori", h));
         formData.set("butce", butce);
-        formData.set("kvkk_onay", kvkk ? "on" : "");
+        formData.set("kvkk_onay", "on");
 
         startTransition(async () => {
           const r = await submitLead(formData);
@@ -150,7 +149,7 @@ export function IletisimForm() {
       </div>
 
       <div className="space-y-2">
-        <Label>Hangi hizmetlere ilgileniyorsun?</Label>
+        <Label>Hangi hizmetlerle ilgileniyorsun?</Label>
         <div className="flex flex-wrap gap-2">
           {kategoriOptions.map((k) => {
             const sel = hizmetler.includes(k.value);
@@ -182,7 +181,7 @@ export function IletisimForm() {
           onChange={(e) => setButce(e.target.value)}
           className="border-input bg-background focus-visible:ring-ring h-10 w-full rounded-md border px-3 text-sm focus-visible:ring-2 focus-visible:outline-none"
         >
-          <option value="">Seçim yapma</option>
+          <option value="">Seç (opsiyonel)</option>
           {butceOptions.map((b) => (
             <option key={b.value} value={b.value}>
               {b.label}
@@ -211,34 +210,24 @@ export function IletisimForm() {
         {/* Karakter sayacı (solda) + Brief'i gönder butonu (sağda) */}
         <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-muted-foreground text-xs">{brief.length}/5000 — en az 20 karakter</p>
-          <Button type="submit" size="lg" disabled={isPending || !kvkk} className="sm:ml-auto">
+          <Button type="submit" size="lg" disabled={isPending} className="sm:ml-auto">
             {isPending ? "Gönderiliyor..." : "Brief'i gönder"}
             <ArrowUpRight className="ml-1 size-4" />
           </Button>
         </div>
       </div>
 
-      {/* KVKK — butonun altında, sağa hizalı */}
-      <label className="flex cursor-pointer items-start justify-end gap-2 text-xs">
-        <input
-          type="checkbox"
-          name="kvkk_onay"
-          checked={kvkk}
-          onChange={(e) => setKvkk(e.target.checked)}
-          required
-          className="mt-0.5 size-4 accent-current"
-        />
-        <span className="text-muted-foreground">
-          <Link
-            href="/kvkk"
-            target="_blank"
-            className="hover:text-foreground underline underline-offset-2"
-          >
-            KVKK aydınlatma metnini
-          </Link>{" "}
-          okudum, kişisel verilerimin işlenmesine onay veriyorum.
-        </span>
-      </label>
+      <p className="text-muted-foreground text-right text-xs">
+        1 iş günü içinde dönüyoruz. Göndererek{" "}
+        <Link
+          href="/kvkk"
+          target="_blank"
+          className="hover:text-foreground underline underline-offset-2"
+        >
+          KVKK aydınlatma metnini
+        </Link>{" "}
+        okuduğunu kabul edersin.
+      </p>
     </form>
   );
 }
