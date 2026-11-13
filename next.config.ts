@@ -11,13 +11,13 @@ const isDev = process.env.NODE_ENV === "development";
 // ve upgrade-insecure-requests'in localhost http isteklerini kırma riski var.
 const csp = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://www.clarity.ms https://*.clarity.ms https://connect.facebook.net https://va.vercel-scripts.com",
+  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://*.googletagmanager.com https://www.google-analytics.com https://googleads.g.doubleclick.net https://www.googleadservices.com https://www.google.com https://www.clarity.ms https://*.clarity.ms https://connect.facebook.net https://va.vercel-scripts.com",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
-  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://*.clarity.ms https://connect.facebook.net https://www.facebook.com https://vitals.vercel-insights.com",
+  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.google-analytics.com https://*.google-analytics.com https://analytics.google.com https://*.analytics.google.com https://www.googletagmanager.com https://*.googletagmanager.com https://*.g.doubleclick.net https://ad.doubleclick.net https://www.google.com https://www.google.com.tr https://www.googleadservices.com https://pagead2.googlesyndication.com https://*.clarity.ms https://connect.facebook.net https://www.facebook.com https://vitals.vercel-insights.com",
   "media-src 'self' blob: https://*.supabase.co",
-  "frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com",
+  "frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://td.doubleclick.net https://www.googletagmanager.com",
   "worker-src 'self' blob:",
   "object-src 'none'",
   "base-uri 'self'",
